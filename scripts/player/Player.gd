@@ -4,12 +4,12 @@ extends CharacterBody3D
 @export var move_speed: float = 6.0
 @export var acceleration: float = 40.0
 @export var friction: float = 50.0
-@export var turn_speed: float = 14.0
 
-# Must match the camera yaw in Main.tscn (45 degrees), so W moves "up" on screen.
+# Must match the camera yaw in CameraRig.tscn (45 degrees), so W moves "up" on screen.
 const CAMERA_YAW_DEGREES: float = 45.0
 
 @onready var model: Node3D = $Model
+@onready var aim: Node = $AimComponent
 
 
 func _physics_process(delta: float) -> void:
@@ -23,7 +23,5 @@ func _physics_process(delta: float) -> void:
 	velocity.y = 0.0
 	move_and_slide()
 
-	# Temporary: face the movement direction. Task 4 will aim at the mouse instead.
-	if direction != Vector3.ZERO:
-		var target_angle: float = atan2(direction.x, direction.z)
-		model.rotation.y = lerp_angle(model.rotation.y, target_angle, clampf(turn_speed * delta, 0.0, 1.0))
+	# The player always faces the mouse.
+	model.rotation.y = atan2(aim.aim_direction.x, aim.aim_direction.z)

@@ -7,6 +7,7 @@ var target: Node3D
 
 
 func _ready() -> void:
+	add_to_group("camera_rig")
 	target = get_tree().get_first_node_in_group("player") as Node3D
 	if target:
 		global_position = target.global_position
@@ -17,3 +18,8 @@ func _physics_process(delta: float) -> void:
 		return
 	var weight: float = 1.0 - exp(-follow_speed * delta)
 	global_position = global_position.lerp(target.global_position, weight)
+
+
+func snap_to_target() -> void:
+	if target:
+		global_position = target.global_position

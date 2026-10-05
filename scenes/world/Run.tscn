@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="3_hud"]
 [ext_resource type="Script" path="res://scripts/rooms/RoomManager.gd" id="4_roommanager"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Combat_01.tres" id="5_room"]
+[ext_resource type="Resource" path="res://resources/rooms/Room_Combat_02.tres" id="6_room"]
 
 [sub_resource type="Environment" id="Env_run"]
 background_mode = 1
@@ -32,4 +33,4 @@ shadow_enabled = true
 
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("4_roommanager")
-starting_room = ExtResource("5_room")
+room_sequence = Array[Resource]([ExtResource("5_room"), ExtResource("6_room")])

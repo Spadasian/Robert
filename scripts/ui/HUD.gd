@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var hp_label: Label = $HPBar/Label
 @onready var death_label: Label = $DeathLabel
 @onready var message_label: Label = $MessageLabel
+@onready var fade_rect: ColorRect = $Fade
 
 var player_dead: bool = false
 
@@ -43,3 +44,15 @@ func show_message(text: String, duration: float = 2.0) -> void:
 	message_label.visible = true
 	await get_tree().create_timer(duration).timeout
 	message_label.visible = false
+
+
+func fade_out(duration: float = 0.25) -> void:
+	var tween := create_tween()
+	tween.tween_property(fade_rect, "color:a", 1.0, duration)
+	await tween.finished
+
+
+func fade_in(duration: float = 0.25) -> void:
+	var tween := create_tween()
+	tween.tween_property(fade_rect, "color:a", 0.0, duration)
+	await tween.finished

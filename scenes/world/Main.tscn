@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/enemies/TrainingDummy.tscn" id="3_dummy"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Bandit.tscn" id="4_bandit"]
 [ext_resource type="Script" path="res://scripts/rooms/NavBaker.gd" id="5_navbaker"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="6_hud"]
 
 [sub_resource type="NavigationMesh" id="NavMesh_level"]
 geometry_parsed_geometry_type = 1
@@ -81,3 +82,5 @@ transform = Transform3D(1, 0, 0, 0, 0.7, 0.714, 0, -0.714, 0.7, 0, 10, 0)
 shadow_enabled = true
 
 [node name="CameraRig" parent="." instance=ExtResource("2_camera")]
+
+[node name="HUD" parent="." instance=ExtResource("6_hud")]

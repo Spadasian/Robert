@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/world/CameraRig.tscn" id="2_camera"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
-size = Vector2(24, 24)
+size = Vector2(60, 60)
 
 [sub_resource type="StandardMaterial3D" id="Mat_floor"]
 albedo_color = Color(0.2, 0.15, 0.3, 1)
@@ -49,7 +50,4 @@ surface_material_override/0 = SubResource("Mat_crate")
 transform = Transform3D(1, 0, 0, 0, 0.7, 0.714, 0, -0.714, 0.7, 0, 10, 0)
 shadow_enabled = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.7071, -0.40825, 0.57735, 0, 0.8165, 0.57735, -0.7071, -0.40825, 0.57735, 10, 10, 10)
-projection = 1
-size = 14.0
+[node name="CameraRig" parent="." instance=ExtResource("2_camera")]

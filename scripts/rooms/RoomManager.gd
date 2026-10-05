@@ -17,8 +17,11 @@ var room_index: int = -1
 var is_transitioning: bool = false
 
 
-func _ready() -> void:
+func _enter_tree() -> void:
 	add_to_group("room_manager")
+
+
+func _ready() -> void:
 	if not room_sequence.is_empty():
 		_load_next_room.call_deferred()
 
@@ -51,11 +54,11 @@ func _load_next_room() -> void:
 
 
 func _on_room_cleared() -> void:
-	room_cleared.emit()
 	_spawn_reward()
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud:
 		hud.show_message("ROOM CLEARED")
+	room_cleared.emit()
 
 
 func _on_exit_reached() -> void:

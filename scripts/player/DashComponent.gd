@@ -21,6 +21,13 @@ func _ready() -> void:
 	charges = max_charges
 
 
+func set_max_charges(new_max: int) -> void:
+	if new_max > max_charges:
+		charges += new_max - max_charges
+	max_charges = new_max
+	charges = mini(charges, max_charges)
+
+
 func is_invulnerable() -> bool:
 	return is_dashing
 

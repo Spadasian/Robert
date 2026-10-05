@@ -7,6 +7,17 @@
 [ext_resource type="Script" path="res://scripts/managers/RunManager.gd" id="7_runmanager"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Combat_01.tres" id="5_room"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Combat_02.tres" id="6_room"]
+[ext_resource type="Resource" path="res://resources/upgrades/blood_edge.tres" id="u_blood_edge"]
+[ext_resource type="Resource" path="res://resources/upgrades/shadow_step.tres" id="u_shadow_step"]
+[ext_resource type="Resource" path="res://resources/upgrades/iron_skin.tres" id="u_iron_skin"]
+[ext_resource type="Resource" path="res://resources/upgrades/sakura_step.tres" id="u_sakura_step"]
+[ext_resource type="Resource" path="res://resources/upgrades/executioner.tres" id="u_executioner"]
+[ext_resource type="Resource" path="res://resources/upgrades/dark_breath.tres" id="u_dark_breath"]
+[ext_resource type="Resource" path="res://resources/upgrades/swift_blade.tres" id="u_swift_blade"]
+[ext_resource type="Resource" path="res://resources/upgrades/vital_spirit.tres" id="u_vital_spirit"]
+[ext_resource type="Resource" path="res://resources/upgrades/keen_edge.tres" id="u_keen_edge"]
+[ext_resource type="Resource" path="res://resources/upgrades/crimson_meal.tres" id="u_crimson_meal"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeManager.gd" id="8_upgrademanager"]
 
 [sub_resource type="Environment" id="Env_run"]
 background_mode = 1
@@ -38,3 +49,7 @@ script = ExtResource("7_runmanager")
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("4_roommanager")
 room_sequence = Array[Resource]([ExtResource("5_room"), ExtResource("6_room")])
+
+[node name="UpgradeManager" type="Node" parent="."]
+script = ExtResource("8_upgrademanager")
+upgrade_pool = Array[Resource]([ExtResource("u_blood_edge"), ExtResource("u_shadow_step"), ExtResource("u_iron_skin"), ExtResource("u_sakura_step"), ExtResource("u_executioner"), ExtResource("u_dark_breath"), ExtResource("u_swift_blade"), ExtResource("u_vital_spirit"), ExtResource("u_keen_edge"), ExtResource("u_crimson_meal")])

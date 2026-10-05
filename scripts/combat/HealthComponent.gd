@@ -21,6 +21,15 @@ func set_max_health(value: float, refill: bool = true) -> void:
 	health_changed.emit(current_health, max_health)
 
 
+func change_max_health(new_max: float) -> void:
+	var difference: float = new_max - max_health
+	max_health = new_max
+	if difference > 0.0:
+		current_health += difference
+	current_health = minf(current_health, max_health)
+	health_changed.emit(current_health, max_health)
+
+
 func take_damage(amount: float) -> void:
 	if is_dead():
 		return

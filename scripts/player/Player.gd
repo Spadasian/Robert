@@ -4,8 +4,6 @@ extends CharacterBody3D
 
 const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/ui/DamageNumber.tscn")
 
-@export var max_health: float = 100.0
-@export var move_speed: float = 6.0
 @export var acceleration: float = 40.0
 @export var friction: float = 50.0
 
@@ -18,6 +16,7 @@ const MASK_DASHING: int = 1
 @onready var model: Node3D = $Model
 @onready var body_mesh: MeshInstance3D = $Model/Body
 @onready var aim: Node = $AimComponent
+@onready var stats: Node = $StatsComponent
 @onready var health: Node = $HealthComponent
 @onready var dash: Node = $DashComponent
 @onready var hurtbox: Area3D = $Hurtbox
@@ -25,7 +24,9 @@ const MASK_DASHING: int = 1
 
 
 func _ready() -> void:
-	health.set_max_health(max_health)
+	health.set_max_health(stats.get_stat("max_health"))
+	dash.set_max_charges(int(stats.get_stat("dodge_charges")))
+	stats.stats_changed.connect(_on_stats_changed)
 	hurtbox.hit_received.connect(_on_hit_received)
 	health.damaged.connect(_on_damaged)
 	health.died.connect(_on_died)
@@ -52,7 +53,7 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	var target_velocity: Vector3 = direction * move_speed
+	var target_velocity: Vector3 = direction * stats.get_stat("move_speed")
 	var rate: float = acceleration if direction != Vector3.ZERO else friction
 	velocity.x = move_toward(velocity.x, target_velocity.x, rate * delta)
 	velocity.z = move_toward(velocity.z, target_velocity.z, rate * delta)
@@ -63,7 +64,12 @@ func _physics_process(delta: float) -> void:
 func _on_hit_received(damage: float, _source: Node) -> void:
 	if dash.is_invulnerable() or health.is_dead():
 		return
-	health.take_damage(damage)
+	health.take_damage(damage * stats.get_stat("damage_taken"))
+
+
+func _on_stats_changed() -> void:
+	health.change_max_health(stats.get_stat("max_health"))
+	dash.set_max_charges(int(stats.get_stat("dodge_charges")))
 
 
 func _on_damaged(amount: float) -> void:

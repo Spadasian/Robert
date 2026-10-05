@@ -1,12 +1,12 @@
 extends Node3D
 ## Basic katana slash. Hold the attack button to keep slashing (limited by cooldown).
 
-@export var damage: float = 10.0
 @export var attack_cooldown: float = 0.35
 @export var swing_time: float = 0.15
 @export var swing_arc_degrees: float = 140.0
 
 @onready var aim: Node = $"../AimComponent"
+@onready var stats: Node = $"../StatsComponent"
 @onready var swing_pivot: Node3D = $SwingPivot
 @onready var hitbox: Area3D = $SwingPivot/Hitbox
 @onready var blade: MeshInstance3D = $SwingPivot/Blade
@@ -30,8 +30,8 @@ func _physics_process(delta: float) -> void:
 
 
 func start_attack() -> void:
-	cooldown_left = attack_cooldown
-	hitbox.damage = damage
+	cooldown_left = attack_cooldown / stats.get_stat("attack_speed")
+	hitbox.damage = stats.get_stat("attack_damage")
 	hitbox.set_active(true)
 	blade.visible = true
 

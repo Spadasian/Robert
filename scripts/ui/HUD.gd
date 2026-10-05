@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var fade_rect: ColorRect = $Fade
 @onready var gold_label: Label = $GoldLabel
 @onready var corruption_label: Label = $CorruptionLabel
+@onready var room_label: Label = $RoomLabel
 
 var player_dead: bool = false
 var message_serial: int = 0

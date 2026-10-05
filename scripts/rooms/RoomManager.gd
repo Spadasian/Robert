@@ -62,6 +62,9 @@ func _on_exit_reached() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
+	# Anything left on the floor is collected automatically when you leave.
+	for pickup in get_tree().get_nodes_in_group("pickup"):
+		pickup.collect()
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud:
 		await hud.fade_out()

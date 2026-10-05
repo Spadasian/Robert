@@ -38,6 +38,13 @@ offset_right = 260.0
 offset_bottom = 110.0
 text = "Corruption: 0%"
 
+[node name="RoomLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 116.0
+offset_right = 260.0
+offset_bottom = 142.0
+text = "Room 1 / 1"
+
 [node name="DeathLabel" type="Label" parent="."]
 anchors_preset = 15
 anchor_right = 1.0

@@ -29,6 +29,10 @@ func _ready() -> void:
 	corruption.corruption_changed.connect(_on_corruption_changed)
 	_on_corruption_changed(corruption.value, corruption.level)
 
+	var room_manager: Node = get_tree().get_first_node_in_group("room_manager")
+	if room_manager:
+		room_manager.room_changed.connect(_on_room_changed)
+
 	var run_manager: Node = get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
 		run_manager.gold_changed.connect(_on_gold_changed)
@@ -47,6 +51,10 @@ func _on_gold_changed(gold: int) -> void:
 
 func _on_corruption_changed(value: float, _level: int) -> void:
 	corruption_label.text = "Corruption: %d%%" % int(value)
+
+
+func _on_room_changed(index: int, total: int) -> void:
+	room_label.text = "Room %d / %d" % [index + 1, total]
 
 
 func _on_player_died() -> void:

@@ -1,16 +1,22 @@
 extends Node
-## Loads room scenes into the run, places the player and moves on when the exit is reached.
-## For now rooms come from a fixed list; the procedural generator (Phase 12) will replace it.
+## Builds the run plan with RunGenerator, loads rooms one by one, places the player
+## and moves on when the exit is reached.
 
 const GOLD_PICKUP_SCENE: PackedScene = preload("res://scenes/world/GoldPickup.tscn")
 
 signal room_loaded(room: Node)
+signal room_changed(index: int, total: int)
 signal room_cleared
 
-@export var room_sequence: Array[Resource] = [] # RoomData resources
+@export var room_pool: Array[Resource] = [] # every RoomData that can appear in a run
+## Room types in order: 0 COMBAT, 1 ELITE, 2 TREASURE, 3 SHOP, 4 EVENT, 5 SHRINE, 6 BOSS
+@export var layout: PackedInt32Array = PackedInt32Array([0, 0, 0, 1, 3, 0, 6])
+## 0 = new random run every time. Put a number here to replay the same run.
+@export var run_seed: int = 0
 
 @onready var room_container: Node3D = $"../CurrentRoom"
 
+var room_plan: Array = []
 var current_room: Node3D
 var current_room_data: Resource
 var room_index: int = -1
@@ -22,8 +28,17 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	if not room_sequence.is_empty():
-		_load_next_room.call_deferred()
+	if room_pool.is_empty():
+		return
+	var rng := RandomNumberGenerator.new()
+	if run_seed == 0:
+		rng.randomize()
+	else:
+		rng.seed = run_seed
+	print("Run seed: ", rng.seed)
+	room_plan = RunGenerator.generate(room_pool, layout, rng)
+	print("Run plan: ", room_plan.map(func(room): return room.display_name))
+	_load_room_at.call_deferred(0)
 
 
 func load_room(room_data: Resource) -> void:
@@ -48,9 +63,10 @@ func load_room(room_data: Resource) -> void:
 	room_loaded.emit(current_room)
 
 
-func _load_next_room() -> void:
-	room_index = (room_index + 1) % room_sequence.size()
-	load_room(room_sequence[room_index])
+func _load_room_at(index: int) -> void:
+	room_index = index
+	load_room(room_plan[index])
+	room_changed.emit(room_index, room_plan.size())
 
 
 func _on_room_cleared() -> void:
@@ -71,7 +87,14 @@ func _on_exit_reached() -> void:
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud:
 		await hud.fade_out()
-	_load_next_room()
+
+	if room_index + 1 >= room_plan.size():
+		# Placeholder until Phase 16 (victory screen): start a brand new run.
+		print("Run complete")
+		get_tree().reload_current_scene()
+		return
+
+	_load_room_at(room_index + 1)
 	if hud:
 		await hud.fade_in()
 	is_transitioning = false

@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/player/AimComponent.gd" id="2_aim"]
 [ext_resource type="Script" path="res://scripts/player/AttackComponent.gd" id="3_attack"]
 [ext_resource type="Script" path="res://scripts/combat/Hitbox.gd" id="4_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/Hurtbox.gd" id="5_hurtbox"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_player"]
 radius = 0.4
@@ -21,6 +22,10 @@ albedo_color = Color(0.25, 0.45, 0.9, 1)
 
 [sub_resource type="StandardMaterial3D" id="Mat_nose"]
 albedo_color = Color(0.95, 0.9, 0.5, 1)
+
+[sub_resource type="CapsuleShape3D" id="Shape_hurt"]
+radius = 0.5
+height = 1.9
 
 [sub_resource type="BoxShape3D" id="Shape_hit"]
 size = Vector3(0.9, 1.2, 2)
@@ -76,3 +81,14 @@ shape = SubResource("Shape_hit")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.4)
 mesh = SubResource("Mesh_blade")
 surface_material_override/0 = SubResource("Mat_blade")
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+team = "player"
+debug_print = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("Shape_hurt")

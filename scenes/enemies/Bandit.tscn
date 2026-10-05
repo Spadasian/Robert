@@ -1,0 +1,87 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/Bandit.gd" id="1_bandit"]
+[ext_resource type="Script" path="res://scripts/combat/HealthComponent.gd" id="2_health"]
+[ext_resource type="Script" path="res://scripts/combat/Hurtbox.gd" id="3_hurtbox"]
+[ext_resource type="Script" path="res://scripts/combat/Hitbox.gd" id="4_hitbox"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_body"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="Shape_hurt"]
+radius = 0.55
+height = 1.9
+
+[sub_resource type="CapsuleMesh" id="Mesh_body"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_body"]
+albedo_color = Color(0.5, 0.32, 0.2, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_attack"]
+size = Vector3(1.4, 1.2, 1.6)
+
+[sub_resource type="BoxMesh" id="Mesh_attack"]
+size = Vector3(1.4, 0.05, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="Mat_attack"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.2, 0.2, 0.3)
+
+[node name="Bandit" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_bandit")
+max_health = 30.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("Shape_body")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("Mesh_body")
+surface_material_override/0 = SubResource("Mat_body")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("3_hurtbox")
+team = "enemy"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("Shape_hurt")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+target_desired_distance = 0.5
+radius = 0.45
+height = 1.8
+
+[node name="AttackPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+
+[node name="Hitbox" type="Area3D" parent="AttackPivot"]
+collision_layer = 16
+collision_mask = 32
+monitorable = false
+script = ExtResource("4_hitbox")
+team = "enemy"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackPivot/Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.1)
+shape = SubResource("Shape_attack")
+
+[node name="Visual" type="MeshInstance3D" parent="AttackPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.85, 1.1)
+mesh = SubResource("Mesh_attack")
+surface_material_override/0 = SubResource("Mat_attack")

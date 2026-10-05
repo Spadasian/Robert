@@ -18,6 +18,7 @@
 [ext_resource type="Resource" path="res://resources/upgrades/keen_edge.tres" id="u_keen_edge"]
 [ext_resource type="Resource" path="res://resources/upgrades/crimson_meal.tres" id="u_crimson_meal"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeManager.gd" id="8_upgrademanager"]
+[ext_resource type="PackedScene" path="res://scenes/ui/UpgradeChoice.tscn" id="9_choice"]
 
 [sub_resource type="Environment" id="Env_run"]
 background_mode = 1
@@ -49,6 +50,8 @@ script = ExtResource("7_runmanager")
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("4_roommanager")
 room_sequence = Array[Resource]([ExtResource("5_room"), ExtResource("6_room")])
+
+[node name="UpgradeChoice" parent="." instance=ExtResource("9_choice")]
 
 [node name="UpgradeManager" type="Node" parent="."]
 script = ExtResource("8_upgrademanager")

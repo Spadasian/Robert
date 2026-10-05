@@ -4,6 +4,8 @@ extends Node
 
 @export var upgrade_pool: Array[Resource] = []
 
+@onready var choice_ui: Node = $"../UpgradeChoice"
+
 var stats: Node
 
 
@@ -41,13 +43,15 @@ func apply_upgrade(upgrade: Resource) -> void:
 	stats.add_upgrade(upgrade)
 
 
-# Temporary (livrarea A): grant one random upgrade automatically. Livrarea B replaces this with a choice screen.
 func _on_room_cleared() -> void:
-	var choices: Array = get_random_choices(1)
+	await get_tree().create_timer(0.6).timeout # let the player see the last kill
+	if stats.get_parent().get_node("HealthComponent").is_dead():
+		return
+	var choices: Array = get_random_choices(3)
 	if choices.is_empty():
 		return
-	var upgrade: Resource = choices[0]
-	apply_upgrade(upgrade)
+	var chosen: Resource = await choice_ui.choose(choices)
+	apply_upgrade(chosen)
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud:
-		hud.show_message("ROOM CLEARED\n[%s] %s: %s" % [upgrade.get_rarity_name(), upgrade.display_name, upgrade.description], 3.5)
+		hud.show_message("%s acquired" % chosen.display_name)

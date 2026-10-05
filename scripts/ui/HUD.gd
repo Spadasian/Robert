@@ -6,6 +6,7 @@ extends CanvasLayer
 @onready var death_label: Label = $DeathLabel
 @onready var message_label: Label = $MessageLabel
 @onready var fade_rect: ColorRect = $Fade
+@onready var gold_label: Label = $GoldLabel
 
 var player_dead: bool = false
 
@@ -22,11 +23,20 @@ func _ready() -> void:
 	health.died.connect(_on_player_died)
 	_on_health_changed(health.current_health, health.max_health)
 
+	var run_manager: Node = get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.gold_changed.connect(_on_gold_changed)
+		_on_gold_changed(run_manager.gold)
+
 
 func _on_health_changed(current: float, maximum: float) -> void:
 	hp_bar.max_value = maximum
 	hp_bar.value = current
 	hp_label.text = "%d / %d" % [int(current), int(maximum)]
+
+
+func _on_gold_changed(gold: int) -> void:
+	gold_label.text = "Gold: %d" % gold
 
 
 func _on_player_died() -> void:

@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/CameraRig.tscn" id="2_camera"]
 [ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="3_hud"]
 [ext_resource type="Script" path="res://scripts/rooms/RoomManager.gd" id="4_roommanager"]
+[ext_resource type="Script" path="res://scripts/managers/RunManager.gd" id="7_runmanager"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Combat_01.tres" id="5_room"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Combat_02.tres" id="6_room"]
 
@@ -28,6 +29,9 @@ shadow_enabled = true
 [node name="Player" parent="." instance=ExtResource("1_player")]
 
 [node name="CameraRig" parent="." instance=ExtResource("2_camera")]
+
+[node name="RunManager" type="Node" parent="."]
+script = ExtResource("7_runmanager")
 
 [node name="HUD" parent="." instance=ExtResource("3_hud")]
 

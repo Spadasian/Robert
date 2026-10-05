@@ -146,6 +146,8 @@ enemy_scene = ExtResource("4_bandit")
 
 [node name="Enemies" type="Node3D" parent="."]
 
+[node name="RewardSpawn" type="Marker3D" parent="."]
+
 [node name="Exit" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.8, 1, 0)
 collision_layer = 0

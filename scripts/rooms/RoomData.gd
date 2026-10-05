@@ -9,3 +9,4 @@ enum RoomType { COMBAT, ELITE, TREASURE, SHOP, EVENT, SHRINE, BOSS }
 @export var room_type: RoomType = RoomType.COMBAT
 @export var scene: PackedScene
 @export var difficulty: int = 1
+@export var reward_gold: int = 10

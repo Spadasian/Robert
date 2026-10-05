@@ -1,7 +1,7 @@
 extends Node3D
 ## Root script of every room scene.
 ## Required child nodes: PlayerSpawn (Marker3D), EnemySpawns (Node3D with EnemySpawnPoint children),
-## Enemies (Node3D), Exit (Area3D) with a DoorVisual (MeshInstance3D) inside it.
+## Enemies (Node3D), RewardSpawn (Marker3D), Exit (Area3D) with a DoorVisual (MeshInstance3D) inside it.
 
 signal room_cleared
 signal exit_reached
@@ -9,6 +9,7 @@ signal exit_reached
 @onready var player_spawn: Marker3D = $PlayerSpawn
 @onready var enemy_spawns: Node3D = $EnemySpawns
 @onready var enemies_root: Node3D = $Enemies
+@onready var reward_spawn: Marker3D = $RewardSpawn
 @onready var exit_area: Area3D = $Exit
 @onready var door_visual: MeshInstance3D = $Exit/DoorVisual
 
@@ -25,6 +26,10 @@ func _ready() -> void:
 
 func get_player_spawn_position() -> Vector3:
 	return player_spawn.global_position
+
+
+func get_reward_position() -> Vector3:
+	return reward_spawn.global_position
 
 
 func start_room() -> void:

@@ -35,3 +35,13 @@ text = "YOU DIED
 Press R to restart"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 140.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 36
+text = ""
+horizontal_alignment = 1

@@ -1,0 +1,35 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/world/CameraRig.tscn" id="2_camera"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="3_hud"]
+[ext_resource type="Script" path="res://scripts/rooms/RoomManager.gd" id="4_roommanager"]
+[ext_resource type="Resource" path="res://resources/rooms/Room_Combat_01.tres" id="5_room"]
+
+[sub_resource type="Environment" id="Env_run"]
+background_mode = 1
+background_color = Color(0.04, 0.03, 0.07, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.45, 0.4, 0.6, 1)
+ambient_light_energy = 0.6
+
+[node name="Run" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_run")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0.714, 0, -0.714, 0.7, 0, 10, 0)
+shadow_enabled = true
+
+[node name="CurrentRoom" type="Node3D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+
+[node name="CameraRig" parent="." instance=ExtResource("2_camera")]
+
+[node name="HUD" parent="." instance=ExtResource("3_hud")]
+
+[node name="RoomManager" type="Node" parent="."]
+script = ExtResource("4_roommanager")
+starting_room = ExtResource("5_room")

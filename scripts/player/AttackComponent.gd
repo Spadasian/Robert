@@ -25,7 +25,8 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	cooldown_left = maxf(cooldown_left - delta, 0.0)
 	rotation.y = atan2(aim.aim_direction.x, aim.aim_direction.z)
-	if Input.is_action_pressed("attack") and cooldown_left <= 0.0:
+	var player := get_parent()
+	if Input.is_action_pressed("attack") and cooldown_left <= 0.0 and not player.is_busy():
 		start_attack()
 
 
@@ -34,6 +35,8 @@ func start_attack() -> void:
 	hitbox.damage = stats.get_stat("attack_damage")
 	hitbox.set_active(true)
 	blade.visible = true
+	AudioManager.play_sfx("slash")
+	VFX.slash_arc(global_position + Vector3(0.0, 0.9, 0.0), rotation.y, 2.3, 130.0, Color(0.9, 0.95, 1.0), 0.16)
 
 	var half_arc: float = deg_to_rad(swing_arc_degrees * 0.5) * swing_side
 	swing_pivot.rotation.y = -half_arc

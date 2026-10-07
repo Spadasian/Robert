@@ -15,6 +15,9 @@ signal stats_changed
 	"execute_bonus": 0.0, # extra damage vs enemies at low HP
 	"corruption_on_hit": 0.0,
 	"life_on_kill": 0.0,
+	"gold_gain": 1.0, # multiplier for gold picked up (Black Pearl: 1.5)
+	"shop_discount": 0.0, # 0.2 = shops charge 20% less
+	"free_hits_per_room": 0.0, # hits ignored at the start of every room (Fox Mask: 1)
 }
 
 var upgrades: Array = [] # UpgradeData taken this run
@@ -34,6 +37,15 @@ func add_upgrade(upgrade: Resource) -> void:
 		if not base_stats.has(effect.stat):
 			push_warning("StatsComponent: unknown stat '%s' in upgrade '%s'" % [effect.stat, upgrade.id])
 		modifiers.append(effect)
+	_recalculate()
+	stats_changed.emit()
+
+
+## A permanent bonus that is not a run upgrade (Soul Shard upgrades): it is not listed in `upgrades`.
+func add_modifier(effect: Resource) -> void:
+	if not base_stats.has(effect.stat):
+		push_warning("StatsComponent: unknown stat '%s' in modifier" % effect.stat)
+	modifiers.append(effect)
 	_recalculate()
 	stats_changed.emit()
 

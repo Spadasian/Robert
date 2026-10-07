@@ -174,3 +174,29 @@ Empty (reserved) folders exist for the rest of the planned structure (`scripts/b
 7. Skills still unbuilt: Iaijutsu (RMB), ultimate (E), pause (Esc), main menu/character select.
 8. Known simplifications to revisit: Bandit has no stagger; enemy stats are exported variables instead of `EnemyData`; run end just reloads the scene; HUD/art/audio are placeholders; no cooldown UI for dash; all rooms use the same layout size (22×22) with exit on the east wall.
 9. User was asked, and has not yet answered: key **F** for interaction.
+
+---
+
+## 8. UPDATE 2026-10-07 — merged with the user's local version (read this first, it overrides sections 3 and 6 where they differ)
+
+The user uploaded a much more advanced local version of the game (made in another Claude session). It was merged into this branch; **the user's files won over the older versions in this brief**. The merge was checked only statically (every `res://` path in scenes, scripts, resources and `project.godot` exists); **nobody has run it from this repository yet**.
+
+What the repo now contains (from file names; not all verified in the editor):
+- **Flow:** main scene is `scenes/ui/MainMenu.tscn`; `scenes/world/Run.tscn` and `Main.tscn`; `EndScreen`, `PauseMenu`, `VolumeSliders`, `SoulShrine` in `scenes/ui` + `scripts/ui`.
+- **Autoloads** (in `project.godot`): `MetaProgression`, `AudioManager`, `VFX`, `SaveManager`, `GameManager` (all in `scripts/managers`).
+- **Enemies:** Bandit, Heavy Bandit, **Archer** (+ `Arrow`), **Ninja** (+ `Shuriken`), **Boss** (`scenes/enemies/Boss.tscn`, `scripts/enemies/Boss.gd`, room `Room_Boss_01`), TrainingDummy.
+- **Player skills** (`scripts/player/skills`, `scenes/player/skills`): `PlayerSkill` base, `IaijutsuSkill`, `KaeshiSkill`, `UltimateSkill`; `CorruptionVfx` for Corruption visuals.
+- **Relics:** `RelicData` + `resources/relics` (Fox Mask, Black Pearl, Oni Horn), `RelicPedestal`.
+- **Meta progression:** `MetaProgression`, `MetaUpgradeData`, `resources/meta` (hungry_blade, pouch, vitality), `SaveManager`.
+- **Rooms:** `ShopRoom` + `ShopStand`, `TreasureRoom`, Boss room; the older Shop/Treasure implementation (Interactable, ShopPedestal, TreasureChest) was deleted as a duplicate.
+- **Audio:** `audio/sfx`, `audio/music`, `audio/ambience`; `tools/audio/generate_audio.py` generates them.
+- Input Map: also `interact` = F, `pause` = Esc, `skill`, `ability`, `ultimate`.
+- **Repo layout fix:** the user's scripts were uploaded to the repo root by mistake; they were moved into `scripts/`. The user's local project has the correct layout (`res://scripts/...`), so do not upload script folders to the root again.
+
+## 9. The 3D character model (Blender) — status
+
+Reference: the user's 2D concept sheet (`concept_sheet`, "Kazuma Ronin T-pose turnaround") is the visual target. Workflow so far is documented by the scripts in `art/blender_tools/` (run in Blender 5.2.2 Scripting tab; keep each script under ~120 lines, longer pastes get truncated):
+- Blender file: `Kazuma V3.blend` (in the user's Downloads). Objects: `Kazuma_high` (sculpt, double-shelled skin, `kazuma_color` attribute, no UVs — baking colors from it FAILS, do not retry), `Kazuma_low`, `Kazuma_game` (repaired low-poly, ~45k verts, holes filled, original UV layout kept), `Meshy_textured` (Meshy model with painted texture; white pauldrons/orange scarf/different face, katana still attached, so not used).
+- Material `Kazuma_game_mat_old` uses the OLD good texture; `04a_rebake_face.py` re-projects the face from the sheet panel FACE DETAIL (mapping: `u = 0.54232*x + 0.08431`, `v = 0.77637*z - 0.92188` on object coordinates, image `concept_sheet`) into a new image `Kazuma_color_v4`. Its result was never verified (the preview script stopped writing new images on the user's machine).
+- Remaining: verify `Kazuma_color_v4`; body details from the sheet (back, belts, patterns); rig (bones for scarf, sleeves, skirt, ponytail); export `.glb` to Godot to replace the blue capsule.
+- Claude cloud sessions cannot reach Blender. The user has a Blender MCP connector in a local session; that is the better place to finish the model.

@@ -3,7 +3,12 @@ extends Label3D
 
 
 func play(amount: float) -> void:
-	text = str(int(round(amount)))
+	play_text(str(int(round(amount))))
+
+
+## Same effect with any text, e.g. "BLOCKED".
+func play_text(new_text: String) -> void:
+	text = new_text
 	var tween := create_tween().set_parallel(true)
 	tween.tween_property(self, "position:y", position.y + 1.2, 0.6)
 	tween.tween_property(self, "modulate:a", 0.0, 0.6)

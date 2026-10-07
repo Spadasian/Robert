@@ -41,6 +41,7 @@ func _input(event: InputEvent) -> void:
 
 func _select(upgrade: Resource) -> void:
 	if visible:
+		AudioManager.play_sfx("upgrade")
 		upgrade_chosen.emit(upgrade)
 
 

@@ -50,6 +50,7 @@ func _physics_process(delta: float) -> void:
 		State.RECOVER:
 			_recover(delta)
 	move_and_slide()
+	lock_to_floor()
 
 
 func _chase(delta: float) -> void:
@@ -102,6 +103,7 @@ func _change_state(new_state: State) -> void:
 		State.ATTACK:
 			visual_material.albedo_color.a = 0.85
 			attack_hitbox.set_active(true)
+			AudioManager.play_sfx("slash_enemy")
 		State.RECOVER:
 			attack_hitbox.set_active(false)
 			attack_visual.visible = false

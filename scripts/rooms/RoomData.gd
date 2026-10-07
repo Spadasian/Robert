@@ -10,5 +10,3 @@ enum RoomType { COMBAT, ELITE, TREASURE, SHOP, EVENT, SHRINE, BOSS }
 @export var scene: PackedScene
 @export var difficulty: int = 1
 @export var reward_gold: int = 10
-## Fight rooms give an upgrade choice when cleared; shop and treasure rooms do not.
-@export var gives_upgrade_choice: bool = true

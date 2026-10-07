@@ -33,6 +33,17 @@ func _on_hit_received(damage: float, _source: Node) -> void:
 	health.take_damage(damage)
 
 
+## The game is flat. An enemy pushed off the floor by an overlapping body is put back (see Player.gd).
+## Subclasses call this right after move_and_slide(); _process is a second safety net.
+func lock_to_floor() -> void:
+	if absf(global_position.y) > 0.001 and not health.is_dead():
+		global_position.y = 0.0
+
+
+func _process(_delta: float) -> void:
+	lock_to_floor()
+
+
 func _on_damaged(amount: float) -> void:
 	_spawn_damage_number(amount)
 	body_material.albedo_color = Color.WHITE
@@ -42,9 +53,11 @@ func _on_damaged(amount: float) -> void:
 func _on_died() -> void:
 	hurtbox.set_deferred("monitorable", false)
 	collision_layer = 0
+	AudioManager.play_sfx("enemy_death")
+	VFX.death_puff(global_position + Vector3(0.0, 0.9, 0.0), base_color)
 	defeated.emit(self)
 	var tween := create_tween()
-	tween.tween_property(self, "scale", Vector3.ZERO, 0.25)
+	tween.tween_property(self, "scale", Vector3.ONE * 0.01, 0.25) # not ZERO: a zero scale makes Godot print "det == 0" errors
 	tween.tween_callback(queue_free)
 
 

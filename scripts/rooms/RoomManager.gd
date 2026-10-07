@@ -7,10 +7,11 @@ const GOLD_PICKUP_SCENE: PackedScene = preload("res://scenes/world/GoldPickup.ts
 signal room_loaded(room: Node)
 signal room_changed(index: int, total: int)
 signal room_cleared
+signal run_completed # the exit of the last room was reached; EndScreen shows the victory
 
 @export var room_pool: Array[Resource] = [] # every RoomData that can appear in a run
 ## Room types in order: 0 COMBAT, 1 ELITE, 2 TREASURE, 3 SHOP, 4 EVENT, 5 SHRINE, 6 BOSS
-@export var layout: PackedInt32Array = PackedInt32Array([0, 0, 0, 1, 3, 0, 6])
+@export var layout: PackedInt32Array = PackedInt32Array([0, 0, 0, 1, 2, 3, 0, 6])
 ## 0 = new random run every time. Put a number here to replay the same run.
 @export var run_seed: int = 0
 
@@ -57,6 +58,8 @@ func load_room(room_data: Resource) -> void:
 	if camera_rig:
 		camera_rig.snap_to_target()
 
+	AudioManager.play_music("music_boss" if room_data.room_type == RoomData.RoomType.BOSS else "music_run")
+	AudioManager.play_ambience("ambience_night")
 	current_room.room_cleared.connect(_on_room_cleared)
 	current_room.exit_reached.connect(_on_exit_reached)
 	current_room.start_room()
@@ -70,11 +73,23 @@ func _load_room_at(index: int) -> void:
 
 
 func _on_room_cleared() -> void:
+	# Shops and treasure rooms have no enemies, so they count as cleared at once. They must not hand out
+	# gold or a free upgrade choice (not emitting room_cleared also silences UpgradeManager).
+	if current_room_data.room_type == RoomData.RoomType.SHOP or current_room_data.room_type == RoomData.RoomType.TREASURE:
+		return
 	_spawn_reward()
+	AudioManager.play_sfx("room_clear")
+	var is_boss: bool = current_room_data.room_type == RoomData.RoomType.BOSS
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.rooms_cleared += 1
+		if is_boss:
+			run_manager.boss_defeated = true
 	var hud := get_tree().get_first_node_in_group("hud")
-	var is_fight: bool = current_room_data.room_type in [RoomData.RoomType.COMBAT, RoomData.RoomType.ELITE, RoomData.RoomType.BOSS]
-	if hud and is_fight:
-		hud.show_message("ROOM CLEARED")
+	if hud:
+		hud.show_message("BOSS DEFEATED" if is_boss else "ROOM CLEARED", 3.0 if is_boss else 2.0)
+	if is_boss:
+		return # the run ends here, so no upgrade choice (not emitting also silences UpgradeManager)
 	room_cleared.emit()
 
 
@@ -90,9 +105,11 @@ func _on_exit_reached() -> void:
 		await hud.fade_out()
 
 	if room_index + 1 >= room_plan.size():
-		# Placeholder until Phase 16 (victory screen): start a brand new run.
+		# The run is won. is_transitioning stays true so the exit cannot fire twice.
 		print("Run complete")
-		get_tree().reload_current_scene()
+		if hud:
+			await hud.fade_in()
+		run_completed.emit()
 		return
 
 	_load_room_at(room_index + 1)
@@ -102,8 +119,6 @@ func _on_exit_reached() -> void:
 
 
 func _spawn_reward() -> void:
-	if current_room_data.reward_gold <= 0:
-		return
 	var pickup: Node3D = GOLD_PICKUP_SCENE.instantiate()
 	pickup.amount = current_room_data.reward_gold
 	current_room.add_child(pickup)

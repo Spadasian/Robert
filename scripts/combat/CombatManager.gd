@@ -20,6 +20,8 @@ static func calculate_damage(base_damage: float, attacker: Node, target_health: 
 
 
 static func after_hit(attacker: Node, target_health: Node) -> void:
+	if attacker and attacker.has_method("on_hit_dealt"):
+		attacker.on_hit_dealt(target_health) # the player's ultimate charges from this
 	var stats := _get_stats(attacker)
 	if stats == null:
 		return

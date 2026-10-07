@@ -1,16 +1,24 @@
 extends "res://scripts/rooms/Room.gd"
-## A room with no enemies and a "Pedestals" node. Fills the upgrade pedestals with random upgrades.
+## Shop room. Needs the same nodes as every room, plus a "Stands" node with ShopStand children.
+## There are no enemies, so the base class opens the exit door right away.
+## Each stand gets a random upgrade the player does not own yet.
 
-@onready var pedestals: Node3D = $Pedestals
+@onready var stands_root: Node3D = $Stands
 
 
 func start_room() -> void:
-	super.start_room()
+	super()
+	_stock_stands()
+
+
+func _stock_stands() -> void:
+	var stands: Array = stands_root.get_children()
+	var choices: Array = []
 	var upgrade_manager := get_tree().get_first_node_in_group("upgrade_manager")
-	var slots: Array = pedestals.get_children().filter(func(pedestal): return pedestal.item_type == 0)
-	var choices: Array = upgrade_manager.get_random_choices(slots.size())
-	for index in slots.size():
+	if upgrade_manager:
+		choices = upgrade_manager.get_random_choices(stands.size())
+	for index in stands.size():
 		if index < choices.size():
-			slots[index].setup_upgrade(choices[index])
+			stands[index].setup(choices[index])
 		else:
-			slots[index].disable_empty()
+			stands[index].disable()

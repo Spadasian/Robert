@@ -28,5 +28,7 @@ func _on_body_entered(body: Node3D) -> void:
 func collect() -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
-		run_manager.add_gold(amount)
+		run_manager.collect_gold(amount)
+	AudioManager.play_sfx("gold")
+	VFX.sparkle(global_position + Vector3(0.0, 0.7, 0.0))
 	queue_free()

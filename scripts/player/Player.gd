@@ -22,6 +22,11 @@ const MASK_DASHING: int = 1
 @onready var hurtbox: Area3D = $Hurtbox
 @onready var weapon: Node3D = $WeaponPivot
 
+var free_hits_left: int = 0 # hits still ignored in this room (Fox Mask)
+var free_hits_max: int = 0
+var skills: Array[PlayerSkill] = [] # right click, Q, E (children of this scene)
+var ghost_timer: float = 0.0 # time until the next dash afterimage
+
 
 func _ready() -> void:
 	health.set_max_health(stats.get_stat("max_health"))
@@ -30,13 +35,33 @@ func _ready() -> void:
 	hurtbox.hit_received.connect(_on_hit_received)
 	health.damaged.connect(_on_damaged)
 	health.died.connect(_on_died)
+	for child in get_children():
+		if child is PlayerSkill:
+			skills.append(child)
+	add_child(preload("res://scripts/player/CorruptionVfx.gd").new()) # purple wisps that grow with Corruption
 	dash.dash_started.connect(_on_dash_started)
 	dash.dash_finished.connect(_on_dash_finished)
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager:
+		room_manager.room_changed.connect(_on_room_changed)
 
 
 func _physics_process(delta: float) -> void:
 	if health.is_dead():
 		return
+	_move(delta)
+	_lock_to_floor()
+
+
+## The game is flat: no jumping, no gravity. When the physics engine separates the player from an overlapping
+## body (an enemy spawned on him, a dash that ended inside an enemy) it may push him UP, and nothing would ever
+## pull him back down, so right after moving he is put back on the floor.
+func _lock_to_floor() -> void:
+	if absf(global_position.y) > 0.001:
+		global_position.y = 0.0
+
+
+func _move(delta: float) -> void:
 
 	var input_vector: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var direction := Vector3(input_vector.x, 0.0, input_vector.y).rotated(Vector3.UP, deg_to_rad(CAMERA_YAW_DEGREES))
@@ -44,16 +69,40 @@ func _physics_process(delta: float) -> void:
 	# The player always faces the mouse.
 	model.rotation.y = atan2(aim.aim_direction.x, aim.aim_direction.z)
 
-	if Input.is_action_just_pressed("dash"):
+	for skill in skills:
+		if Input.is_action_just_pressed(skill.input_action):
+			skill.try_activate()
+
+	if Input.is_action_just_pressed("dash") and not is_busy():
 		# Dash where you move; if standing still, dash towards the mouse.
 		dash.try_dash(direction if direction != Vector3.ZERO else aim.aim_direction)
 
 	if dash.is_dashing:
 		velocity = dash.direction * dash.dash_speed
 		move_and_slide()
+		ghost_timer -= delta
+		if ghost_timer <= 0.0:
+			ghost_timer = 0.035
+			VFX.ghost(body_mesh, Color(0.4, 0.9, 1.0))
 		return
 
-	var target_velocity: Vector3 = direction * stats.get_stat("move_speed")
+	# Skills can push the player (Iaijutsu strike) or hold him in place (windup, counter stance).
+	for skill in skills:
+		if not skill.is_active:
+			continue
+		var forced: Variant = skill.get_forced_velocity()
+		if forced != null:
+			velocity = forced
+			move_and_slide()
+			return
+		if skill.locks_movement():
+			velocity.x = move_toward(velocity.x, 0.0, friction * delta)
+			velocity.z = move_toward(velocity.z, 0.0, friction * delta)
+			velocity.y = 0.0
+			move_and_slide()
+			return
+
+	var target_velocity: Vector3 = direction * stats.get_stat("move_speed") * _get_skill_speed_multiplier()
 	var rate: float = acceleration if direction != Vector3.ZERO else friction
 	velocity.x = move_toward(velocity.x, target_velocity.x, rate * delta)
 	velocity.z = move_toward(velocity.z, target_velocity.z, rate * delta)
@@ -61,26 +110,79 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
+## True while any skill is running: no second skill, no dash and no basic attack until it ends.
+func is_busy() -> bool:
+	for skill in skills:
+		if skill.is_active:
+			return true
+	return false
+
+
+func _get_skill_speed_multiplier() -> float:
+	var multiplier: float = 1.0
+	for skill in skills:
+		multiplier *= skill.get_speed_multiplier()
+	return multiplier
+
+
+## Called by CombatManager after every hit this player lands (the ultimate charges from it).
+func on_hit_dealt(target_health: Node) -> void:
+	var killed: bool = target_health != null and target_health.is_dead()
+	for skill in skills:
+		skill.on_player_hit_dealt(killed)
+
+
 func _on_hit_received(damage: float, _source: Node) -> void:
 	if dash.is_invulnerable() or health.is_dead():
 		return
-	health.take_damage(damage * stats.get_stat("damage_taken"))
+	var damage_taken_multiplier: float = 1.0
+	for skill in skills:
+		if skill.is_active and skill.is_invulnerable():
+			return
+		if skill.is_active and skill.intercept_hit(damage, _source):
+			return # Kaeshi: the hit is cancelled and answered
+		damage_taken_multiplier *= skill.get_damage_taken_multiplier()
+	if free_hits_left > 0: # Fox Mask: the first hit of every room does nothing
+		free_hits_left -= 1
+		_show_floating_text("BLOCKED", Color(1.0, 0.7, 0.3))
+		AudioManager.play_sfx("kaeshi_counter", -8.0)
+		VFX.hit_spark(global_position + Vector3(0.0, 1.0, 0.0), Color(1.0, 0.7, 0.3))
+		return
+	health.take_damage(damage * stats.get_stat("damage_taken") * damage_taken_multiplier)
 
 
 func _on_stats_changed() -> void:
 	health.change_max_health(stats.get_stat("max_health"))
 	dash.set_max_charges(int(stats.get_stat("dodge_charges")))
+	# A new free hit (Fox Mask picked up) is ready at once.
+	var new_free_hits: int = int(stats.get_stat("free_hits_per_room"))
+	free_hits_left = clampi(free_hits_left + (new_free_hits - free_hits_max), 0, new_free_hits)
+	free_hits_max = new_free_hits
+
+
+func _on_room_changed(_index: int, _total: int) -> void:
+	free_hits_left = free_hits_max
 
 
 func _on_damaged(amount: float) -> void:
+	_show_floating_text(str(int(round(amount))), Color(1.0, 0.3, 0.3))
+	AudioManager.play_sfx("hurt")
+	VFX.hit_spark(global_position + Vector3(0.0, 1.0, 0.0), Color(1.0, 0.3, 0.25))
+	VFX.shake(clampf(amount / 60.0, 0.08, 0.3), 0.2)
+
+
+func _show_floating_text(text: String, color: Color) -> void:
 	var number: Label3D = DAMAGE_NUMBER_SCENE.instantiate()
 	get_tree().current_scene.add_child(number)
 	number.global_position = global_position + Vector3(0.0, 2.4, 0.0)
-	number.modulate = Color(1.0, 0.3, 0.3)
-	number.play(amount)
+	number.modulate = color
+	number.play_text(text)
 
 
 func _on_died() -> void:
+	for skill in skills:
+		skill.cancel()
+	VFX.death_puff(global_position + Vector3(0.0, 0.9, 0.0), Color(0.9, 0.2, 0.25), true)
 	hurtbox.set_deferred("monitorable", false)
 	weapon.set_physics_process(false)
 	velocity = Vector3.ZERO
@@ -89,6 +191,9 @@ func _on_died() -> void:
 
 
 func _on_dash_started() -> void:
+	AudioManager.play_sfx("dash")
+	VFX.dust(global_position)
+	ghost_timer = 0.0
 	collision_mask = MASK_DASHING
 	body_mesh.transparency = 0.6
 

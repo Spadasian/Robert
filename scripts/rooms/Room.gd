@@ -32,6 +32,13 @@ func get_reward_position() -> Vector3:
 	return reward_spawn.global_position
 
 
+# Enemies never spawn closer than this to the player spawn: two bodies placed on the same spot are pushed apart
+# by the physics engine in a random direction (this once lifted the player into the air).
+const MIN_ENEMY_SPAWN_DISTANCE: float = 3.5
+
+var started_empty: bool = false # a shop or treasure room: no enemies, the exit is open from the start
+
+
 func start_room() -> void:
 	for point in enemy_spawns.get_children():
 		var scene: PackedScene = point.get("enemy_scene")
@@ -39,20 +46,37 @@ func start_room() -> void:
 			continue
 		var enemy: Node3D = scene.instantiate()
 		enemies_root.add_child(enemy)
-		enemy.global_position = point.global_position
+		enemy.global_position = _safe_enemy_position(point.global_position)
 		enemy.defeated.connect(_on_enemy_defeated)
 		alive_enemies += 1
-	if alive_enemies == 0:
+	started_empty = alive_enemies == 0
+	if started_empty:
 		_clear_room.call_deferred()
 
 
+func _safe_enemy_position(wanted: Vector3) -> Vector3:
+	var spawn: Vector3 = player_spawn.global_position
+	var offset: Vector3 = wanted - spawn
+	offset.y = 0.0
+	if offset.length() >= MIN_ENEMY_SPAWN_DISTANCE:
+		return wanted
+	push_warning("%s: an enemy spawn point is too close to the player spawn, moved it away" % name)
+	var away: Vector3 = offset.normalized() if offset.length() > 0.01 else Vector3.RIGHT
+	return Vector3(spawn.x + away.x * MIN_ENEMY_SPAWN_DISTANCE, wanted.y, spawn.z + away.z * MIN_ENEMY_SPAWN_DISTANCE)
+
+
 func _on_enemy_defeated(_enemy: Node) -> void:
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.register_kill()
 	alive_enemies -= 1
 	if alive_enemies <= 0:
 		_clear_room()
 
 
 func _clear_room() -> void:
+	if not started_empty:
+		AudioManager.play_sfx("door") # the exit opens after a fight
 	_set_door_open(true)
 	room_cleared.emit()
 

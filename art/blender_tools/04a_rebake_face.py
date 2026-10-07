@@ -3,9 +3,10 @@
 import bpy, bmesh, traceback
 import numpy as np
 
-# face area in meters (change if the result covers too much / too little)
-Z_MIN, Z_MAX = 1.43, 1.72
-X_MIN, X_MAX = -0.22, 0.12
+# face area in meters. The FACE DETAIL panel of the sheet covers x -0.14..0.12 and z 1.31..1.64,
+# so we stay inside it (change if the result covers too much / too little)
+Z_MIN, Z_MAX = 1.40, 1.63
+X_MIN, X_MAX = -0.13, 0.115
 MIN_FRONT = 0.2   # a face must look toward the front (-Y) at least this much
 
 scene = bpy.context.scene
@@ -54,8 +55,9 @@ try:
     face.data.materials.append(mat_fp)
     if "Face_bake_tmp" in bpy.data.images:
         bpy.data.images.remove(bpy.data.images["Face_bake_tmp"])
-    tmp = bpy.data.images.new("Face_bake_tmp", 4096, 4096, alpha=True)
-    tmp.generated_color = (0, 0, 0, 0)
+    tmp = bpy.data.images.new("Face_bake_tmp", 4096, 4096, alpha=False)
+    sentinel = np.array([1.0, 0.0, 1.0, 1.0], dtype=np.float32)  # magenta = "not baked"
+    tmp.pixels.foreach_set(np.tile(sentinel, 4096 * 4096))
     target = nt.nodes["BakeTarget"]
     prev_image = target.image
     target.image = tmp
@@ -66,7 +68,7 @@ try:
     scene.cycles.samples = 8
     b = scene.render.bake
     b.use_selected_to_active = False
-    b.use_clear = True
+    b.use_clear = False
     b.margin = 6
     b.margin_type = "EXTEND"
     b.target = "IMAGE_TEXTURES"
@@ -87,10 +89,11 @@ try:
     tmp.pixels.foreach_get(a_new)
     old = a_old.reshape(-1, 4)
     new = a_new.reshape(-1, 4)
-    mask = (new[:, 3] > 0.01) | (new[:, :3].max(axis=1) > 0.002)
+    mask = np.abs(new - sentinel).max(axis=1) > 0.01
     msg.append("Pixels replaced: %d" % int(mask.sum()))
     old[mask] = new[mask]
     old[mask, 3] = 1.0
+    del new, a_new
     if "Kazuma_color_v4" in bpy.data.images:
         bpy.data.images.remove(bpy.data.images["Kazuma_color_v4"])
     res = bpy.data.images.new("Kazuma_color_v4", 4096, 4096, alpha=False)

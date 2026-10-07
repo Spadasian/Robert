@@ -343,13 +343,13 @@ func _boss_fill_style() -> StyleBoxFlat:
 
 const SLOT_SIZE: float = 68.0
 
-## Bottom-centre slots for the player's skills (right click, Q, E). A dark cover shrinks while a skill recharges
+## Bottom-centre slots for the player's skills (right click, Shift, Q, E). A dark cover shrinks while a skill recharges
 ## (for the ultimate it shrinks as the meter fills); the border turns gold when the skill is ready.
 func _build_skill_bar(player: Node) -> void:
 	var box := HBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	box.offset_left = -130.0
-	box.offset_right = 130.0
+	box.offset_left = -180.0
+	box.offset_right = 180.0
 	box.offset_top = -92.0
 	box.offset_bottom = -20.0
 	box.grow_horizontal = Control.GROW_DIRECTION_BOTH

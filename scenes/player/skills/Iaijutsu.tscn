@@ -12,7 +12,7 @@ size = Vector3(0.35, 0.05, 7.4)
 [node name="Iaijutsu" type="Node3D"]
 script = ExtResource("1_skill")
 display_name = "Iaijutsu"
-key_label = "RMB"
+key_label = "SHIFT"
 input_action = "skill"
 cooldown = 6.0
 

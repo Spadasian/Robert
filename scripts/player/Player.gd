@@ -24,7 +24,7 @@ const MASK_DASHING: int = 1
 
 var free_hits_left: int = 0 # hits still ignored in this room (Fox Mask)
 var free_hits_max: int = 0
-var skills: Array[PlayerSkill] = [] # right click, Q, E (children of this scene)
+var skills: Array[PlayerSkill] = [] # right click, Shift, Q, E (children of this scene)
 var ghost_timer: float = 0.0 # time until the next dash afterimage
 
 

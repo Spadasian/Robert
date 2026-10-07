@@ -1,5 +1,5 @@
 extends "res://scripts/player/skills/PlayerSkill.gd"
-## Right click: Iaijutsu, the quick draw. The player plants his feet and a thin line shows the cut (it follows the
+## Shift: Iaijutsu, the quick draw. The player plants his feet and a thin line shows the cut (it follows the
 ## mouse, then locks), then he flashes forward through enemies, invulnerable, and hits everything on the line hard.
 
 enum Phase { WINDUP, STRIKE, RECOVER }

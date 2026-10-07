@@ -87,7 +87,7 @@ text = "Quit"
 [node name="Hint" type="Label" parent="Center/Box"]
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
-text = "Kazuma, the ronin  -  WASD move, mouse aim, click attack, right click Iaijutsu, Q counter, E ultimate, Space dash, Esc pause"
+text = "Kazuma, the ronin  -  WASD move, mouse aim, click attack, right click heavy attack, Shift Iaijutsu, Q counter, E ultimate, Space dash, Esc pause"
 horizontal_alignment = 1
 autowrap_mode = 3
 

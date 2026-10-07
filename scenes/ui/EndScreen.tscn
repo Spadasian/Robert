@@ -1,0 +1,85 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/EndScreen.gd" id="1_end"]
+[ext_resource type="PackedScene" path="res://scenes/ui/SoulShrine.tscn" id="2_shrine"]
+
+[node name="EndScreen" type="CanvasLayer"]
+process_mode = 3
+layer = 10
+visible = false
+script = ExtResource("1_end")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.82)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Box" type="VBoxContainer" parent="Center"]
+custom_minimum_size = Vector2(800, 0)
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Center/Box"]
+theme_override_font_sizes/font_size = 56
+text = "YOU DIED"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/Box"]
+theme_override_font_sizes/font_size = 22
+text = ""
+horizontal_alignment = 1
+
+[node name="Columns" type="HBoxContainer" parent="Center/Box"]
+theme_override_constants/separation = 56
+alignment = 1
+
+[node name="StatsBox" type="VBoxContainer" parent="Center/Box/Columns"]
+custom_minimum_size = Vector2(260, 0)
+theme_override_constants/separation = 12
+
+[node name="Stats" type="Label" parent="Center/Box/Columns/StatsBox"]
+theme_override_font_sizes/font_size = 20
+text = ""
+
+[node name="Shards" type="Label" parent="Center/Box/Columns/StatsBox"]
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.6, 0.85, 1, 1)
+text = ""
+
+[node name="ShrineBox" type="VBoxContainer" parent="Center/Box/Columns"]
+custom_minimum_size = Vector2(430, 0)
+theme_override_constants/separation = 8
+
+[node name="ShrineTitle" type="Label" parent="Center/Box/Columns/ShrineBox"]
+theme_override_font_sizes/font_size = 22
+text = "Soul Shrine"
+
+[node name="Shrine" parent="Center/Box/Columns/ShrineBox" instance=ExtResource("2_shrine")]
+
+[node name="Buttons" type="HBoxContainer" parent="Center/Box"]
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="PlayAgain" type="Button" parent="Center/Box/Buttons"]
+custom_minimum_size = Vector2(240, 52)
+theme_override_font_sizes/font_size = 24
+text = "Play again  [Enter]"
+
+[node name="MainMenu" type="Button" parent="Center/Box/Buttons"]
+custom_minimum_size = Vector2(160, 52)
+theme_override_font_sizes/font_size = 20
+text = "Main menu"
+
+[node name="Quit" type="Button" parent="Center/Box/Buttons"]
+custom_minimum_size = Vector2(100, 52)
+theme_override_font_sizes/font_size = 20
+text = "Quit"

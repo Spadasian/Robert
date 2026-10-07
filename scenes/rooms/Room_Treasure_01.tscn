@@ -1,16 +1,7 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=16 format=3]
 
-[ext_resource type="Script" path="res://scripts/rooms/Room.gd" id="1_room"]
-[ext_resource type="Script" path="res://scripts/rooms/NavBaker.gd" id="2_nav"]
-[ext_resource type="Script" path="res://scripts/rooms/EnemySpawnPoint.gd" id="3_spawn"]
-[ext_resource type="PackedScene" path="res://scenes/world/TreasureChest.tscn" id="6_chest"]
-[ext_resource type="PackedScene" path="res://scenes/enemies/Bandit.tscn" id="4_bandit"]
-[ext_resource type="PackedScene" path="res://scenes/enemies/HeavyBandit.tscn" id="5_heavy"]
-
-[sub_resource type="NavigationMesh" id="NavMesh_room"]
-geometry_parsed_geometry_type = 1
-agent_height = 1.8
-agent_radius = 0.5
+[ext_resource type="Script" path="res://scripts/rooms/TreasureRoom.gd" id="1_room"]
+[ext_resource type="Script" path="res://scripts/rooms/RelicPedestal.gd" id="2_stand"]
 
 [sub_resource type="BoxShape3D" id="Shape_floor"]
 size = Vector3(22, 0.2, 22)
@@ -19,7 +10,7 @@ size = Vector3(22, 0.2, 22)
 size = Vector2(22, 22)
 
 [sub_resource type="StandardMaterial3D" id="Mat_floor"]
-albedo_color = Color(0.2, 0.15, 0.3, 1)
+albedo_color = Color(0.3, 0.24, 0.1, 1)
 
 [sub_resource type="BoxShape3D" id="Shape_wall_ns"]
 size = Vector3(24, 1.2, 1)
@@ -36,12 +27,6 @@ size = Vector3(1, 1.2, 22)
 [sub_resource type="StandardMaterial3D" id="Mat_wall"]
 albedo_color = Color(0.12, 0.1, 0.18, 1)
 
-[sub_resource type="BoxShape3D" id="Shape_crate"]
-size = Vector3(2, 2, 2)
-
-[sub_resource type="BoxMesh" id="Mesh_crate"]
-size = Vector3(2, 2, 2)
-
 [sub_resource type="BoxShape3D" id="Shape_exit"]
 size = Vector3(1.6, 2, 3)
 
@@ -51,12 +36,16 @@ size = Vector3(0.2, 2.5, 3)
 [sub_resource type="StandardMaterial3D" id="Mat_door"]
 albedo_color = Color(0.3, 0.05, 0.05, 1)
 
+[sub_resource type="SphereShape3D" id="Shape_pedestal"]
+radius = 1.8
+
+[sub_resource type="BoxMesh" id="Mesh_pedestal"]
+size = Vector3(1, 1, 1)
+
 [node name="Room_Treasure_01" type="Node3D"]
 script = ExtResource("1_room")
 
-[node name="Level" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavMesh_room")
-script = ExtResource("2_nav")
+[node name="Level" type="Node3D" parent="."]
 
 [node name="Floor" type="StaticBody3D" parent="Level"]
 
@@ -109,16 +98,105 @@ mesh = SubResource("Mesh_wall_ew")
 surface_material_override/0 = SubResource("Mat_wall")
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
 [node name="EnemySpawns" type="Node3D" parent="."]
-
-[node name="Chest" parent="." instance=ExtResource("6_chest")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
 
 [node name="Enemies" type="Node3D" parent="."]
 
 [node name="RewardSpawn" type="Marker3D" parent="."]
+
+[node name="Pedestals" type="Node3D" parent="."]
+
+[node name="Pedestal1" type="Area3D" parent="Pedestals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_stand")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Pedestal1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("Shape_pedestal")
+
+[node name="Visual" type="MeshInstance3D" parent="Pedestals/Pedestal1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("Mesh_pedestal")
+
+[node name="InfoLabel" type="Label3D" parent="Pedestals/Pedestal1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
+width = 480.0
+autowrap_mode = 2
+
+[node name="HintLabel" type="Label3D" parent="Pedestals/Pedestal1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
+
+[node name="Pedestal2" type="Area3D" parent="Pedestals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_stand")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Pedestal2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("Shape_pedestal")
+
+[node name="Visual" type="MeshInstance3D" parent="Pedestals/Pedestal2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("Mesh_pedestal")
+
+[node name="InfoLabel" type="Label3D" parent="Pedestals/Pedestal2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
+width = 480.0
+autowrap_mode = 2
+
+[node name="HintLabel" type="Label3D" parent="Pedestals/Pedestal2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
+
+[node name="Pedestal3" type="Area3D" parent="Pedestals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_stand")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Pedestal3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("Shape_pedestal")
+
+[node name="Visual" type="MeshInstance3D" parent="Pedestals/Pedestal3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("Mesh_pedestal")
+
+[node name="InfoLabel" type="Label3D" parent="Pedestals/Pedestal3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
+width = 480.0
+autowrap_mode = 2
+
+[node name="HintLabel" type="Label3D" parent="Pedestals/Pedestal3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
 
 [node name="Exit" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.8, 1, 0)

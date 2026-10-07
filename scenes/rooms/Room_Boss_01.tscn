@@ -1,15 +1,14 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/rooms/Room.gd" id="1_room"]
 [ext_resource type="Script" path="res://scripts/rooms/NavBaker.gd" id="2_nav"]
 [ext_resource type="Script" path="res://scripts/rooms/EnemySpawnPoint.gd" id="3_spawn"]
-[ext_resource type="PackedScene" path="res://scenes/enemies/Bandit.tscn" id="4_bandit"]
-[ext_resource type="PackedScene" path="res://scenes/enemies/Archer.tscn" id="20_archer"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Boss.tscn" id="4_boss"]
 
 [sub_resource type="NavigationMesh" id="NavMesh_room"]
 geometry_parsed_geometry_type = 1
 agent_height = 1.8
-agent_radius = 0.5
+agent_radius = 0.8
 
 [sub_resource type="BoxShape3D" id="Shape_floor"]
 size = Vector3(22, 0.2, 22)
@@ -18,7 +17,7 @@ size = Vector3(22, 0.2, 22)
 size = Vector2(22, 22)
 
 [sub_resource type="StandardMaterial3D" id="Mat_floor"]
-albedo_color = Color(0.2, 0.15, 0.3, 1)
+albedo_color = Color(0.22, 0.08, 0.1, 1)
 
 [sub_resource type="BoxShape3D" id="Shape_wall_ns"]
 size = Vector3(24, 1.2, 1)
@@ -50,7 +49,7 @@ size = Vector3(0.2, 2.5, 3)
 [sub_resource type="StandardMaterial3D" id="Mat_door"]
 albedo_color = Color(0.3, 0.05, 0.05, 1)
 
-[node name="Room_Combat_02" type="Node3D"]
+[node name="Room_Boss_01" type="Node3D"]
 script = ExtResource("1_room")
 
 [node name="Level" type="NavigationRegion3D" parent="."]
@@ -107,71 +106,51 @@ shape = SubResource("Shape_wall_ew")
 mesh = SubResource("Mesh_wall_ew")
 surface_material_override/0 = SubResource("Mat_wall")
 
-[node name="Crate1" type="StaticBody3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -3)
+[node name="Pillar1" type="StaticBody3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -4)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Crate1"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Pillar1"]
 shape = SubResource("Shape_crate")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Crate1"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Pillar1"]
 mesh = SubResource("Mesh_crate")
 
-[node name="Crate2" type="StaticBody3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 3)
+[node name="Pillar2" type="StaticBody3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, -4)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Crate2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Pillar2"]
 shape = SubResource("Shape_crate")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Crate2"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Pillar2"]
 mesh = SubResource("Mesh_crate")
 
-[node name="Crate3" type="StaticBody3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -4)
+[node name="Pillar3" type="StaticBody3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, 4)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Crate3"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Pillar3"]
 shape = SubResource("Shape_crate")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Crate3"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Pillar3"]
 mesh = SubResource("Mesh_crate")
 
-[node name="Crate4" type="StaticBody3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 4)
+[node name="Pillar4" type="StaticBody3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 4)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Crate4"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Pillar4"]
 shape = SubResource("Shape_crate")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Crate4"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Pillar4"]
 mesh = SubResource("Mesh_crate")
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
 [node name="EnemySpawns" type="Node3D" parent="."]
 
-[node name="Spawn1" type="Marker3D" parent="EnemySpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -7)
+[node name="BossSpawn" type="Marker3D" parent="EnemySpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
 script = ExtResource("3_spawn")
-enemy_scene = ExtResource("4_bandit")
-
-[node name="Spawn2" type="Marker3D" parent="EnemySpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -7)
-script = ExtResource("3_spawn")
-enemy_scene = ExtResource("4_bandit")
-
-[node name="Spawn3" type="Marker3D" parent="EnemySpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 6)
-script = ExtResource("3_spawn")
-enemy_scene = ExtResource("4_bandit")
-
-[node name="Spawn4" type="Marker3D" parent="EnemySpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -9)
-script = ExtResource("3_spawn")
-enemy_scene = ExtResource("4_bandit")
-
-[node name="Spawn5" type="Marker3D" parent="EnemySpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 7)
-script = ExtResource("3_spawn")
-enemy_scene = ExtResource("20_archer")
+enemy_scene = ExtResource("4_boss")
 
 [node name="Enemies" type="Node3D" parent="."]
 

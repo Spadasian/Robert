@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/world/CameraRig.tscn" id="2_camera"]
@@ -11,7 +11,7 @@
 [ext_resource type="Resource" path="res://resources/rooms/Room_Combat_04.tres" id="11_room"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Elite_01.tres" id="12_room"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Shop_01.tres" id="13_room"]
-[ext_resource type="Resource" path="res://resources/rooms/Room_Treasure_01.tres" id="14_room"]
+[ext_resource type="Resource" path="res://resources/rooms/Room_Boss_01.tres" id="14_room"]
 [ext_resource type="Resource" path="res://resources/upgrades/blood_edge.tres" id="u_blood_edge"]
 [ext_resource type="Resource" path="res://resources/upgrades/shadow_step.tres" id="u_shadow_step"]
 [ext_resource type="Resource" path="res://resources/upgrades/iron_skin.tres" id="u_iron_skin"]
@@ -24,6 +24,12 @@
 [ext_resource type="Resource" path="res://resources/upgrades/crimson_meal.tres" id="u_crimson_meal"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeManager.gd" id="8_upgrademanager"]
 [ext_resource type="PackedScene" path="res://scenes/ui/UpgradeChoice.tscn" id="9_choice"]
+[ext_resource type="PackedScene" path="res://scenes/ui/EndScreen.tscn" id="15_end"]
+[ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="16_pause"]
+[ext_resource type="Resource" path="res://resources/rooms/Room_Treasure_01.tres" id="17_room"]
+[ext_resource type="Resource" path="res://resources/relics/fox_mask.tres" id="r_fox_mask"]
+[ext_resource type="Resource" path="res://resources/relics/black_pearl.tres" id="r_black_pearl"]
+[ext_resource type="Resource" path="res://resources/relics/oni_horn.tres" id="r_oni_horn"]
 
 [sub_resource type="Environment" id="Env_run"]
 background_mode = 1
@@ -49,16 +55,21 @@ shadow_enabled = true
 
 [node name="RunManager" type="Node" parent="."]
 script = ExtResource("7_runmanager")
+relic_pool = Array[Resource]([ExtResource("r_fox_mask"), ExtResource("r_black_pearl"), ExtResource("r_oni_horn")])
 
 [node name="HUD" parent="." instance=ExtResource("3_hud")]
 
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("4_roommanager")
-room_pool = Array[Resource]([ExtResource("5_room"), ExtResource("6_room"), ExtResource("10_room"), ExtResource("11_room"), ExtResource("12_room"), ExtResource("13_room"), ExtResource("14_room")])
-layout = PackedInt32Array(0, 0, 2, 1, 3, 0, 6)
+room_pool = Array[Resource]([ExtResource("5_room"), ExtResource("6_room"), ExtResource("10_room"), ExtResource("11_room"), ExtResource("12_room"), ExtResource("13_room"), ExtResource("14_room"), ExtResource("17_room")])
+layout = PackedInt32Array(0, 0, 0, 1, 2, 3, 0, 6)
 
 [node name="UpgradeChoice" parent="." instance=ExtResource("9_choice")]
 
 [node name="UpgradeManager" type="Node" parent="."]
 script = ExtResource("8_upgrademanager")
 upgrade_pool = Array[Resource]([ExtResource("u_blood_edge"), ExtResource("u_shadow_step"), ExtResource("u_iron_skin"), ExtResource("u_sakura_step"), ExtResource("u_executioner"), ExtResource("u_dark_breath"), ExtResource("u_swift_blade"), ExtResource("u_vital_spirit"), ExtResource("u_keen_edge"), ExtResource("u_crimson_meal")])
+
+[node name="EndScreen" parent="." instance=ExtResource("15_end")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("16_pause")]

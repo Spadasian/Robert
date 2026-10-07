@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/skills/UltimateSkill.gd" id="1_skill"]
+[ext_resource type="Script" path="res://scripts/combat/Hitbox.gd" id="2_hitbox"]
+
+[sub_resource type="CylinderShape3D" id="Shape_hit"]
+radius = 3.8
+height = 1.6
+
+[sub_resource type="CylinderMesh" id="Mesh_disc"]
+top_radius = 3.8
+bottom_radius = 3.8
+height = 0.06
+
+[sub_resource type="BoxMesh" id="Mesh_blade"]
+size = Vector3(7.2, 0.08, 0.3)
+
+[node name="Ultimate" type="Node3D"]
+script = ExtResource("1_skill")
+display_name = "Moonlit Storm"
+key_label = "E"
+input_action = "ultimate"
+cooldown = 0.0
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 32
+monitorable = false
+script = ExtResource("2_hitbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Shape_hit")
+
+[node name="Disc" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("Mesh_disc")
+
+[node name="Blades" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+
+[node name="BladeA" type="MeshInstance3D" parent="Blades"]
+mesh = SubResource("Mesh_blade")
+
+[node name="BladeB" type="MeshInstance3D" parent="Blades"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 0)
+mesh = SubResource("Mesh_blade")

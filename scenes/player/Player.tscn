@@ -1,6 +1,9 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/Player.gd" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/player/skills/Iaijutsu.tscn" id="20_iaijutsu"]
+[ext_resource type="PackedScene" path="res://scenes/player/skills/Kaeshi.tscn" id="21_kaeshi"]
+[ext_resource type="PackedScene" path="res://scenes/player/skills/Ultimate.tscn" id="22_ultimate"]
 [ext_resource type="Script" path="res://scripts/player/AimComponent.gd" id="2_aim"]
 [ext_resource type="Script" path="res://scripts/player/AttackComponent.gd" id="3_attack"]
 [ext_resource type="Script" path="res://scripts/combat/Hitbox.gd" id="4_hitbox"]
@@ -107,3 +110,9 @@ team = "player"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 shape = SubResource("Shape_hurt")
+
+[node name="IaijutsuSkill" parent="." instance=ExtResource("20_iaijutsu")]
+
+[node name="KaeshiSkill" parent="." instance=ExtResource("21_kaeshi")]
+
+[node name="UltimateSkill" parent="." instance=ExtResource("22_ultimate")]

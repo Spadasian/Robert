@@ -85,6 +85,10 @@ pause={
 ]
 }
 
+[physics]
+
+jolt_physics_3d/simulation/areas_detect_static_bodies=true
+
 [layer_names]
 
 3d_physics/layer_1="world"

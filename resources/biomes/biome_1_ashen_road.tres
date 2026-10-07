@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BiomeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/procedural/BiomeData.gd" id="1_biome"]
+
+[resource]
+script = ExtResource("1_biome")
+display_name = "Ashen Road"
+grid_size = Vector2i(5, 4)
+combat_rooms = 4
+elite_rooms = 1
+treasure_rooms = 1
+shop_rooms = 1
+enemy_health_multiplier = 1.0
+enemy_damage_multiplier = 1.0
+background_color = Color(0.04, 0.03, 0.07, 1)
+ambient_color = Color(0.45, 0.4, 0.6, 1)
+sun_color = Color(1, 1, 1, 1)

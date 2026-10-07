@@ -29,6 +29,10 @@ func _on_area_entered(area: Area3D) -> void:
 	var attacker: Node = source if is_instance_valid(source) else null
 	var target_health: Node = area.get_parent().get_node_or_null("HealthComponent")
 	var final_damage: float = CombatManager.calculate_damage(damage, attacker, target_health)
+	if team == "enemy": # later biomes hit harder
+		var run_manager := get_tree().get_first_node_in_group("run_manager")
+		if run_manager:
+			final_damage *= run_manager.enemy_damage_multiplier
 	area.receive_hit(final_damage, attacker)
 	CombatManager.after_hit(attacker, target_health)
 	if team == "player": # the player's hits get a thud and sparks (hits on the player: see Player._on_damaged)

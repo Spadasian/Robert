@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BiomeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/procedural/BiomeData.gd" id="1_biome"]
+
+[resource]
+script = ExtResource("1_biome")
+display_name = "Moonlit Forest"
+grid_size = Vector2i(5, 4)
+combat_rooms = 5
+elite_rooms = 1
+treasure_rooms = 1
+shop_rooms = 1
+enemy_health_multiplier = 1.35
+enemy_damage_multiplier = 1.2
+background_color = Color(0.02, 0.05, 0.07, 1)
+ambient_color = Color(0.35, 0.55, 0.55, 1)
+sun_color = Color(0.7, 0.9, 1, 1)

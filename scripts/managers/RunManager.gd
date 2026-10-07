@@ -12,7 +12,15 @@ var gold_earned: int = 0 # everything picked up this run, even what was spent in
 var enemies_defeated: int = 0
 var elapsed_time: float = 0.0 # seconds; does not count while the game is paused
 var rooms_cleared: int = 0 # combat, elite and boss rooms (a shop does not count)
-var boss_defeated: bool = false
+var boss_defeated: bool = false # at least one boss fell this run
+var bosses_defeated: int = 0 # one per biome
+var biome_index: int = 0
+var mode_name: String = ""
+var biome_count: int = 1
+## Set by RoomManager for the biome being played (see BiomeData).
+var enemy_health_multiplier: float = 1.0
+var enemy_damage_multiplier: float = 1.0
+var shard_multiplier: float = 1.0 # of the run mode
 var relics: Array = [] # RelicData found this run
 var stats: Node # the player's StatsComponent
 

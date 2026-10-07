@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RunModeData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/procedural/RunModeData.gd" id="1_mode"]
+[ext_resource type="Resource" path="res://resources/biomes/biome_1_ashen_road.tres" id="2_b1"]
+[ext_resource type="Resource" path="res://resources/biomes/biome_2_moonlit_forest.tres" id="3_b2"]
+[ext_resource type="Resource" path="res://resources/biomes/biome_3_cursed_castle.tres" id="4_b3"]
+
+[resource]
+script = ExtResource("1_mode")
+id = "standard"
+display_name = "Standard Run"
+description = "Three biomes, a boss at the end of each. About 30 minutes."
+biomes = Array[Resource]([ExtResource("2_b1"), ExtResource("3_b2"), ExtResource("4_b3")])
+shard_multiplier = 1.0

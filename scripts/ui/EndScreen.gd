@@ -86,11 +86,10 @@ func _refresh_shards() -> void:
 
 func _build_stats() -> String:
 	var lines: Array[String] = []
-	var room_manager := get_tree().get_first_node_in_group("room_manager")
-	if room_manager and not room_manager.dungeon.is_empty():
-		lines.append("Dungeon rooms cleared: %d / %d" % [room_manager.rooms_done, room_manager.rooms_total])
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
+		lines.append("Mode: %s" % run_manager.mode_name)
+		lines.append("Bosses defeated: %d / %d" % [run_manager.bosses_defeated, run_manager.biome_count])
 		lines.append("Rooms cleared: %d" % run_manager.rooms_cleared)
 		lines.append("Enemies defeated: %d" % run_manager.enemies_defeated)
 		lines.append("Gold earned: %d" % run_manager.gold_earned)

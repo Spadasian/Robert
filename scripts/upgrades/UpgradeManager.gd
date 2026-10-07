@@ -20,6 +20,7 @@ func _ready() -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
 		room_manager.room_cleared.connect(_on_room_cleared)
+		room_manager.boss_defeated.connect(_on_boss_defeated)
 
 
 ## Random upgrades the player does not own yet, picked by rarity weight, no duplicates.
@@ -45,6 +46,20 @@ func get_random_choices(count: int) -> Array:
 
 func apply_upgrade(upgrade: Resource) -> void:
 	stats.add_upgrade(upgrade)
+
+
+## The reward for a boss that is not the last one: pick an upgrade before moving on to the next biome.
+func _on_boss_defeated(is_final: bool) -> void:
+	if is_final:
+		return
+	await get_tree().create_timer(1.2, false).timeout
+	if stats.get_parent().get_node("HealthComponent").is_dead():
+		return
+	var choices: Array = get_random_choices(3)
+	if choices.is_empty():
+		return
+	var chosen: Resource = await choice_ui.choose(choices)
+	apply_upgrade(chosen)
 
 
 func _on_room_cleared() -> void:

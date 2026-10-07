@@ -1,29 +1,32 @@
 extends Node
-## Builds the dungeon map with DungeonGenerator, moves the player from room to room through doors and keeps
-## the rooms the player has visited alive (out of the scene tree), so they remember what happened in them.
-## The door to the boss stays locked until every other room is entered and cleared.
+## Builds the dungeon of the current biome with DungeonGenerator, moves the player from room to room through doors
+## and keeps the rooms the player has visited alive (out of the scene tree), so they remember what happened in them.
+## The door to the boss stays locked until every other room is entered and cleared. The boss door of a biome leads to
+## the next biome; after the last one the run is won. The run mode (RunModeData) says which biomes a run has.
 
 const GOLD_PICKUP_SCENE: PackedScene = preload("res://scenes/world/GoldPickup.tscn")
+const BOSS_GOLD_REWARD: int = 50
+const BOSS_HEAL_RATIO: float = 0.5
 
 signal room_loaded(room: Node)
 signal room_changed(index: int, total: int) # a room was entered: index = rooms cleared, total = rooms before the boss
-signal map_changed # something the minimap shows changed (a room entered or cleared)
+signal map_changed # something the minimap shows changed (a room entered or cleared, a new biome)
 signal room_cleared
-signal run_completed # a door of the boss room was used after the boss died; EndScreen shows the victory
+signal boss_defeated(is_final: bool) # the boss of a biome fell; is_final = it was the last biome
+signal run_completed # the boss door was used after the last boss died; EndScreen shows the victory
 
 @export var room_pool: Array[Resource] = [] # every RoomData that can appear in a run (including START and BOSS)
-@export var combat_rooms: int = 4
-@export var elite_rooms: int = 1
-@export var treasure_rooms: int = 1
-@export var shop_rooms: int = 1
-@export var event_rooms: int = 0
-@export var shrine_rooms: int = 0
-@export var grid_size: Vector2i = Vector2i(5, 4)
+## Used when the Run scene is started on its own (F6 in the editor); normally GameManager.run_mode is used.
+@export var default_mode: Resource
 ## 0 = new random run every time. Put a number here to replay the same run.
 @export var run_seed: int = 0
 
 @onready var room_container: Node3D = $"../CurrentRoom"
 
+var mode: Resource
+var biomes: Array = []
+var biome_index: int = -1
+var biome: Resource
 var dungeon: Dictionary = {}
 var rooms: Dictionary = {} # Vector2i -> Room instance, created when the player first enters the cell
 var visited: Dictionary = {} # Vector2i -> true
@@ -33,7 +36,7 @@ var current_room_data: Resource
 var boss_unlocked: bool = false
 var is_transitioning: bool = false
 var rooms_done: int = 0
-var rooms_total: int = 0 # every room except the boss room
+var rooms_total: int = 0 # every room of this biome except the boss room
 
 
 func _enter_tree() -> void:
@@ -43,31 +46,25 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	if room_pool.is_empty():
 		return
-	var rng := RandomNumberGenerator.new()
-	if run_seed == 0:
-		rng.randomize()
-	else:
-		rng.seed = run_seed
-	print("Run seed: ", rng.seed)
-	var counts: Dictionary = {
-		RoomData.RoomType.COMBAT: combat_rooms, RoomData.RoomType.ELITE: elite_rooms,
-		RoomData.RoomType.TREASURE: treasure_rooms, RoomData.RoomType.SHOP: shop_rooms,
-		RoomData.RoomType.EVENT: event_rooms, RoomData.RoomType.SHRINE: shrine_rooms,
-	}
-	dungeon = DungeonGenerator.generate(room_pool, counts, grid_size, rng)
-	rooms_total = dungeon.cells.size() - 1
-	_enter_cell.call_deferred(dungeon.start, "")
+	mode = GameManager.run_mode if GameManager.run_mode != null else default_mode
+	biomes = mode.biomes
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.mode_name = mode.display_name
+		run_manager.biome_count = biomes.size()
+		run_manager.shard_multiplier = mode.shard_multiplier
+	_start_biome.call_deferred(0)
 
 
 func _exit_tree() -> void:
 	# Rooms that are not in the tree are not freed with the scene, so free them here.
-	for cell in rooms:
-		var room: Node = rooms[cell]
-		if is_instance_valid(room) and not room.is_inside_tree():
-			room.queue_free()
+	_free_kept_rooms()
 
 
-## Cell of the dungeon where the player is.
+func is_final_biome() -> bool:
+	return biome_index + 1 >= biomes.size()
+
+
 func get_cell_data(cell: Vector2i) -> Dictionary:
 	return dungeon.cells.get(cell, {})
 
@@ -76,8 +73,59 @@ func is_cell_cleared(cell: Vector2i) -> bool:
 	return rooms.has(cell) and rooms[cell].cleared
 
 
+func _free_kept_rooms() -> void:
+	for cell in rooms:
+		var room: Node = rooms[cell]
+		if is_instance_valid(room):
+			if room.get_parent():
+				room.get_parent().remove_child(room)
+			room.queue_free()
+	rooms.clear()
+	current_room = null
+
+
+## Builds and enters the dungeon of biome number `index` of the run mode.
+func _start_biome(index: int) -> void:
+	biome_index = index
+	biome = biomes[index]
+	_free_kept_rooms()
+	visited.clear()
+	boss_unlocked = false
+	rooms_done = 0
+
+	var rng := RandomNumberGenerator.new()
+	if run_seed == 0:
+		rng.randomize()
+	else:
+		rng.seed = run_seed + index
+	print("Biome %d (%s), seed: %d" % [index + 1, biome.display_name, rng.seed])
+	dungeon = DungeonGenerator.generate(room_pool, biome.get_room_counts(), biome.grid_size, rng)
+	rooms_total = dungeon.cells.size() - 1
+
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.biome_index = index
+		run_manager.enemy_health_multiplier = biome.enemy_health_multiplier
+		run_manager.enemy_damage_multiplier = biome.enemy_damage_multiplier
+	_apply_biome_look()
+	_enter_cell(dungeon.start, "")
+	var hud := get_tree().get_first_node_in_group("hud")
+	if hud and biomes.size() > 1:
+		hud.show_message("Biome %d: %s" % [index + 1, biome.display_name], 3.0)
+
+
+func _apply_biome_look() -> void:
+	var world_environment := get_node_or_null("../WorldEnvironment") as WorldEnvironment
+	if world_environment and world_environment.environment:
+		world_environment.environment.background_color = biome.background_color
+		world_environment.environment.ambient_light_color = biome.ambient_color
+	var sun := get_node_or_null("../Sun") as DirectionalLight3D
+	if sun:
+		sun.light_color = biome.sun_color
+
+
 func _enter_cell(cell: Vector2i, entry_side: String) -> void:
-	if current_room:
+	if current_room and current_room.get_parent():
 		room_container.remove_child(current_room) # kept alive: it remembers its state
 
 	current_cell = cell
@@ -97,6 +145,8 @@ func _enter_cell(cell: Vector2i, entry_side: String) -> void:
 		current_room.configure_doors(cell_data.doors, boss_side)
 		if boss_side != "":
 			current_room.set_door_locked(boss_side, not boss_unlocked)
+		if cell == dungeon.boss and not is_final_biome():
+			current_room.set_exit_tag("NEXT BIOME")
 
 	var entry: Vector3 = current_room.get_entry_position(entry_side)
 	current_room.entry_position = entry
@@ -131,11 +181,17 @@ func _on_door_used(direction: String) -> void:
 		await hud.fade_out()
 
 	if current_cell == dungeon.boss:
-		# The run is won. is_transitioning stays true so a door cannot fire twice.
-		print("Run complete")
+		if is_final_biome():
+			# The run is won. is_transitioning stays true so a door cannot fire twice.
+			print("Run complete")
+			if hud:
+				await hud.fade_in()
+			run_completed.emit()
+			return
+		_start_biome(biome_index + 1)
 		if hud:
 			await hud.fade_in()
-		run_completed.emit()
+		is_transitioning = false
 		return
 
 	var next_cell: Vector2i = dungeon.cells[current_cell].doors[direction]
@@ -170,12 +226,30 @@ func _on_room_cleared(cell: Vector2i) -> void:
 		run_manager.rooms_cleared += 1
 		if is_boss:
 			run_manager.boss_defeated = true
+			run_manager.bosses_defeated += 1
 	var hud := get_tree().get_first_node_in_group("hud")
-	if hud:
-		hud.show_message("BOSS DEFEATED" if is_boss else "ROOM CLEARED", 3.0 if is_boss else 2.0)
 	if is_boss:
-		return # the run ends when the player uses the door, so no upgrade choice (not emitting also silences UpgradeManager)
+		var final: bool = is_final_biome()
+		if not final:
+			_give_boss_reward()
+		if hud:
+			hud.show_message("BOSS DEFEATED" if final else "BOSS DEFEATED   +%d gold, healed" % BOSS_GOLD_REWARD, 3.0)
+		boss_defeated.emit(final)
+		return # no regular upgrade choice for a boss (UpgradeManager reacts to boss_defeated instead)
+	if hud:
+		hud.show_message("ROOM CLEARED", 2.0)
 	room_cleared.emit()
+
+
+## Gold and a partial heal for beating the boss of a biome that is not the last one.
+func _give_boss_reward() -> void:
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.add_gold(BOSS_GOLD_REWARD)
+	var player := get_tree().get_first_node_in_group("player")
+	if player:
+		var health: Node = player.get_node("HealthComponent")
+		health.heal(health.max_health * BOSS_HEAL_RATIO)
 
 
 ## When every room before the boss is cleared the boss door opens.

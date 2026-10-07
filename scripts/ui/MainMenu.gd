@@ -2,6 +2,8 @@ extends Control
 ## Main menu: start a run, spend Soul Shards in the Soul Shrine, quit.
 
 @onready var play_button: Button = $Center/Box/Play
+@onready var quick_button: Button = $Center/Box/QuickRun
+@onready var mode_info_label: Label = $Center/Box/ModeInfo
 @onready var shrine_button: Button = $Center/Box/ShrineButton
 @onready var quit_button: Button = $Center/Box/Quit
 @onready var shards_label: Label = $Center/Box/Shards
@@ -20,7 +22,12 @@ func _ready() -> void:
 	AudioManager.stop_ambience()
 	options_button.pressed.connect(_open_options)
 	options_back_button.pressed.connect(_close_options)
-	play_button.pressed.connect(GameManager.start_run)
+	play_button.pressed.connect(GameManager.start_run.bind(GameManager.STANDARD_MODE))
+	quick_button.pressed.connect(GameManager.start_run.bind(GameManager.QUICK_MODE))
+	for button_and_mode in [[play_button, GameManager.STANDARD_MODE], [quick_button, GameManager.QUICK_MODE]]:
+		var mode: Resource = button_and_mode[1]
+		button_and_mode[0].focus_entered.connect(func(): mode_info_label.text = mode.description)
+		button_and_mode[0].mouse_entered.connect(func(): mode_info_label.text = mode.description)
 	shrine_button.pressed.connect(_open_shrine)
 	back_button.pressed.connect(_close_shrine)
 	quit_button.pressed.connect(GameManager.quit_game)

@@ -50,20 +50,17 @@ func buy(upgrade: Resource) -> bool:
 	return true
 
 
-func calculate_shards(rooms_cleared: int, enemies_defeated: int, boss_defeated: bool) -> int:
-	var shards: int = rooms_cleared * SHARDS_PER_ROOM + enemies_defeated / KILLS_PER_SHARD
-	if boss_defeated:
-		shards += BOSS_BONUS
-	return shards
+func calculate_shards(rooms_cleared: int, enemies_defeated: int, bosses_beaten: int) -> int:
+	return rooms_cleared * SHARDS_PER_ROOM + enemies_defeated / KILLS_PER_SHARD + bosses_beaten * BOSS_BONUS
 
 
 ## Called once when a run ends (death or victory). Returns the shards earned.
 func finish_run(run_manager: Node) -> int:
-	var earned: int = calculate_shards(run_manager.rooms_cleared, run_manager.enemies_defeated, run_manager.boss_defeated)
+	var earned: int = calculate_shards(run_manager.rooms_cleared, run_manager.enemies_defeated, run_manager.bosses_defeated)
+	earned = roundi(earned * run_manager.shard_multiplier) # Quick Run pays less than Standard
 	soul_shards += earned
 	runs_played += 1
-	if run_manager.boss_defeated:
-		bosses_defeated += 1
+	bosses_defeated += run_manager.bosses_defeated
 	shards_changed.emit(soul_shards)
 	data_changed.emit()
 	return earned

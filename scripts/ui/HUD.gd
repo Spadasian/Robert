@@ -211,7 +211,10 @@ func _on_map_changed() -> void:
 	if room_manager == null or room_manager.current_room_data == null:
 		return
 	minimap.refresh(room_manager)
-	room_name_label.text = "Cleared %d / %d   %s" % [room_manager.rooms_done, room_manager.rooms_total, room_manager.current_room_data.display_name]
+	var biome_text: String = ""
+	if room_manager.biomes.size() > 1:
+		biome_text = "Biome %d/%d   " % [room_manager.biome_index + 1, room_manager.biomes.size()]
+	room_name_label.text = "%sCleared %d / %d   %s" % [biome_text, room_manager.rooms_done, room_manager.rooms_total, room_manager.current_room_data.display_name]
 
 
 func _on_room_loaded(_room: Node) -> void:

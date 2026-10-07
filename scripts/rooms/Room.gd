@@ -64,6 +64,13 @@ func configure_doors(neighbours: Dictionary, boss_direction: String) -> void:
 	_update_doors()
 
 
+## Text above every door of this room (the boss room says "NEXT BIOME").
+func set_exit_tag(text: String) -> void:
+	for direction in doors:
+		if doors[direction].exists:
+			doors[direction].tag.text = text
+
+
 func set_door_locked(direction: String, locked: bool) -> void:
 	if doors.has(direction):
 		doors[direction].set_locked(locked)
@@ -72,11 +79,14 @@ func set_door_locked(direction: String, locked: bool) -> void:
 
 func start_room() -> void:
 	entered_before = true
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	for point in enemy_spawns.get_children():
 		var scene: PackedScene = point.get("enemy_scene")
 		if scene == null:
 			continue
 		var enemy: Node3D = scene.instantiate()
+		if run_manager:
+			enemy.max_health *= run_manager.enemy_health_multiplier # read by Enemy._ready, so the boss bar is right too
 		enemies_root.add_child(enemy)
 		enemy.global_position = _safe_enemy_position(point.global_position)
 		enemy.defeated.connect(_on_enemy_defeated)

@@ -4,9 +4,16 @@ extends Node
 
 const MAIN_MENU_SCENE: String = "res://scenes/ui/MainMenu.tscn"
 const RUN_SCENE: String = "res://scenes/world/Run.tscn"
+const STANDARD_MODE: Resource = preload("res://resources/modes/standard.tres")
+const QUICK_MODE: Resource = preload("res://resources/modes/quick.tres")
+
+## The mode of the current (or last) run. "Play again" starts the same mode.
+var run_mode: Resource = STANDARD_MODE
 
 
-func start_run() -> void:
+func start_run(mode: Resource = null) -> void:
+	if mode != null:
+		run_mode = mode
 	_change_scene(RUN_SCENE)
 
 

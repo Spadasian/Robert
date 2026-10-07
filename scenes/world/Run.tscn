@@ -13,6 +13,7 @@
 [ext_resource type="Resource" path="res://resources/rooms/Room_Shop_01.tres" id="13_room"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Boss_01.tres" id="14_room"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Start_01.tres" id="18_start"]
+[ext_resource type="Resource" path="res://resources/modes/standard.tres" id="19_mode"]
 [ext_resource type="Resource" path="res://resources/upgrades/blood_edge.tres" id="u_blood_edge"]
 [ext_resource type="Resource" path="res://resources/upgrades/shadow_step.tres" id="u_shadow_step"]
 [ext_resource type="Resource" path="res://resources/upgrades/iron_skin.tres" id="u_iron_skin"]
@@ -63,6 +64,7 @@ relic_pool = Array[Resource]([ExtResource("r_fox_mask"), ExtResource("r_black_pe
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("4_roommanager")
 room_pool = Array[Resource]([ExtResource("5_room"), ExtResource("6_room"), ExtResource("10_room"), ExtResource("11_room"), ExtResource("12_room"), ExtResource("13_room"), ExtResource("14_room"), ExtResource("17_room"), ExtResource("18_start")])
+default_mode = ExtResource("19_mode")
 
 [node name="UpgradeChoice" parent="." instance=ExtResource("9_choice")]
 

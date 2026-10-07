@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MetaUpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/managers/MetaUpgradeData.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "vitality"
+display_name = "Vitality"
+description = "+10 max HP"
+stat = "max_health"
+value_per_level = 10.0
+costs = PackedInt32Array(20, 35, 55, 80, 110)

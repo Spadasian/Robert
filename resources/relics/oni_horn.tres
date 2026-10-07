@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="RelicData" format=3 uid="uid://b88snnjwwpl6o"]
+
+[ext_resource type="Script" uid="uid://bfgpuxt57v7tr" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://c3o2gkau1kb4i" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "attack_damage"
+operation = 1
+value = 0.25
+
+[sub_resource type="Resource" id="Effect_2"]
+script = ExtResource("2_effect")
+stat = "max_health"
+operation = 1
+value = -0.2
+
+[resource]
+script = ExtResource("1_data")
+id = "oni_horn"
+display_name = "Oni Horn"
+description = "+25% damage, but -20% max HP."
+color = Color(0.9, 0.2, 0.2, 1)
+effects = Array[Resource]([SubResource("Effect_1"), SubResource("Effect_2")])

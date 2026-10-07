@@ -1,12 +1,11 @@
-[gd_resource type="Resource" script_class="UpgradeData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="UpgradeData" format=3 uid="uid://tvbf237buijo"]
 
-[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
-[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" uid="uid://jbb3utsqamcl" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://c3o2gkau1kb4i" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
 
 [sub_resource type="Resource" id="Effect_1"]
 script = ExtResource("2_effect")
 stat = "corruption_on_hit"
-operation = 0
 value = 3
 
 [resource]

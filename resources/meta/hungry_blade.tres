@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MetaUpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/managers/MetaUpgradeData.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "hungry_blade"
+display_name = "Hungry Blade"
+description = "Heal 1 HP per kill"
+stat = "life_on_kill"
+value_per_level = 1.0
+costs = PackedInt32Array(40, 70, 110)

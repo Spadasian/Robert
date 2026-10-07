@@ -6,9 +6,8 @@
 [resource]
 script = ExtResource("1_script")
 id = "treasure_01"
-display_name = "Forgotten Shrine Vault"
+display_name = "Forgotten Shrine"
 room_type = 2
 scene = ExtResource("2_scene")
-difficulty = 1
+difficulty = 2
 reward_gold = 0
-gives_upgrade_choice = false

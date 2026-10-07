@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3 uid="uid://dngmlsxshqt8a"]
+
+[ext_resource type="Script" uid="uid://bfgpuxt57v7tr" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://c3o2gkau1kb4i" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "free_hits_per_room"
+value = 1.0
+
+[resource]
+script = ExtResource("1_data")
+id = "fox_mask"
+display_name = "Fox Mask"
+description = "Blocks the first hit you take in every room."
+color = Color(1, 0.55, 0.2, 1)
+effects = Array[Resource]([SubResource("Effect_1")])

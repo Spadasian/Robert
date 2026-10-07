@@ -4,6 +4,8 @@ extends Area3D
 
 # Price in gold per rarity. Order matches UpgradeData.Rarity: COMMON, RARE, EPIC, LEGENDARY, CURSED.
 const PRICES: Array[int] = [30, 50, 80, 120, 40]
+# Kata techniques cost more than any ordinary item. Order matches UpgradeData.Rarity.
+const TECHNIQUE_PRICES: Array[int] = [150, 180, 220, 300, 300]
 const COLOR_AFFORD: Color = Color(1.0, 1.0, 1.0)
 const COLOR_TOO_EXPENSIVE: Color = Color(1.0, 0.4, 0.4)
 const COLOR_SOLD: Color = Color(0.6, 0.6, 0.6)
@@ -28,10 +30,11 @@ func _ready() -> void:
 
 func setup(data: Resource) -> void:
 	upgrade = data
-	price = _discounted(PRICES[data.rarity])
+	var is_technique: bool = data is TechniqueData
+	price = _discounted(TECHNIQUE_PRICES[data.rarity] if is_technique else PRICES[data.rarity])
 	sold = false
 
-	var color: Color = data.get_color()
+	var color: Color = data.color if is_technique else data.get_color()
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.emission_enabled = true
@@ -40,10 +43,15 @@ func setup(data: Resource) -> void:
 	visual.material_override = material
 
 	info_label.text = "%s\n%s" % [data.display_name, data.description]
+	if is_technique:
+		info_label.text = "KATA - %s\n%s\n%s" % [data.get_category_name().to_upper(), data.display_name, data.description]
+		var old: Resource = _kata().get_technique(data.category) if _kata() else null
+		if old:
+			info_label.text += "\nReplaces: %s" % old.display_name
 	info_label.modulate = color
 
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
-	if run_manager:
+	if run_manager and not run_manager.gold_changed.is_connected(_on_gold_changed):
 		run_manager.gold_changed.connect(_on_gold_changed)
 
 	visible = true
@@ -77,19 +85,30 @@ func _try_buy() -> void:
 	var hud := get_tree().get_first_node_in_group("hud")
 	if run_manager == null or upgrade_manager == null:
 		return
+	if upgrade is TechniqueData and _kata() == null:
+		return
 	if not run_manager.spend_gold(price):
 		if hud:
 			hud.show_message("Not enough gold")
 		return
-	upgrade_manager.apply_upgrade(upgrade)
+	var color: Color = upgrade.color if upgrade is TechniqueData else upgrade.get_color()
+	if upgrade is TechniqueData:
+		_kata().set_technique(upgrade)
+	else:
+		upgrade_manager.apply_upgrade(upgrade)
 	AudioManager.play_sfx("buy")
-	VFX.sparkle(global_position + Vector3(0.0, 1.2, 0.0), upgrade.get_color())
+	VFX.sparkle(global_position + Vector3(0.0, 1.2, 0.0), color)
 	sold = true
 	visual.visible = false
 	info_label.visible = false
 	if hud:
 		hud.show_message("%s bought" % upgrade.display_name)
 	_refresh_price_label()
+
+
+func _kata() -> Node:
+	var player := get_tree().get_first_node_in_group("player")
+	return player.get_node_or_null("KataComponent") if player else null
 
 
 func _refresh_price_label() -> void:

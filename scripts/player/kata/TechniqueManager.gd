@@ -1,8 +1,8 @@
 extends Node
 ## Hands out Kata techniques. Rewards call offer(categories): the player picks 1 of 3 techniques (or keeps the Kata
 ## as it is). The pool is a list of TechniqueData resources set in the Inspector.
-## Temporary sources until the mini-boss and special rooms exist: the first cleared fight room teaches an Opening,
-## the first Elite room a Flow (the boss teaches the Finisher). Each slot does nothing until it has a technique.
+## Techniques come only from the mini-boss, bosses, special rooms (they call offer()) and, rarely and expensively,
+## from the shop (see get_shop_technique()). Ordinary fight rooms never give any. Each slot does nothing until it has one.
 
 const Category = TechniqueData.Category
 
@@ -12,8 +12,6 @@ const Category = TechniqueData.Category
 
 var kata: Node
 var busy: bool = false
-var combat_reward_given: bool = false
-var elite_reward_given: bool = false
 
 
 func _enter_tree() -> void:
@@ -27,7 +25,6 @@ func _ready() -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
 		room_manager.boss_defeated.connect(_on_boss_defeated)
-		room_manager.room_cleared.connect(_on_room_cleared)
 
 
 ## Techniques of the given categories that the player does not own. Categories that are still empty come first:
@@ -78,18 +75,9 @@ func _on_boss_defeated(is_final: bool) -> void:
 		offer([Category.FINISHER])
 
 
-func _on_room_cleared() -> void:
-	var room_manager := get_tree().get_first_node_in_group("room_manager")
-	var type: int = room_manager.current_room_data.room_type
-	var category: int
-	if type == RoomData.RoomType.ELITE and not elite_reward_given:
-		elite_reward_given = true
-		category = Category.FLOW
-	elif type == RoomData.RoomType.COMBAT and not combat_reward_given:
-		combat_reward_given = true
-		category = Category.OPENING
-	else:
-		return
-	await get_tree().create_timer(1.0, false).timeout
-	if not _is_player_dead():
-		offer([category])
+## A technique the shop can sell: one the player does not own, from a category with an empty slot if possible.
+func get_shop_technique() -> Resource:
+	var categories: Array = [Category.OPENING, Category.FLOW, Category.FINISHER, Category.MASTER]
+	var empty_slots: Array = categories.filter(func(category): return not kata.slots.has(category) and category != Category.MASTER)
+	var choices: Array = get_choices(empty_slots if not empty_slots.is_empty() else categories, 1)
+	return choices[0] if not choices.is_empty() else null

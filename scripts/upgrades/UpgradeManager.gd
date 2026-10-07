@@ -9,6 +9,10 @@ extends Node
 var stats: Node
 
 
+func _enter_tree() -> void:
+	add_to_group("upgrade_manager")
+
+
 func _ready() -> void:
 	var player := get_tree().get_first_node_in_group("player")
 	if player:
@@ -43,11 +47,8 @@ func apply_upgrade(upgrade: Resource) -> void:
 	stats.add_upgrade(upgrade)
 
 
-func _on_room_cleared() -> void:
-	await get_tree().create_timer(0.6).timeout # let the player see the last kill
-	if stats.get_parent().get_node("HealthComponent").is_dead():
-		return
-	var choices: Array = get_random_choices(3)
+func offer_upgrade_choice(count: int = 3) -> void:
+	var choices: Array = get_random_choices(count)
 	if choices.is_empty():
 		return
 	var chosen: Resource = await choice_ui.choose(choices)
@@ -55,3 +56,13 @@ func _on_room_cleared() -> void:
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud:
 		hud.show_message("%s acquired" % chosen.display_name)
+
+
+func _on_room_cleared() -> void:
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager.current_room_data and not room_manager.current_room_data.gives_upgrade_choice:
+		return
+	await get_tree().create_timer(0.6).timeout # let the player see the last kill
+	if stats.get_parent().get_node("HealthComponent").is_dead():
+		return
+	await offer_upgrade_choice()

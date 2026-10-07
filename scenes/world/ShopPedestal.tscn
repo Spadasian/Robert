@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/rooms/ShopPedestal.gd" id="1_ped"]
+
+[sub_resource type="BoxShape3D" id="Shape_trigger"]
+size = Vector3(2.4, 2, 2.4)
+
+[sub_resource type="CylinderMesh" id="Mesh_base"]
+top_radius = 0.6
+bottom_radius = 0.7
+height = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_base"]
+albedo_color = Color(0.25, 0.2, 0.3, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_orb"]
+radius = 0.3
+height = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_orb"]
+albedo_color = Color(1, 1, 1, 1)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+
+[node name="ShopPedestal" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_ped")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("Shape_trigger")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+mesh = SubResource("Mesh_base")
+surface_material_override/0 = SubResource("Mat_base")
+
+[node name="Orb" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("Mesh_orb")
+surface_material_override/0 = SubResource("Mat_orb")
+
+[node name="ItemLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+pixel_size = 0.008
+billboard = 1
+no_depth_test = true
+text = ""
+font_size = 40
+outline_size = 10
+
+[node name="PromptLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+pixel_size = 0.008
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 0.95, 0.6, 1)
+text = "[F]"
+font_size = 40
+outline_size = 10

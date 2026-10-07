@@ -72,7 +72,8 @@ func _load_room_at(index: int) -> void:
 func _on_room_cleared() -> void:
 	_spawn_reward()
 	var hud := get_tree().get_first_node_in_group("hud")
-	if hud:
+	var is_fight: bool = current_room_data.room_type in [RoomData.RoomType.COMBAT, RoomData.RoomType.ELITE, RoomData.RoomType.BOSS]
+	if hud and is_fight:
 		hud.show_message("ROOM CLEARED")
 	room_cleared.emit()
 
@@ -101,6 +102,8 @@ func _on_exit_reached() -> void:
 
 
 func _spawn_reward() -> void:
+	if current_room_data.reward_gold <= 0:
+		return
 	var pickup: Node3D = GOLD_PICKUP_SCENE.instantiate()
 	pickup.amount = current_room_data.reward_gold
 	current_room.add_child(pickup)

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/ShadowDoppelganger.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "shadow_doppelganger"
+display_name = "Shadow Doppelganger"
+description = "Master: a shadow repeats every Finisher a moment later."
+category = 3
+rarity = 3
+color = Color(0.6, 0.3, 0.9, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"echo_damage": 0.6
+}

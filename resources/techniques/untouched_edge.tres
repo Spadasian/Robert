@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/UntouchedEdge.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "untouched_edge"
+display_name = "Untouched Edge"
+description = "Flow: builds fast while you are not hit. The first hit you take wipes it all."
+category = 1
+rarity = 1
+color = Color(0.9, 0.95, 1, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"gain_per_hit": 0.4
+}

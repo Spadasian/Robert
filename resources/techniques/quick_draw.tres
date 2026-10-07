@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/QuickDraw.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "quick_draw"
+display_name = "Quick Draw"
+description = "Opening: dashing starts the Kata, with a little Flow already built."
+category = 0
+rarity = 0
+color = Color(0.4, 0.8, 1, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"start_flow": 0.25
+}

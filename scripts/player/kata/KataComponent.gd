@@ -1,13 +1,16 @@
 extends Node
 ## The Kata: the player's fighting style. OPENING (how a sequence starts) -> FLOW (how it builds up) ->
 ## FINISHER (how it ends, the heavy attack). Each part is a technique (TechniqueData + a TechniqueBehavior script).
-## Without any technique found, the default ones play: the first light hit opens the Kata, light hits add Flow,
-## and a heavy attack at the end hits harder the more Flow there is.
+## The Kata does not exist at the start of a run: with no technique the player only has plain light and heavy attacks.
+## The first technique found AWAKENS it. From then on, a slot that is still empty uses a neutral fallback
+## (first light hit opens, light hits add Flow, heavy hits harder with Flow), and every technique found replaces
+## the fallback of its slot. The MASTER slot has no fallback.
 ##
 ## The Kata listens to KataEvents; it closes after `open_timeout` seconds without Flow activity, on a new room,
 ## or when the finisher is used.
 
 signal kata_changed # slots, running state or Flow changed (the HUD redraws)
+signal awakened # the first technique was found
 signal opened
 signal closed(reason: String)
 signal finisher_performed(context: Dictionary)
@@ -22,17 +25,17 @@ const DEFAULT_FINISHER: Resource = preload("res://resources/techniques/heavy_sla
 
 @onready var events: Node = $"../KataEvents"
 
-var slots: Dictionary = {} # Category -> TechniqueData
-var behaviors: Dictionary = {} # Category -> TechniqueBehavior
+var slots: Dictionary = {} # Category -> TechniqueData (only techniques that were found)
+var behaviors: Dictionary = {} # Category -> TechniqueBehavior (the technique's, or the fallback's)
+var is_awake: bool = false
 var is_open: bool = false
 var flow_value: float = 0.0
 var idle_time: float = 0.0
 
 
 func _ready() -> void:
-	set_technique(DEFAULT_OPENING)
-	set_technique(DEFAULT_FLOW)
-	set_technique(DEFAULT_FINISHER)
+	for category in [Category.OPENING, Category.FLOW, Category.FINISHER]:
+		behaviors[category] = _make_behavior(get_display(category))
 	events.light_attack.connect(func(): _on_event("light_attack", {}))
 	events.heavy_attack.connect(func(): _on_event("heavy_attack", {}))
 	events.hit_dealt.connect(func(info: Dictionary): _on_event("hit_dealt", info))
@@ -51,6 +54,13 @@ func get_technique(category: int) -> Resource:
 	return slots.get(category)
 
 
+## What the HUD shows for a slot: the technique, or the neutral fallback when nothing was found for it.
+func get_display(category: int) -> Resource:
+	if slots.has(category):
+		return slots[category]
+	return {Category.OPENING: DEFAULT_OPENING, Category.FLOW: DEFAULT_FLOW, Category.FINISHER: DEFAULT_FINISHER}.get(category)
+
+
 func has_technique(technique_id: String) -> bool:
 	for data in slots.values():
 		if data.id == technique_id:
@@ -58,21 +68,28 @@ func has_technique(technique_id: String) -> bool:
 	return false
 
 
-## True when the slot still holds the starting technique (nothing was found for it yet).
+## True when nothing was found for the slot yet (the neutral fallback plays there).
 func is_default(category: int) -> bool:
-	var data: Resource = slots.get(category)
-	return data == null or data == DEFAULT_OPENING or data == DEFAULT_FLOW or data == DEFAULT_FINISHER
+	return not slots.has(category)
 
 
 ## Puts a technique in the slot of its category. Returns the technique that was there (or null).
+## The first technique ever found awakens the Kata.
 func set_technique(data: Resource) -> Resource:
 	var previous: Resource = slots.get(data.category)
-	var behavior: TechniqueBehavior = data.behavior.new() if data.behavior else TechniqueBehavior.new()
-	behavior.data = data
 	slots[data.category] = data
-	behaviors[data.category] = behavior
+	behaviors[data.category] = _make_behavior(data)
+	if not is_awake:
+		is_awake = true
+		awakened.emit()
 	kata_changed.emit()
 	return previous
+
+
+func _make_behavior(data: Resource) -> TechniqueBehavior:
+	var behavior: TechniqueBehavior = data.behavior.new() if data.behavior else TechniqueBehavior.new()
+	behavior.data = data
+	return behavior
 
 
 func _active_behaviors() -> Array:
@@ -80,12 +97,16 @@ func _active_behaviors() -> Array:
 
 
 func _on_event(event: String, payload: Dictionary) -> void:
+	if not is_awake:
+		return
 	if not is_open:
 		if behaviors[Category.OPENING].opening_matches(self, event, payload):
 			_open()
 			# the event that opened the Kata also counts for the Flow
 			for behavior in _active_behaviors():
 				behavior.on_event(self, event, payload)
+		elif behaviors.has(Category.MASTER):
+			behaviors[Category.MASTER].on_event(self, event, payload) # a Master technique can act while the Kata is closed
 		return
 	for behavior in _active_behaviors():
 		behavior.on_event(self, event, payload)
@@ -129,7 +150,7 @@ func touch() -> void:
 ## the techniques can multiply its damage and add effects, then the Kata ends. Returns the context.
 func begin_finisher(heavy: Node) -> Dictionary:
 	var context: Dictionary = {"damage_multiplier": 1.0, "flow": flow_value, "was_open": is_open}
-	if not is_open:
+	if not is_awake or not is_open:
 		return context
 	for behavior in _active_behaviors():
 		context.damage_multiplier *= behavior.finisher_multiplier(self)

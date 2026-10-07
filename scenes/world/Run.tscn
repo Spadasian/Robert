@@ -26,6 +26,19 @@
 [ext_resource type="Resource" path="res://resources/upgrades/crimson_meal.tres" id="u_crimson_meal"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeManager.gd" id="8_upgrademanager"]
 [ext_resource type="PackedScene" path="res://scenes/ui/UpgradeChoice.tscn" id="9_choice"]
+[ext_resource type="Resource" path="res://resources/techniques/quick_draw.tres" id="t_quick_draw"]
+[ext_resource type="Resource" path="res://resources/techniques/riposte_step.tres" id="t_riposte_step"]
+[ext_resource type="Resource" path="res://resources/techniques/ghost_step.tres" id="t_ghost_step"]
+[ext_resource type="Resource" path="res://resources/techniques/crimson_rhythm.tres" id="t_crimson_rhythm"]
+[ext_resource type="Resource" path="res://resources/techniques/untouched_edge.tres" id="t_untouched_edge"]
+[ext_resource type="Resource" path="res://resources/techniques/many_faces.tres" id="t_many_faces"]
+[ext_resource type="Resource" path="res://resources/techniques/moon_sever.tres" id="t_moon_sever"]
+[ext_resource type="Resource" path="res://resources/techniques/crimson_execution.tres" id="t_crimson_execution"]
+[ext_resource type="Resource" path="res://resources/techniques/whirlwind.tres" id="t_whirlwind"]
+[ext_resource type="Resource" path="res://resources/techniques/perfect_draw.tres" id="t_perfect_draw"]
+[ext_resource type="Resource" path="res://resources/techniques/shadow_doppelganger.tres" id="t_shadow_doppelganger"]
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueManager.gd" id="t_manager"]
+[ext_resource type="PackedScene" path="res://scenes/ui/TechniqueChoice.tscn" id="t_choice"]
 [ext_resource type="PackedScene" path="res://scenes/ui/EndScreen.tscn" id="15_end"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="16_pause"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Treasure_01.tres" id="17_room"]
@@ -71,6 +84,12 @@ default_mode = ExtResource("19_mode")
 [node name="UpgradeManager" type="Node" parent="."]
 script = ExtResource("8_upgrademanager")
 upgrade_pool = Array[Resource]([ExtResource("u_blood_edge"), ExtResource("u_shadow_step"), ExtResource("u_iron_skin"), ExtResource("u_sakura_step"), ExtResource("u_executioner"), ExtResource("u_dark_breath"), ExtResource("u_swift_blade"), ExtResource("u_vital_spirit"), ExtResource("u_keen_edge"), ExtResource("u_crimson_meal")])
+
+[node name="TechniqueChoice" parent="." instance=ExtResource("t_choice")]
+
+[node name="TechniqueManager" type="Node" parent="."]
+script = ExtResource("t_manager")
+technique_pool = Array[Resource]([ExtResource("t_quick_draw"), ExtResource("t_riposte_step"), ExtResource("t_ghost_step"), ExtResource("t_crimson_rhythm"), ExtResource("t_untouched_edge"), ExtResource("t_many_faces"), ExtResource("t_moon_sever"), ExtResource("t_crimson_execution"), ExtResource("t_whirlwind"), ExtResource("t_perfect_draw"), ExtResource("t_shadow_doppelganger")])
 
 [node name="EndScreen" parent="." instance=ExtResource("15_end")]
 

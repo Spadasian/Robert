@@ -21,9 +21,9 @@ func _draw() -> void:
 		return
 	var font: Font = ThemeDB.fallback_font
 	var open: bool = kata.is_open
-	var opening: Resource = kata.get_technique(TechniqueData.Category.OPENING)
-	var flow: Resource = kata.get_technique(TechniqueData.Category.FLOW)
-	var finisher: Resource = kata.get_technique(TechniqueData.Category.FINISHER)
+	var opening: Resource = kata.get_display(TechniqueData.Category.OPENING)
+	var flow: Resource = kata.get_display(TechniqueData.Category.FLOW)
+	var finisher: Resource = kata.get_display(TechniqueData.Category.FINISHER)
 	var origin := Vector2(0.0, 0.0)
 
 	# 1. Opening

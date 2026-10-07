@@ -348,7 +348,12 @@ func _build_kata_bar(player: Node) -> void:
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bar)
 	move_child(bar, fade_rect.get_index())
-	bar.setup(player.get_node("KataComponent"))
+	var kata: Node = player.get_node("KataComponent")
+	bar.setup(kata)
+	bar.visible = kata.is_awake # hidden until the first technique is found
+	kata.awakened.connect(func():
+		bar.visible = true
+		show_message("The Kata awakens", 3.0))
 	bar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	bar.offset_left = -bar.custom_minimum_size.x * 0.5
 	bar.offset_right = bar.custom_minimum_size.x * 0.5

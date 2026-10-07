@@ -6,6 +6,9 @@ extends Area3D
 @export var team: String = "player"
 ## What kind of attack this is, for the Kata: "light", "heavy" or "skill" (empty for enemies).
 @export var kind: String = ""
+## Set by Kata finishers for one swing: the next hits are critical / kill targets below this health ratio.
+var force_crit: bool = false
+var execute_below: float = 0.0
 
 var source: Node
 var already_hit: Array = []
@@ -36,6 +39,11 @@ func _on_area_entered(area: Area3D) -> void:
 		if run_manager:
 			final_damage *= run_manager.enemy_damage_multiplier
 	var was_crit: bool = CombatManager.last_hit_was_crit
+	if force_crit and not was_crit:
+		final_damage *= CombatManager.CRIT_MULTIPLIER
+		was_crit = true
+	if execute_below > 0.0 and target_health and target_health.current_health <= target_health.max_health * execute_below:
+		final_damage = maxf(final_damage, target_health.current_health)
 	area.receive_hit(final_damage, attacker)
 	var info: Dictionary = {"target": area.get_parent(), "damage": final_damage, "crit": was_crit, "kind": kind, "hit_count": already_hit.size()}
 	CombatManager.after_hit(attacker, target_health, info)

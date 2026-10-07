@@ -21,10 +21,16 @@ func _draw() -> void:
 		return
 	var font: Font = ThemeDB.fallback_font
 	var open: bool = kata.is_open
-	var opening: Resource = kata.get_display(TechniqueData.Category.OPENING)
-	var flow: Resource = kata.get_display(TechniqueData.Category.FLOW)
-	var finisher: Resource = kata.get_display(TechniqueData.Category.FINISHER)
+	var opening: Resource = kata.get_technique(TechniqueData.Category.OPENING)
+	var flow: Resource = kata.get_technique(TechniqueData.Category.FLOW)
+	var finisher: Resource = kata.get_technique(TechniqueData.Category.FINISHER)
 	var origin := Vector2(0.0, 0.0)
+	var empty := TechniqueData.new() # shown for a slot with no technique: the chain does nothing there
+	empty.display_name = "-"
+	empty.color = Color(0.4, 0.4, 0.5)
+	opening = opening if opening else empty
+	flow = flow if flow else empty
+	finisher = finisher if finisher else empty
 
 	# 1. Opening
 	_draw_box(Rect2(origin, BOX), opening.color, open, opening.display_name, font)

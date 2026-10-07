@@ -1,7 +1,8 @@
 extends Node
 ## Hands out Kata techniques. Rewards call offer(categories): the player picks 1 of 3 techniques (or keeps the Kata
 ## as it is). The pool is a list of TechniqueData resources set in the Inspector.
-## Temporary source until the mini-boss and special rooms exist: the first Elite room gives an Opening or Flow.
+## Temporary sources until the mini-boss and special rooms exist: the first cleared fight room teaches an Opening,
+## the first Elite room a Flow (the boss teaches the Finisher). Each slot does nothing until it has a technique.
 
 const Category = TechniqueData.Category
 
@@ -11,6 +12,7 @@ const Category = TechniqueData.Category
 
 var kata: Node
 var busy: bool = false
+var combat_reward_given: bool = false
 var elite_reward_given: bool = false
 
 
@@ -78,9 +80,16 @@ func _on_boss_defeated(is_final: bool) -> void:
 
 func _on_room_cleared() -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
-	if elite_reward_given or room_manager.current_room_data.room_type != RoomData.RoomType.ELITE:
+	var type: int = room_manager.current_room_data.room_type
+	var category: int
+	if type == RoomData.RoomType.ELITE and not elite_reward_given:
+		elite_reward_given = true
+		category = Category.FLOW
+	elif type == RoomData.RoomType.COMBAT and not combat_reward_given:
+		combat_reward_given = true
+		category = Category.OPENING
+	else:
 		return
-	elite_reward_given = true
 	await get_tree().create_timer(1.0, false).timeout
 	if not _is_player_dead():
-		offer([Category.OPENING, Category.FLOW])
+		offer([category])

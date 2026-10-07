@@ -12,12 +12,15 @@ signal room_loaded(room: Node)
 signal room_changed(index: int, total: int) # a room was entered: index = rooms cleared, total = rooms before the boss
 signal map_changed # something the minimap shows changed (a room entered or cleared, a new biome)
 signal room_cleared
+signal miniboss_defeated # the mini-boss of the biome fell (TechniqueManager reacts: it teaches an Opening or Flow)
 signal boss_defeated(is_final: bool) # the boss of a biome fell; is_final = it was the last biome
 signal run_completed # the boss door was used after the last boss died; EndScreen shows the victory
 
 @export var room_pool: Array[Resource] = [] # every RoomData that can appear in a run (including START and BOSS)
 ## Used when the Run scene is started on its own (F6 in the editor); normally GameManager.run_mode is used.
 @export var default_mode: Resource
+## The kinds of mini-boss (MiniBossVariant). Each biome of a run gets a different one while there are enough.
+@export var miniboss_variants: Array[Resource] = []
 ## 0 = new random run every time. Put a number here to replay the same run.
 @export var run_seed: int = 0
 
@@ -36,7 +39,20 @@ var current_room_data: Resource
 var boss_unlocked: bool = false
 var is_transitioning: bool = false
 var rooms_done: int = 0
-var rooms_total: int = 0 # every room of this biome except the boss room
+var rooms_total: int = 0 # every required room of this biome (not the boss room, not the optional special rooms)
+var miniboss_variant: Resource # the variant of the mini-boss of the current biome
+var variant_bag: Array = [] # variants not used yet in this run
+
+# Rooms the boss door does not wait for.
+const OPTIONAL_TYPES: Array = [RoomData.RoomType.DUEL, RoomData.RoomType.ARENA]
+# Special rooms: the door that leads to one has a coloured label, visible before entering.
+const DOOR_LABELS: Dictionary = {
+	RoomData.RoomType.MINIBOSS: ["MINI-BOSS", Color(1.0, 0.35, 0.3)],
+	RoomData.RoomType.DUEL: ["DUEL", Color(0.4, 0.85, 1.0)],
+	RoomData.RoomType.ARENA: ["ARENA", Color(1.0, 0.6, 0.2)],
+	RoomData.RoomType.TREASURE: ["TREASURE", Color(1.0, 0.85, 0.3)],
+	RoomData.RoomType.SHOP: ["SHOP", Color(0.4, 0.9, 0.5)],
+}
 
 
 func _enter_tree() -> void:
@@ -100,7 +116,12 @@ func _start_biome(index: int) -> void:
 		rng.seed = run_seed + index
 	print("Biome %d (%s), seed: %d" % [index + 1, biome.display_name, rng.seed])
 	dungeon = DungeonGenerator.generate(room_pool, biome.get_room_counts(), biome.grid_size, rng)
-	rooms_total = dungeon.cells.size() - 1
+	rooms_total = 0
+	for cell in dungeon.cells:
+		var type: int = dungeon.cells[cell].data.room_type
+		if cell != dungeon.boss and not OPTIONAL_TYPES.has(type):
+			rooms_total += 1
+	_pick_miniboss_variant(rng)
 
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
@@ -112,6 +133,18 @@ func _start_biome(index: int) -> void:
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud and biomes.size() > 1:
 		hud.show_message("Biome %d: %s" % [index + 1, biome.display_name], 3.0)
+
+
+## A different mini-boss variant for every biome while the variants last (then the bag is refilled).
+func _pick_miniboss_variant(rng: RandomNumberGenerator) -> void:
+	miniboss_variant = null
+	if miniboss_variants.is_empty():
+		return
+	if variant_bag.is_empty():
+		variant_bag = miniboss_variants.duplicate()
+	miniboss_variant = variant_bag[rng.randi() % variant_bag.size()]
+	variant_bag.erase(miniboss_variant)
+	print("Mini-boss of this biome: %s" % miniboss_variant.display_name)
 
 
 func _apply_biome_look() -> void:
@@ -147,6 +180,12 @@ func _enter_cell(cell: Vector2i, entry_side: String) -> void:
 			current_room.set_door_locked(boss_side, not boss_unlocked)
 		if cell == dungeon.boss and not is_final_biome():
 			current_room.set_exit_tag("NEXT BIOME")
+		for direction in cell_data.doors:
+			if direction == boss_side or cell == dungeon.boss:
+				continue # the boss door and the way out of the boss room keep their own text
+			var neighbour_type: int = dungeon.cells[cell_data.doors[direction]].data.room_type
+			if DOOR_LABELS.has(neighbour_type):
+				current_room.doors[direction].set_destination(DOOR_LABELS[neighbour_type][0], DOOR_LABELS[neighbour_type][1])
 
 	var entry: Vector3 = current_room.get_entry_position(entry_side)
 	current_room.entry_position = entry
@@ -170,7 +209,7 @@ func _enter_cell(cell: Vector2i, entry_side: String) -> void:
 
 
 func _on_door_used(direction: String) -> void:
-	if is_transitioning:
+	if is_transitioning or (current_cell != dungeon.boss and not dungeon.cells[current_cell].doors.has(direction)):
 		return
 	is_transitioning = true
 	# Anything left on the floor is collected automatically when you leave.
@@ -210,12 +249,12 @@ func _on_locked_door_touched(_direction: String) -> void:
 func _on_room_cleared(cell: Vector2i) -> void:
 	var data: Resource = dungeon.cells[cell].data
 	var type: int = data.room_type
-	if type != RoomData.RoomType.BOSS:
+	if type != RoomData.RoomType.BOSS and not OPTIONAL_TYPES.has(type):
 		rooms_done += 1
 		_update_boss_lock()
 	map_changed.emit()
 	# Rooms without a fight give no gold and no free upgrade choice (not emitting room_cleared silences UpgradeManager).
-	var is_fight: bool = type == RoomData.RoomType.COMBAT or type == RoomData.RoomType.ELITE or type == RoomData.RoomType.BOSS
+	var is_fight: bool = [RoomData.RoomType.COMBAT, RoomData.RoomType.ELITE, RoomData.RoomType.BOSS, RoomData.RoomType.MINIBOSS].has(type)
 	if not is_fight:
 		return
 	_spawn_reward(data)
@@ -236,6 +275,11 @@ func _on_room_cleared(cell: Vector2i) -> void:
 			hud.show_message("BOSS DEFEATED" if final else "BOSS DEFEATED   +%d gold, healed" % BOSS_GOLD_REWARD, 3.0)
 		boss_defeated.emit(final)
 		return # no regular upgrade choice for a boss (UpgradeManager reacts to boss_defeated instead)
+	if type == RoomData.RoomType.MINIBOSS:
+		if hud:
+			hud.show_message("MINI-BOSS DEFEATED", 3.0)
+		miniboss_defeated.emit() # its reward is a Kata technique, not the usual upgrade
+		return
 	if hud:
 		hud.show_message("ROOM CLEARED", 2.0)
 	room_cleared.emit()

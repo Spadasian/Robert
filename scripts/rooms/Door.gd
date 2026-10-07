@@ -13,6 +13,7 @@ var is_open: bool = false
 var is_locked: bool = false
 
 var material: StandardMaterial3D
+var accent: Color = Color.TRANSPARENT # a special room behind the door: coloured label, and the open door has this colour
 
 @onready var visual: MeshInstance3D = $DoorVisual
 @onready var tag: Label3D = $Tag
@@ -30,6 +31,16 @@ func setup(has_neighbor: bool, leads_to_boss: bool) -> void:
 	is_locked = has_neighbor and leads_to_boss
 	is_open = false
 	tag.text = "BOSS" if (has_neighbor and leads_to_boss) else ""
+	accent = Color.TRANSPARENT
+	tag.modulate = Color.WHITE
+	_refresh()
+
+
+## Marks the door of a special room (mini-boss, duel, arena, treasure, shop): a coloured label before you enter.
+func set_destination(label: String, color: Color) -> void:
+	accent = color
+	tag.text = label
+	tag.modulate = color
 	_refresh()
 
 
@@ -55,8 +66,10 @@ func _refresh() -> void:
 	if is_locked:
 		color = Color(0.5, 0.2, 0.75)
 	elif is_open:
-		color = Color(0.2, 0.9, 0.8)
+		color = accent if accent.a > 0.0 else Color(0.2, 0.9, 0.8)
 		glow = true
+	if accent.a > 0.0 and not is_locked:
+		color = color.lerp(accent, 0.35) if not is_open else color # closed special doors are tinted too
 	material.albedo_color = color
 	material.emission_enabled = glow
 	material.emission = color

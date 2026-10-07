@@ -96,6 +96,12 @@ func start_room() -> void:
 		_clear_room.call_deferred()
 
 
+## An enemy that was created during the fight (a summon): the room waits for it too.
+func register_enemy(enemy: Node) -> void:
+	enemy.defeated.connect(_on_enemy_defeated)
+	alive_enemies += 1
+
+
 func _safe_enemy_position(wanted: Vector3) -> Vector3:
 	var spawn: Vector3 = entry_position
 	var offset: Vector3 = wanted - spawn

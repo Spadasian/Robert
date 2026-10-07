@@ -39,6 +39,11 @@
 [ext_resource type="Resource" path="res://resources/techniques/shadow_doppelganger.tres" id="t_shadow_doppelganger"]
 [ext_resource type="Script" path="res://scripts/player/kata/TechniqueManager.gd" id="t_manager"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TechniqueChoice.tscn" id="t_choice"]
+[ext_resource type="Resource" path="res://resources/rooms/Room_MiniBoss_01.tres" id="mb_room"]
+[ext_resource type="Resource" path="res://resources/variants/oni_brute.tres" id="mb_v1"]
+[ext_resource type="Resource" path="res://resources/variants/shadow_duelist.tres" id="mb_v2"]
+[ext_resource type="Resource" path="res://resources/variants/iron_warden.tres" id="mb_v3"]
+[ext_resource type="Resource" path="res://resources/variants/crimson_hunter.tres" id="mb_v4"]
 [ext_resource type="PackedScene" path="res://scenes/ui/EndScreen.tscn" id="15_end"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="16_pause"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Treasure_01.tres" id="17_room"]
@@ -76,7 +81,8 @@ relic_pool = Array[Resource]([ExtResource("r_fox_mask"), ExtResource("r_black_pe
 
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("4_roommanager")
-room_pool = Array[Resource]([ExtResource("5_room"), ExtResource("6_room"), ExtResource("10_room"), ExtResource("11_room"), ExtResource("12_room"), ExtResource("13_room"), ExtResource("14_room"), ExtResource("17_room"), ExtResource("18_start")])
+room_pool = Array[Resource]([ExtResource("5_room"), ExtResource("6_room"), ExtResource("10_room"), ExtResource("11_room"), ExtResource("12_room"), ExtResource("13_room"), ExtResource("14_room"), ExtResource("17_room"), ExtResource("18_start"), ExtResource("mb_room")])
+miniboss_variants = Array[Resource]([ExtResource("mb_v1"), ExtResource("mb_v2"), ExtResource("mb_v3"), ExtResource("mb_v4")])
 default_mode = ExtResource("19_mode")
 
 [node name="UpgradeChoice" parent="." instance=ExtResource("9_choice")]

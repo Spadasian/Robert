@@ -9,6 +9,9 @@ extends Resource
 @export var elite_rooms: int = 1
 @export var treasure_rooms: int = 1
 @export var shop_rooms: int = 1
+@export var miniboss_rooms: int = 1 # one per biome; a required room (the boss door waits for it)
+@export var duel_rooms: int = 0 # special rooms are optional
+@export var arena_rooms: int = 0
 @export var event_rooms: int = 0
 @export var shrine_rooms: int = 0
 ## Enemies of this biome: their health and the damage they deal are multiplied by these.
@@ -26,4 +29,5 @@ func get_room_counts() -> Dictionary:
 		RoomData.RoomType.COMBAT: combat_rooms, RoomData.RoomType.ELITE: elite_rooms,
 		RoomData.RoomType.TREASURE: treasure_rooms, RoomData.RoomType.SHOP: shop_rooms,
 		RoomData.RoomType.EVENT: event_rooms, RoomData.RoomType.SHRINE: shrine_rooms,
+		RoomData.RoomType.MINIBOSS: miniboss_rooms, RoomData.RoomType.DUEL: duel_rooms, RoomData.RoomType.ARENA: arena_rooms,
 	}

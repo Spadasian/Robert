@@ -2,8 +2,8 @@ class_name RoomData
 extends Resource
 ## Describes one room: its type, scene and difficulty. The run generator picks from these.
 
-# START is last so the numbers of the older types never change.
-enum RoomType { COMBAT, ELITE, TREASURE, SHOP, EVENT, SHRINE, BOSS, START }
+# New types go last so the numbers of the older ones never change.
+enum RoomType { COMBAT, ELITE, TREASURE, SHOP, EVENT, SHRINE, BOSS, START, MINIBOSS, DUEL, ARENA }
 
 @export var id: String = ""
 @export var display_name: String = ""

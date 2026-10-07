@@ -2,10 +2,11 @@ extends Control
 ## The dungeon map in the corner of the HUD: rooms you entered are coloured by type, rooms next to them that you have
 ## not entered yet show as "?", the room you are in has a white frame, and doors are lines between rooms.
 
-# Colour per RoomData.RoomType: COMBAT, ELITE, TREASURE, SHOP, EVENT, SHRINE, BOSS, START.
+# Colour per RoomData.RoomType: COMBAT, ELITE, TREASURE, SHOP, EVENT, SHRINE, BOSS, START, MINIBOSS, DUEL, ARENA.
 const COLORS: Array[Color] = [
 	Color(0.8, 0.8, 0.88), Color(1.0, 0.6, 0.2), Color(1.0, 0.85, 0.3), Color(0.4, 0.9, 0.5),
 	Color(0.6, 0.7, 1.0), Color(0.7, 0.5, 1.0), Color(0.75, 0.25, 0.9), Color(0.55, 0.6, 0.7),
+	Color(1.0, 0.35, 0.3), Color(0.4, 0.85, 1.0), Color(1.0, 0.6, 0.2),
 ]
 const MAX_STEP: float = 34.0
 

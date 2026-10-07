@@ -25,6 +25,7 @@ func _ready() -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
 		room_manager.boss_defeated.connect(_on_boss_defeated)
+		room_manager.miniboss_defeated.connect(_on_miniboss_defeated)
 
 
 ## Techniques of the given categories that the player does not own. Categories that are still empty come first:
@@ -64,6 +65,13 @@ func _upgrade_choice_open() -> bool:
 
 func _is_player_dead() -> bool:
 	return kata.get_parent().get_node("HealthComponent").is_dead()
+
+
+## The mini-boss teaches an Opening or a Flow (the one the Kata is missing, if any).
+func _on_miniboss_defeated() -> void:
+	await get_tree().create_timer(1.2, false).timeout
+	if not _is_player_dead():
+		offer([Category.OPENING, Category.FLOW])
 
 
 ## A boss that is not the last one teaches a Finisher.

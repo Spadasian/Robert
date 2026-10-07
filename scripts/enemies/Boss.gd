@@ -7,7 +7,7 @@ extends "res://scripts/enemies/Enemy.gd"
 signal phase_changed(new_phase: int)
 
 enum State { INTRO, CHASE, WINDUP, STRIKE, RECOVER, TRANSITION }
-enum Attack { COMBO, DASH, SHOCKWAVE, FAN }
+enum Attack { COMBO, DASH, SHOCKWAVE, FAN, LEAP, SUMMON } # LEAP and SUMMON are only used by mini-bosses
 
 @export var boss_name: String = "Lord Kageyama"
 @export var move_speed: float = 3.2
@@ -49,6 +49,20 @@ enum Attack { COMBO, DASH, SHOCKWAVE, FAN }
 @export var fan_windup: float = 0.7
 @export var fan_recover: float = 0.9
 
+@export_group("Leap slam (mini-boss)")
+@export var leap_damage: float = 18.0
+@export var leap_windup: float = 0.8
+@export var leap_duration: float = 0.45
+@export var leap_recover: float = 1.1
+@export var leap_radius: float = 2.6
+
+@export_group("Summon (mini-boss)")
+@export var summon_scene: PackedScene
+@export var summon_count: int = 2
+@export var summon_windup: float = 0.9
+@export var summon_recover: float = 0.8
+@export var summon_max_alive: int = 4 # no summoning while this many enemies are alive in the room
+
 const STRIKE_TIME: float = 0.15 # combo hit and shockwave burst
 const FAN_STRIKE_TIME: float = 0.1
 
@@ -75,6 +89,10 @@ var path_timer: float = 0.0
 var target: Node3D
 var telegraph_material: StandardMaterial3D
 var telegraph_visuals: Array[MeshInstance3D] = []
+var leap_marker: MeshInstance3D
+var leap_from: Vector3
+var leap_to: Vector3
+var leap_landed: bool = false
 
 
 func _ready() -> void:
@@ -153,10 +171,10 @@ func _chase(delta: float) -> void:
 	var to_target: Vector3 = _flat(target.global_position - global_position)
 	var distance: float = to_target.length()
 	if distance <= combo_range:
-		_begin_attack(_pick([Attack.COMBO] if phase == 1 else [Attack.COMBO, Attack.SHOCKWAVE]))
+		_begin_attack(_pick(_near_options()))
 		return
 	if state_time >= far_attack_delay and distance >= 5.0:
-		_begin_attack(_pick([Attack.DASH] if phase == 1 else [Attack.DASH, Attack.FAN]))
+		_begin_attack(_pick(_far_options()))
 		return
 
 	path_timer -= delta
@@ -169,6 +187,15 @@ func _chase(delta: float) -> void:
 	velocity.z = move_toward(velocity.z, direction.z * move_speed * speed_scale, acceleration * delta)
 	velocity.y = 0.0
 	_face(direction, delta)
+
+
+## Attacks it may start when the player is close / far. MiniBoss.gd overrides these with the variant's lists.
+func _near_options() -> Array:
+	return [Attack.COMBO] if phase == 1 else [Attack.COMBO, Attack.SHOCKWAVE]
+
+
+func _far_options() -> Array:
+	return [Attack.DASH] if phase == 1 else [Attack.DASH, Attack.FAN]
 
 
 func _begin_attack(kind: int) -> void:
@@ -190,12 +217,19 @@ func _on_windup_start() -> void:
 		Attack.FAN:
 			aim_pivot.visible = true
 			aim_visual.visible = true
+		Attack.LEAP:
+			_show_leap_marker()
+		Attack.SUMMON:
+			VFX.ring(global_position, 3.0, Color(0.7, 0.3, 0.9), 0.5)
+			AudioManager.play_sfx("roar", -8.0)
 
 
 func _windup(delta: float) -> void:
 	_stop(delta)
 	var duration: float = _windup_duration()
-	if attack != Attack.SHOCKWAVE and state_time < duration - lock_time:
+	if attack == Attack.LEAP and state_time < duration - lock_time:
+		leap_marker.global_position = Vector3(target.global_position.x, 0.05, target.global_position.z)
+	if attack != Attack.SHOCKWAVE and attack != Attack.SUMMON and state_time < duration - lock_time:
 		_face(target.global_position - global_position, delta)
 	elif state_time >= duration - lock_time:
 		telegraph_material.albedo_color.a = 0.85 # locked in: this is where it will land
@@ -214,6 +248,10 @@ func _windup_duration() -> float:
 			base = shock_windup
 		Attack.FAN:
 			base = fan_windup
+		Attack.LEAP:
+			base = leap_windup
+		Attack.SUMMON:
+			base = summon_windup
 	return base / speed_scale
 
 
@@ -230,6 +268,7 @@ func _on_strike_start() -> void:
 			AudioManager.play_sfx("dash")
 			VFX.dust(global_position)
 		Attack.SHOCKWAVE:
+			shock_hitbox.damage = shock_damage
 			shock_hitbox.set_active(true)
 			AudioManager.play_sfx("boom")
 			VFX.ring(global_position, 4.5, Color(1.0, 0.3, 0.3))
@@ -237,6 +276,13 @@ func _on_strike_start() -> void:
 		Attack.FAN:
 			AudioManager.play_sfx("shuriken")
 			_fire_fan()
+		Attack.LEAP:
+			leap_from = global_position
+			leap_to = Vector3(leap_marker.global_position.x, 0.0, leap_marker.global_position.z)
+			leap_landed = false
+			AudioManager.play_sfx("dash")
+		Attack.SUMMON:
+			_summon()
 
 
 func _strike(delta: float) -> void:
@@ -248,6 +294,8 @@ func _strike(delta: float) -> void:
 		Attack.DASH:
 			velocity.x = dash_direction.x * dash_speed
 			velocity.z = dash_direction.z * dash_speed
+		Attack.LEAP:
+			_leap_step(delta)
 		_:
 			_stop(delta)
 	if state_time >= _strike_duration():
@@ -261,6 +309,8 @@ func _strike(delta: float) -> void:
 
 func _strike_duration() -> float:
 	match attack:
+		Attack.LEAP:
+			return leap_duration + STRIKE_TIME
 		Attack.DASH:
 			return dash_duration
 		Attack.FAN:
@@ -285,6 +335,10 @@ func _recover_duration() -> float:
 			base = shock_recover
 		Attack.FAN:
 			base = fan_recover
+		Attack.LEAP:
+			base = leap_recover
+		Attack.SUMMON:
+			base = summon_recover
 	return base / speed_scale
 
 
@@ -386,9 +440,68 @@ func _pick(options: Array) -> int:
 func _hide_telegraphs() -> void:
 	for visual in telegraph_visuals:
 		visual.visible = false
+	if leap_marker:
+		leap_marker.visible = false
+
+
+## The leap flies to the spot marked on the floor; when it lands the shockwave hitbox hurts around it.
+func _leap_step(delta: float) -> void:
+	if state_time < leap_duration:
+		var progress: float = clampf(state_time / leap_duration, 0.0, 1.0)
+		var wanted: Vector3 = leap_from.lerp(leap_to, progress)
+		velocity.x = (wanted.x - global_position.x) / maxf(delta, 0.001)
+		velocity.z = (wanted.z - global_position.z) / maxf(delta, 0.001)
+		model.position.y = sin(progress * PI) * 2.0
+		return
+	_stop(delta)
+	model.position.y = 0.0
+	if not leap_landed:
+		leap_landed = true
+		shock_hitbox.damage = leap_damage
+		shock_hitbox.set_active(true)
+		AudioManager.play_sfx("boom")
+		VFX.ring(global_position, leap_radius + 1.0, Color(1.0, 0.3, 0.3))
+		VFX.shake(0.25, 0.3)
+		if leap_marker:
+			leap_marker.visible = false
+
+
+func _show_leap_marker() -> void:
+	if leap_marker == null:
+		leap_marker = MeshInstance3D.new()
+		var mesh := CylinderMesh.new()
+		mesh.top_radius = leap_radius
+		mesh.bottom_radius = leap_radius
+		mesh.height = 0.04
+		leap_marker.mesh = mesh
+		leap_marker.material_override = telegraph_material
+		leap_marker.top_level = true
+		add_child(leap_marker)
+	leap_marker.global_position = Vector3(target.global_position.x, 0.05, target.global_position.z)
+	leap_marker.visible = true
+
+
+func _summon() -> void:
+	if summon_scene == null:
+		return
+	var room: Node = get_parent().get_parent()
+	if not room.has_method("register_enemy") or room.alive_enemies >= summon_max_alive:
+		return
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	AudioManager.play_sfx("boom", -6.0)
+	for index in summon_count:
+		var minion: Node3D = summon_scene.instantiate()
+		if run_manager:
+			minion.max_health *= run_manager.enemy_health_multiplier
+		var angle: float = TAU * (float(index) / summon_count) + rotation.y
+		minion.position = global_position + Vector3(sin(angle), 0.0, cos(angle)) * 2.2
+		get_parent().add_child(minion)
+		room.register_enemy(minion)
+		VFX.ring(minion.global_position, 1.5, Color(0.7, 0.3, 0.9), 0.4)
 
 
 func _deactivate_hitboxes() -> void:
+	model.position.y = 0.0
 	slash_hitbox.set_active(false)
 	dash_hitbox.set_active(false)
 	shock_hitbox.set_active(false)

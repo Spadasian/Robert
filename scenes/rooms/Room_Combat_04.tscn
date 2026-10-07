@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/enemies/Bandit.tscn" id="4_bandit"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Ninja.tscn" id="21_ninja"]
 
+[ext_resource type="PackedScene" path="res://scenes/world/Door.tscn" id="door_scene"]
 [sub_resource type="NavigationMesh" id="NavMesh_room"]
 geometry_parsed_geometry_type = 1
 agent_height = 1.8
@@ -159,16 +160,20 @@ enemy_scene = ExtResource("21_ninja")
 
 [node name="RewardSpawn" type="Marker3D" parent="."]
 
-[node name="Exit" type="Area3D" parent="."]
+[node name="Doors" type="Node3D" parent="."]
+
+[node name="North" parent="Doors" instance=ExtResource("door_scene")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 1, -9.8)
+direction = "north"
+
+[node name="East" parent="Doors" instance=ExtResource("door_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.8, 1, 0)
-collision_layer = 0
-collision_mask = 2
-monitoring = false
+direction = "east"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Exit"]
-shape = SubResource("Shape_exit")
+[node name="South" parent="Doors" instance=ExtResource("door_scene")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 1, 9.8)
+direction = "south"
 
-[node name="DoorVisual" type="MeshInstance3D" parent="Exit"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.25, 0)
-mesh = SubResource("Mesh_door")
-surface_material_override/0 = SubResource("Mat_door")
+[node name="West" parent="Doors" instance=ExtResource("door_scene")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.8, 1, 0)
+direction = "west"

@@ -87,8 +87,8 @@ func _refresh_shards() -> void:
 func _build_stats() -> String:
 	var lines: Array[String] = []
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
-	if room_manager and not room_manager.room_plan.is_empty():
-		lines.append("Room reached: %d / %d" % [room_manager.room_index + 1, room_manager.room_plan.size()])
+	if room_manager and not room_manager.dungeon.is_empty():
+		lines.append("Dungeon rooms cleared: %d / %d" % [room_manager.rooms_done, room_manager.rooms_total])
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
 		lines.append("Rooms cleared: %d" % run_manager.rooms_cleared)

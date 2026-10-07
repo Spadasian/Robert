@@ -126,7 +126,14 @@ func _exit_tree() -> void:
 
 
 func _on_gold_changed(_gold: int) -> void:
+	if not is_inside_tree():
+		return # the shop room was left and is kept out of the scene tree; it refreshes when entered again
 	_refresh_price_label()
+
+
+func _enter_tree() -> void:
+	if is_node_ready():
+		_refresh_price_label() # coming back to a shop room: the gold may have changed
 
 
 func _on_body_entered(body: Node3D) -> void:

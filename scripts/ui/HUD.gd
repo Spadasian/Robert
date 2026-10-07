@@ -27,7 +27,7 @@ const ROOM_COLORS: Array[Color] = [
 @onready var gold_label: Label = $StatusPanel/Box/GoldRow/GoldLabel
 @onready var dash_box: HBoxContainer = $StatusPanel/Box/DashBox
 @onready var upgrade_row: HFlowContainer = $StatusPanel/Box/UpgradeRow
-@onready var dots: HBoxContainer = $ProgressBox/Dots
+@onready var minimap: Control = $ProgressBox/MiniMap
 @onready var room_name_label: Label = $ProgressBox/RoomName
 @onready var prompt_label: Label = $PromptLabel
 @onready var message_label: Label = $MessageLabel
@@ -69,7 +69,8 @@ func _ready() -> void:
 
 	var room_manager: Node = get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
-		room_manager.room_changed.connect(_on_room_changed)
+		room_manager.map_changed.connect(_on_map_changed)
+		room_manager.room_loaded.connect(_on_room_loaded)
 
 	var run_manager: Node = get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
@@ -204,34 +205,16 @@ func _initials(upgrade_name: String) -> String:
 
 # ---------------------------------------------------------------- run progress
 
-## One dot per room of the run: past rooms dim, the current room big with a white ring, the rest at normal size.
-func _on_room_changed(index: int, total: int) -> void:
+## The minimap and "Cleared 3 / 7" under it. Called when a room is entered or cleared.
+func _on_map_changed() -> void:
 	var room_manager: Node = get_tree().get_first_node_in_group("room_manager")
-	if room_manager == null:
+	if room_manager == null or room_manager.current_room_data == null:
 		return
-	for old_dot in dots.get_children():
-		dots.remove_child(old_dot)
-		old_dot.queue_free()
-	for room_index in total:
-		var room: Resource = room_manager.room_plan[room_index]
-		var is_current: bool = room_index == index
-		var dot_size: float = 20.0 if is_current else 12.0
-		var dot := Panel.new()
-		dot.custom_minimum_size = Vector2(dot_size, dot_size)
-		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var style := StyleBoxFlat.new()
-		var color: Color = ROOM_COLORS[clampi(room.room_type, 0, ROOM_COLORS.size() - 1)]
-		if room_index < index:
-			color.a = 0.35
-		style.bg_color = color
-		style.set_corner_radius_all(int(dot_size / 2.0))
-		if is_current:
-			style.border_color = Color.WHITE
-			style.set_border_width_all(2)
-		dot.add_theme_stylebox_override("panel", style)
-		dot.tooltip_text = room.display_name
-		dots.add_child(dot)
-	room_name_label.text = "%d / %d   %s" % [index + 1, total, room_manager.current_room_data.display_name]
+	minimap.refresh(room_manager)
+	room_name_label.text = "Cleared %d / %d   %s" % [room_manager.rooms_done, room_manager.rooms_total, room_manager.current_room_data.display_name]
+
+
+func _on_room_loaded(_room: Node) -> void:
 	prompt_label.visible = false # a prompt from the room we just left
 	prompt_owner = null
 

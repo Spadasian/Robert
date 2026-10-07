@@ -23,10 +23,19 @@ func launch(from_position: Vector3, move_direction: Vector3) -> void:
 	direction = move_direction.normalized()
 	global_position = from_position
 	rotation.y = atan2(direction.x, direction.z)
+	# The shooter may stand right next to a wall: check the short way back to its body too.
+	if _hits_world(from_position - direction * 1.0, from_position):
+		queue_free()
 
 
 func _physics_process(delta: float) -> void:
-	global_position += direction * speed * delta
+	var step: Vector3 = direction * speed * delta
+	# A ray along the path this frame: walls and crates stop the projectile even if the Area3D
+	# does not report them (Jolt areas ignore static bodies unless a project setting is on).
+	if _hits_world(global_position, global_position + step + direction * 0.3):
+		queue_free()
+		return
+	global_position += step
 	age += delta
 	if age >= lifetime:
 		queue_free()
@@ -44,3 +53,9 @@ func _on_area_entered(area: Area3D) -> void:
 
 func _on_body_entered(_body: Node3D) -> void:
 	queue_free() # the mask only contains the world layer, so this is always a wall or obstacle
+
+
+## True if something solid (layer 1 = world) is between the two points.
+func _hits_world(from_position: Vector3, to_position: Vector3) -> bool:
+	var query := PhysicsRayQueryParameters3D.create(from_position, to_position, 1)
+	return not get_world_3d().direct_space_state.intersect_ray(query).is_empty()

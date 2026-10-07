@@ -6,8 +6,8 @@ extends "res://scripts/player/skills/PlayerSkill.gd"
 signal charge_changed(charge: float, maximum: float)
 
 @export var max_charge: float = 100.0
-@export var charge_per_hit: float = 4.0
-@export var charge_per_kill: float = 12.0
+@export var charge_per_hit: float = 2.0
+@export var charge_per_kill: float = 6.0
 @export var duration: float = 3.5
 @export var tick_interval: float = 0.25
 @export var damage_multiplier: float = 0.9 # per tick, times attack_damage

@@ -66,6 +66,9 @@ func _burst(position: Vector3, amount: int, lifetime: float, speed: float, color
 	particles.gravity = Vector3(0.0, lift - 4.0 if lift == 0.0 else lift, 0.0)
 	particles.scale_amount_min = size * 0.6
 	particles.scale_amount_max = size
+	# Particles move with the node (it never moves after this). With world-space particles Godot culled
+	# the effect whenever it was far from the world origin, so hits only showed in the middle of the map.
+	particles.local_coords = true
 	var fade := Gradient.new()
 	fade.set_color(0, color)
 	fade.set_color(1, Color(color.r, color.g, color.b, 0.0))

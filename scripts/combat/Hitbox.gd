@@ -4,6 +4,8 @@ extends Area3D
 
 @export var damage: float = 10.0
 @export var team: String = "player"
+## What kind of attack this is, for the Kata: "light", "heavy" or "skill" (empty for enemies).
+@export var kind: String = ""
 
 var source: Node
 var already_hit: Array = []
@@ -33,8 +35,10 @@ func _on_area_entered(area: Area3D) -> void:
 		var run_manager := get_tree().get_first_node_in_group("run_manager")
 		if run_manager:
 			final_damage *= run_manager.enemy_damage_multiplier
+	var was_crit: bool = CombatManager.last_hit_was_crit
 	area.receive_hit(final_damage, attacker)
-	CombatManager.after_hit(attacker, target_health)
+	var info: Dictionary = {"target": area.get_parent(), "damage": final_damage, "crit": was_crit, "kind": kind, "hit_count": already_hit.size()}
+	CombatManager.after_hit(attacker, target_health, info)
 	if team == "player": # the player's hits get a thud and sparks (hits on the player: see Player._on_damaged)
 		AudioManager.play_sfx("hit")
 		VFX.hit_spark(area.global_position + Vector3(0.0, 1.0, 0.0))

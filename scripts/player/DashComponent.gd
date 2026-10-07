@@ -14,6 +14,7 @@ var charges: int
 var is_dashing: bool = false
 var direction: Vector3 = Vector3.ZERO
 var time_left: float = 0.0
+var elapsed: float = 0.0 # seconds since this dash began
 var recharge_left: float = 0.0
 
 
@@ -40,6 +41,7 @@ func try_dash(dash_direction: Vector3) -> bool:
 		recharge_left = dash_cooldown
 	direction = dash_direction.normalized()
 	time_left = dash_duration
+	elapsed = 0.0
 	is_dashing = true
 	dash_started.emit()
 	return true
@@ -47,6 +49,7 @@ func try_dash(dash_direction: Vector3) -> bool:
 
 func _physics_process(delta: float) -> void:
 	if is_dashing:
+		elapsed += delta
 		time_left -= delta
 		if time_left <= 0.0:
 			is_dashing = false

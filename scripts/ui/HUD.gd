@@ -85,6 +85,7 @@ func _ready() -> void:
 
 	dash = player.get_node("DashComponent")
 	_build_skill_bar(player)
+	_build_kata_bar(player)
 
 
 func _process(delta: float) -> void:
@@ -337,6 +338,22 @@ func _boss_fill_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.75, 0.1, 0.15)
 	return style
+
+
+# ---------------------------------------------------------------- Kata
+
+## OPENING > FLOW > FINISHER strip above the skill slots.
+func _build_kata_bar(player: Node) -> void:
+	var bar: Control = preload("res://scripts/ui/KataBar.gd").new()
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(bar)
+	move_child(bar, fade_rect.get_index())
+	bar.setup(player.get_node("KataComponent"))
+	bar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	bar.offset_left = -bar.custom_minimum_size.x * 0.5
+	bar.offset_right = bar.custom_minimum_size.x * 0.5
+	bar.offset_top = -150.0
+	bar.offset_bottom = -150.0 + bar.custom_minimum_size.y
 
 
 # ---------------------------------------------------------------- skill slots

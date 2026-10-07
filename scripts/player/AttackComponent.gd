@@ -7,6 +7,7 @@ extends Node3D
 
 @onready var aim: Node = $"../AimComponent"
 @onready var stats: Node = $"../StatsComponent"
+@onready var kata_events: Node = $"../KataEvents"
 @onready var swing_pivot: Node3D = $SwingPivot
 @onready var hitbox: Area3D = $SwingPivot/Hitbox
 @onready var blade: MeshInstance3D = $SwingPivot/Blade
@@ -19,6 +20,7 @@ var swing_tween: Tween
 func _ready() -> void:
 	blade.visible = false
 	hitbox.source = get_parent()
+	hitbox.kind = "light"
 	hitbox.set_active(false)
 
 
@@ -33,6 +35,7 @@ func _physics_process(delta: float) -> void:
 func start_attack() -> void:
 	cooldown_left = attack_cooldown / stats.get_stat("attack_speed")
 	hitbox.damage = stats.get_stat("attack_damage")
+	kata_events.light_attack.emit()
 	hitbox.set_active(true)
 	blade.visible = true
 	AudioManager.play_sfx("slash")

@@ -12,6 +12,8 @@ const CAMERA_YAW_DEGREES: float = 45.0
 # Layers: 1 = world, 4 = enemies. While dashing the player passes through enemies.
 const MASK_NORMAL: int = 5
 const MASK_DASHING: int = 1
+# A hit that arrives this soon after a dash began is a Perfect Dodge (a dash lasts 0.18 s).
+const PERFECT_DODGE_WINDOW: float = 0.10
 
 @onready var model: Node3D = $Model
 @onready var body_mesh: MeshInstance3D = $Model/Body
@@ -21,6 +23,8 @@ const MASK_DASHING: int = 1
 @onready var dash: Node = $DashComponent
 @onready var hurtbox: Area3D = $Hurtbox
 @onready var weapon: Node3D = $WeaponPivot
+@onready var kata_events: Node = $KataEvents
+@onready var kata: Node = $KataComponent
 
 var free_hits_left: int = 0 # hits still ignored in this room (Fox Mask)
 var free_hits_max: int = 0
@@ -38,6 +42,7 @@ func _ready() -> void:
 	for child in get_children():
 		if child is PlayerSkill:
 			skills.append(child)
+			child.activated.connect(func(): kata_events.skill_used.emit(child))
 	add_child(preload("res://scripts/player/CorruptionVfx.gd").new()) # purple wisps that grow with Corruption
 	dash.dash_started.connect(_on_dash_started)
 	dash.dash_finished.connect(_on_dash_finished)
@@ -126,14 +131,41 @@ func _get_skill_speed_multiplier() -> float:
 
 
 ## Called by CombatManager after every hit this player lands (the ultimate charges from it).
-func on_hit_dealt(target_health: Node) -> void:
+func on_hit_dealt(target_health: Node, info: Dictionary = {}) -> void:
 	var killed: bool = target_health != null and target_health.is_dead()
 	for skill in skills:
 		skill.on_player_hit_dealt(killed)
+	# Tell the Kata and the relics what happened.
+	info["killed"] = killed
+	info["from_behind"] = _is_behind(info.get("target"))
+	kata_events.hit_dealt.emit(info)
+	if info.get("crit", false):
+		kata_events.critical_hit.emit(info)
+	if killed:
+		kata_events.kill.emit(info)
+
+
+## True when the player is behind the target (the target looks away from him).
+func _is_behind(target: Node) -> bool:
+	var enemy := target as Node3D
+	if enemy == null:
+		return false
+	var to_player: Vector3 = global_position - enemy.global_position
+	to_player.y = 0.0
+	if to_player.length() < 0.01:
+		return false
+	var enemy_forward: Vector3 = enemy.global_transform.basis.z
+	enemy_forward.y = 0.0
+	return enemy_forward.normalized().dot(to_player.normalized()) < -0.2
 
 
 func _on_hit_received(damage: float, _source: Node) -> void:
-	if dash.is_invulnerable() or health.is_dead():
+	if health.is_dead():
+		return
+	if dash.is_invulnerable():
+		if dash.elapsed <= PERFECT_DODGE_WINDOW:
+			kata_events.perfect_dodge.emit(_source)
+			_show_floating_text("PERFECT", Color(0.5, 0.95, 1.0))
 		return
 	var damage_taken_multiplier: float = 1.0
 	for skill in skills:
@@ -165,6 +197,7 @@ func _on_room_changed(_index: int, _total: int) -> void:
 
 
 func _on_damaged(amount: float) -> void:
+	kata_events.damage_taken.emit(amount)
 	_show_floating_text(str(int(round(amount))), Color(1.0, 0.3, 0.3))
 	AudioManager.play_sfx("hurt")
 	VFX.hit_spark(global_position + Vector3(0.0, 1.0, 0.0), Color(1.0, 0.3, 0.25))
@@ -191,6 +224,7 @@ func _on_died() -> void:
 
 
 func _on_dash_started() -> void:
+	kata_events.dodge.emit()
 	AudioManager.play_sfx("dash")
 	VFX.dust(global_position)
 	ghost_timer = 0.0

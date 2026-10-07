@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scripts/player/AimComponent.gd" id="2_aim"]
 [ext_resource type="Script" path="res://scripts/player/AttackComponent.gd" id="3_attack"]
 [ext_resource type="Script" path="res://scripts/combat/Hitbox.gd" id="4_hitbox"]
+[ext_resource type="Script" path="res://scripts/player/kata/KataEvents.gd" id="30_kataevents"]
+[ext_resource type="Script" path="res://scripts/player/kata/KataComponent.gd" id="31_kata"]
 [ext_resource type="Script" path="res://scripts/combat/Hurtbox.gd" id="5_hurtbox"]
 [ext_resource type="Script" path="res://scripts/combat/HealthComponent.gd" id="6_health"]
 [ext_resource type="Script" path="res://scripts/player/DashComponent.gd" id="7_dash"]
@@ -92,6 +94,7 @@ collision_layer = 8
 collision_mask = 32
 monitorable = false
 script = ExtResource("4_hitbox")
+kind = "light"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPivot/SwingPivot/Hitbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.4)
@@ -111,6 +114,12 @@ team = "player"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 shape = SubResource("Shape_hurt")
+
+[node name="KataEvents" type="Node" parent="."]
+script = ExtResource("30_kataevents")
+
+[node name="KataComponent" type="Node" parent="."]
+script = ExtResource("31_kata")
 
 [node name="HeavySkill" parent="." instance=ExtResource("19_heavy")]
 

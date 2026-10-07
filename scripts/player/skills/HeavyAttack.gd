@@ -24,6 +24,7 @@ func _ready() -> void:
 	super._ready()
 	hitbox.source = player
 	hitbox.team = "player"
+	hitbox.kind = "heavy"
 	hitbox.set_active(false)
 	telegraph_material = _make_glow_material(Color(1.0, 0.7, 0.3, 0.25))
 	telegraph.material_override = telegraph_material
@@ -65,12 +66,17 @@ func _aim() -> void:
 func _begin_strike() -> void:
 	phase = Phase.STRIKE
 	phase_time = 0.0
-	hitbox.damage = player.stats.get_stat("attack_damage") * damage_multiplier
+	# If a Kata is running, this strike is its Finisher: the techniques may multiply the damage and add effects.
+	var context: Dictionary = player.kata.begin_finisher(self)
+	hitbox.damage = player.stats.get_stat("attack_damage") * damage_multiplier * context.damage_multiplier
 	hitbox.set_active(true)
+	player.kata_events.heavy_attack.emit()
 	telegraph.visible = false
 	AudioManager.play_sfx("boss_slash", -6.0)
-	VFX.slash_arc(player.global_position + Vector3(0.0, 0.9, 0.0), global_rotation.y, 3.4, 170.0, Color(1.0, 0.75, 0.4), 0.22)
-	VFX.shake(0.12, 0.15)
+	var finisher: bool = context.was_open
+	var arc_color: Color = Color(1.0, 0.3, 0.3) if finisher else Color(1.0, 0.75, 0.4)
+	VFX.slash_arc(player.global_position + Vector3(0.0, 0.9, 0.0), global_rotation.y, 4.0 if finisher else 3.4, 170.0, arc_color, 0.22)
+	VFX.shake(0.2 if finisher else 0.12, 0.2)
 
 
 func _end_strike() -> void:

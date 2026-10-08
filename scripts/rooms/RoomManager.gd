@@ -21,6 +21,8 @@ signal run_completed # the boss door was used after the last boss died; EndScree
 @export var default_mode: Resource
 ## The kinds of mini-boss (MiniBossVariant). Each biome of a run gets a different one while there are enough.
 @export var miniboss_variants: Array[Resource] = []
+## The kinds of master met in Duel rooms (also MiniBossVariant resources); picked like the mini-boss variants.
+@export var duel_variants: Array[Resource] = []
 ## 0 = new random run every time. Put a number here to replay the same run.
 @export var run_seed: int = 0
 
@@ -42,6 +44,8 @@ var rooms_done: int = 0
 var rooms_total: int = 0 # every required room of this biome (not the boss room, not the optional special rooms)
 var miniboss_variant: Resource # the variant of the mini-boss of the current biome
 var variant_bag: Array = [] # variants not used yet in this run
+var duel_variant: Resource # the master of the Duel room of the current biome
+var duel_bag: Array = []
 
 # Rooms the boss door does not wait for.
 const OPTIONAL_TYPES: Array = [RoomData.RoomType.DUEL, RoomData.RoomType.ARENA]
@@ -122,6 +126,7 @@ func _start_biome(index: int) -> void:
 		if cell != dungeon.boss and not OPTIONAL_TYPES.has(type):
 			rooms_total += 1
 	_pick_miniboss_variant(rng)
+	_pick_duel_variant(rng)
 
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
@@ -145,6 +150,16 @@ func _pick_miniboss_variant(rng: RandomNumberGenerator) -> void:
 	miniboss_variant = variant_bag[rng.randi() % variant_bag.size()]
 	variant_bag.erase(miniboss_variant)
 	print("Mini-boss of this biome: %s" % miniboss_variant.display_name)
+
+
+func _pick_duel_variant(rng: RandomNumberGenerator) -> void:
+	duel_variant = null
+	if duel_variants.is_empty():
+		return
+	if duel_bag.is_empty():
+		duel_bag = duel_variants.duplicate()
+	duel_variant = duel_bag[rng.randi() % duel_bag.size()]
+	duel_bag.erase(duel_variant)
 
 
 func _apply_biome_look() -> void:
@@ -259,7 +274,7 @@ func _on_room_cleared(cell: Vector2i) -> void:
 		_update_boss_lock()
 	map_changed.emit()
 	# Rooms without a fight give no gold and no free upgrade choice (not emitting room_cleared silences UpgradeManager).
-	var is_fight: bool = [RoomData.RoomType.COMBAT, RoomData.RoomType.ELITE, RoomData.RoomType.BOSS, RoomData.RoomType.MINIBOSS].has(type)
+	var is_fight: bool = [RoomData.RoomType.COMBAT, RoomData.RoomType.ELITE, RoomData.RoomType.BOSS, RoomData.RoomType.MINIBOSS, RoomData.RoomType.DUEL, RoomData.RoomType.ARENA].has(type)
 	if not is_fight:
 		return
 	_spawn_reward(data)

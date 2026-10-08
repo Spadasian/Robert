@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/rooms/RoomData.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/Room_Arena_01.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+id = "arena_01"
+display_name = "Blood Arena"
+room_type = 10
+scene = ExtResource("2_scene")
+difficulty = 3
+reward_gold = 20

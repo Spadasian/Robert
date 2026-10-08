@@ -44,6 +44,13 @@
 [ext_resource type="Resource" path="res://resources/variants/shadow_duelist.tres" id="mb_v2"]
 [ext_resource type="Resource" path="res://resources/variants/iron_warden.tres" id="mb_v3"]
 [ext_resource type="Resource" path="res://resources/variants/crimson_hunter.tres" id="mb_v4"]
+[ext_resource type="Resource" path="res://resources/rooms/Room_Duel_01.tres" id="duel_room"]
+[ext_resource type="Resource" path="res://resources/rooms/Room_Arena_01.tres" id="arena_room"]
+[ext_resource type="Resource" path="res://resources/variants/duel_iaido_master.tres" id="dv1"]
+[ext_resource type="Resource" path="res://resources/variants/duel_wind_dancer.tres" id="dv2"]
+[ext_resource type="Resource" path="res://resources/variants/duel_shuriken_sage.tres" id="dv3"]
+[ext_resource type="Resource" path="res://resources/variants/duel_stone_monk.tres" id="dv4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/OmenChoice.tscn" id="omen_choice"]
 [ext_resource type="PackedScene" path="res://scenes/ui/EndScreen.tscn" id="15_end"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="16_pause"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Treasure_01.tres" id="17_room"]
@@ -81,7 +88,8 @@ relic_pool = Array[Resource]([ExtResource("r_fox_mask"), ExtResource("r_black_pe
 
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("4_roommanager")
-room_pool = Array[Resource]([ExtResource("5_room"), ExtResource("6_room"), ExtResource("10_room"), ExtResource("11_room"), ExtResource("12_room"), ExtResource("13_room"), ExtResource("14_room"), ExtResource("17_room"), ExtResource("18_start"), ExtResource("mb_room")])
+room_pool = Array[Resource]([ExtResource("5_room"), ExtResource("6_room"), ExtResource("10_room"), ExtResource("11_room"), ExtResource("12_room"), ExtResource("13_room"), ExtResource("14_room"), ExtResource("17_room"), ExtResource("18_start"), ExtResource("mb_room"), ExtResource("duel_room"), ExtResource("arena_room")])
+duel_variants = Array[Resource]([ExtResource("dv1"), ExtResource("dv2"), ExtResource("dv3"), ExtResource("dv4")])
 miniboss_variants = Array[Resource]([ExtResource("mb_v1"), ExtResource("mb_v2"), ExtResource("mb_v3"), ExtResource("mb_v4")])
 default_mode = ExtResource("19_mode")
 
@@ -92,6 +100,8 @@ script = ExtResource("8_upgrademanager")
 upgrade_pool = Array[Resource]([ExtResource("u_blood_edge"), ExtResource("u_shadow_step"), ExtResource("u_iron_skin"), ExtResource("u_sakura_step"), ExtResource("u_executioner"), ExtResource("u_dark_breath"), ExtResource("u_swift_blade"), ExtResource("u_vital_spirit"), ExtResource("u_keen_edge"), ExtResource("u_crimson_meal")])
 
 [node name="TechniqueChoice" parent="." instance=ExtResource("t_choice")]
+
+[node name="OmenChoice" parent="." instance=ExtResource("omen_choice")]
 
 [node name="TechniqueManager" type="Node" parent="."]
 script = ExtResource("t_manager")

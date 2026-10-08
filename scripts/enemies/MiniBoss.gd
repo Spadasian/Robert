@@ -2,12 +2,15 @@ extends "res://scripts/enemies/Boss.gd"
 ## A mini-boss: the Boss.gd fight with one single phase, less health, and a MiniBossVariant that decides its name,
 ## look, speed and which attacks it uses. RoomManager picks the variant of the biome (miniboss_variant).
 
+## True for the master of a Duel room: it uses the duel variant of the biome instead of the mini-boss one.
+@export var duel: bool = false
+
 var variant: Resource
 
 
 func _ready() -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
-	variant = room_manager.miniboss_variant if room_manager else null
+	variant = (room_manager.duel_variant if duel else room_manager.miniboss_variant) if room_manager else null
 	if variant:
 		_apply_variant()
 	phase_two_ratio = 0.0 # a single phase

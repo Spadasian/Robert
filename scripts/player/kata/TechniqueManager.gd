@@ -31,20 +31,28 @@ func _ready() -> void:
 
 ## Techniques of the given categories that the player does not own. Categories that are still empty come first:
 ## when any of them has techniques left, only those are used.
-func get_choices(categories: Array, count: int) -> Array:
+func get_choices(categories: Array, count: int, add_master: bool = false) -> Array:
 	var empty_slots: Array = categories.filter(func(category): return not kata.slots.has(category))
 	var wanted: Array = empty_slots if not empty_slots.is_empty() else categories
 	var candidates: Array = technique_pool.filter(func(data): return data.category in wanted and not kata.has_technique(data.id))
 	candidates.shuffle()
-	return candidates.slice(0, count)
+	var choices: Array = candidates.slice(0, count)
+	if add_master:
+		# one card becomes a Master technique (a reward for a hard challenge), if the player has one left to find
+		var masters: Array = technique_pool.filter(func(data): return data.category == Category.MASTER and not kata.has_technique(data.id))
+		if not masters.is_empty():
+			if choices.size() >= count:
+				choices.pop_back()
+			choices.append(masters.pick_random())
+	return choices
 
 
 ## Shows the choice and equips the pick. Returns the technique taken (null if none was left or the player kept the Kata).
-func offer(categories: Array, count: int = 3) -> Resource:
+func offer(categories: Array, count: int = 3, add_master: bool = false) -> Resource:
 	while busy or _upgrade_choice_open():
 		await get_tree().process_frame
 	offer_pending = false
-	var choices: Array = get_choices(categories, count)
+	var choices: Array = get_choices(categories, count, add_master)
 	if choices.is_empty():
 		return null
 	busy = true

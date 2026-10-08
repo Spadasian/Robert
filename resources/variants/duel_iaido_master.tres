@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MiniBossVariant" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/MiniBossVariant.gd" id="1_variant"]
+
+[resource]
+script = ExtResource("1_variant")
+id = "duel_iaido_master"
+display_name = "Iaido Master"
+color = Color(0.85, 0.85, 0.95, 1)
+model_scale = 1.0
+health_multiplier = 1.0
+damage_multiplier = 1.15
+speed_multiplier = 1.15
+windup_multiplier = 0.75
+near_attacks = Array[int]([0, 1])
+far_attacks = Array[int]([1])
+description = "One draw, one cut: fast dashes."

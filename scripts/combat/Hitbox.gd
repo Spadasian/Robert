@@ -33,7 +33,7 @@ func _on_area_entered(area: Area3D) -> void:
 	# A projectile can outlive the enemy that shot it: then there is no attacker any more (null), the damage still counts.
 	var attacker: Node = source if is_instance_valid(source) else null
 	var target_health: Node = area.get_parent().get_node_or_null("HealthComponent")
-	var final_damage: float = CombatManager.calculate_damage(damage, attacker, target_health)
+	var final_damage: float = CombatManager.calculate_damage(damage, attacker, target_health, kind)
 	if team == "enemy": # later biomes hit harder
 		var run_manager := get_tree().get_first_node_in_group("run_manager")
 		if run_manager:
@@ -44,8 +44,10 @@ func _on_area_entered(area: Area3D) -> void:
 		was_crit = true
 	if execute_below > 0.0 and target_health and target_health.current_health <= target_health.max_health * execute_below:
 		final_damage = maxf(final_damage, target_health.current_health)
+	var health_before: float = target_health.current_health if target_health else 0.0
 	area.receive_hit(final_damage, attacker)
-	var info: Dictionary = {"target": area.get_parent(), "damage": final_damage, "crit": was_crit, "kind": kind, "hit_count": already_hit.size()}
+	var info: Dictionary = {"target": area.get_parent(), "damage": final_damage, "crit": was_crit, "kind": kind, "hit_count": already_hit.size(),
+		"overkill": maxf(final_damage - health_before, 0.0)}
 	CombatManager.after_hit(attacker, target_health, info)
 	if team == "player": # the player's hits get a thud and sparks (hits on the player: see Player._on_damaged)
 		AudioManager.play_sfx("hit")

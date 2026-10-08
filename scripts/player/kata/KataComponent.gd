@@ -100,6 +100,15 @@ func _on_event(event: String, payload: Dictionary) -> void:
 		behavior.on_event(self, event, payload)
 
 
+## Opens the Kata without its Opening (Second Wind, Echo Opening, Shrine Bell). Does nothing while it sleeps.
+func force_open(initial_flow: float = 0.0) -> void:
+	if not is_awake:
+		return
+	if not is_open:
+		_open()
+	add_flow(initial_flow)
+
+
 func _open() -> void:
 	is_open = true
 	flow_value = 0.0
@@ -127,6 +136,9 @@ func add_flow(amount: float) -> void:
 	if not behaviors.has(Category.FLOW):
 		idle_time = 0.0
 		return # the chain: without a Flow technique the bar does not grow
+	var stats: Node = _stats()
+	if stats:
+		amount *= stats.get_stat("flow_gain") if amount > 0.0 else stats.get_stat("flow_loss")
 	flow_value = clampf(flow_value + amount, 0.0, flow_cap)
 	idle_time = 0.0
 	kata_changed.emit()
@@ -153,13 +165,23 @@ func begin_finisher(heavy: Node) -> Dictionary:
 	return context
 
 
+func _stats() -> Node:
+	return get_parent().get_node_or_null("StatsComponent")
+
+
+## Seconds without activity before the running Kata closes (Lingering Mist adds to it).
+func get_open_timeout() -> float:
+	var stats: Node = _stats()
+	return open_timeout + (stats.get_stat("kata_timeout_bonus") if stats else 0.0)
+
+
 func _physics_process(delta: float) -> void:
 	if not is_open:
 		return
 	idle_time += delta
 	for behavior in _active_behaviors():
 		behavior.on_tick(self, delta)
-	if idle_time >= open_timeout:
+	if idle_time >= get_open_timeout():
 		close("timeout")
 	else:
 		kata_changed.emit() # the timer line on the HUD moves

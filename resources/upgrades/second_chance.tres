@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/SecondChance.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "second_chance"
+display_name = "Second Chance"
+description = "Once per run, a deadly hit leaves you with 30% HP"
+rarity = 2
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"ratio": 0.3
+}
+build = "Survival"

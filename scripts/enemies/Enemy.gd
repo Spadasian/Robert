@@ -15,6 +15,7 @@ const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/ui/DamageNumber.t
 
 var body_material: StandardMaterial3D
 var base_color: Color
+var status: EnemyStatus = EnemyStatus.new(self) # bleed, stun, slow, mark
 
 
 func _ready() -> void:
@@ -31,7 +32,29 @@ func _ready() -> void:
 
 
 func _on_hit_received(damage: float, _source: Node) -> void:
-	health.take_damage(damage)
+	health.take_damage(damage * status.damage_taken_factor())
+
+
+## How fast time runs for this enemy: the Perfect Dodge slow, a stun, an individual slow. Enemy scripts multiply
+## their delta by this at the start of _physics_process and call slide() instead of move_and_slide().
+func time_scale() -> float:
+	return EnemyTime.get_scale() * status.speed_factor()
+
+
+## move_and_slide() at the speed of this enemy's own time (the stored velocity is not changed).
+func slide() -> void:
+	var factor: float = time_scale()
+	if factor >= 0.999:
+		move_and_slide()
+		return
+	var original: Vector3 = velocity
+	velocity = original * factor
+	move_and_slide()
+	velocity = original
+
+
+func can_be_stunned() -> bool:
+	return true
 
 
 ## The game is flat. An enemy pushed off the floor by an overlapping body is put back (see Player.gd).
@@ -41,8 +64,9 @@ func lock_to_floor() -> void:
 		global_position.y = 0.0
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	lock_to_floor()
+	status.tick(delta)
 
 
 func _on_damaged(amount: float) -> void:

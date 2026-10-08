@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "execute_threshold"
+operation = 0
+value = 0.1
+
+[sub_resource type="Resource" id="Effect_2"]
+script = ExtResource("2_effect")
+stat = "execute_bonus"
+operation = 0
+value = 0.25
+
+[resource]
+script = ExtResource("1_data")
+id = "killing_intent"
+display_name = "Killing Intent"
+description = "Enemies below 40% HP (instead of 30%) count as wounded, and you do +25% damage to them"
+rarity = 1
+effects = Array[Resource]([SubResource("Effect_1"), SubResource("Effect_2")])
+build = "Crit & Execution"

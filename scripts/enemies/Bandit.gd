@@ -39,6 +39,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if health.is_dead() or target == null:
 		return
+	delta *= time_scale() # Perfect Dodge slow, stun...
 	state_time += delta
 	match state:
 		State.CHASE:
@@ -49,7 +50,7 @@ func _physics_process(delta: float) -> void:
 			_attack()
 		State.RECOVER:
 			_recover(delta)
-	move_and_slide()
+	slide()
 	lock_to_floor()
 
 

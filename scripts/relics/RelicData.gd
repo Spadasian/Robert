@@ -11,3 +11,5 @@ extends Resource
 @export var icon: Texture2D
 @export var color: Color = Color(1.0, 0.85, 0.4) # border of its tile in the HUD and its pedestal
 @export var effects: Array[Resource] = [] # UpgradeEffect resources
+@export var behavior: Script # a special rule (see RuleBehavior); empty for relics that only change stats
+@export var params: Dictionary = {}

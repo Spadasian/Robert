@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/LastStand.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "last_stand"
+display_name = "Last Stand"
+description = "Below 30% HP: +25% damage and -20% damage taken"
+rarity = 1
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"threshold": 0.3,
+"damage": 0.25,
+"defense": 0.2
+}
+build = "Survival"

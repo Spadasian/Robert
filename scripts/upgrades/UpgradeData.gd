@@ -18,6 +18,10 @@ const RARITY_NAMES: Array[String] = ["Common", "Rare", "Epic", "Legendary", "Cur
 @export var icon: Texture2D
 @export var rarity: Rarity = Rarity.COMMON
 @export var effects: Array[Resource] = [] # UpgradeEffect resources
+## A special rule (see RuleBehavior) with its numbers; empty for upgrades that only change stats.
+@export var behavior: Script
+@export var params: Dictionary = {}
+@export var build: String = "" # which style of play it belongs to (for the lists, not used in the game)
 
 
 func get_weight() -> float:

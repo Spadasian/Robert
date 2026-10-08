@@ -43,7 +43,7 @@ func _draw() -> void:
 	draw_rect(flow_rect, flow.color if open else Color(0.4, 0.4, 0.5, 0.8), false, 2.0)
 	_draw_label(flow.display_name, flow_rect, font, open)
 	if open:
-		var left: float = clampf(1.0 - kata.idle_time / kata.open_timeout, 0.0, 1.0)
+		var left: float = clampf(1.0 - kata.idle_time / kata.get_open_timeout(), 0.0, 1.0)
 		draw_rect(Rect2(flow_rect.position + Vector2(0.0, BOX.y + 5.0), Vector2(BOX.x * left, 3.0)), Color(1, 1, 1, 0.6))
 	# 3. Finisher
 	var ready_glow: float = kata.flow_value / kata.flow_cap if open else 0.0

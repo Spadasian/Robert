@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/FinishThem.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "finish_them"
+display_name = "Finish Them"
+description = "Heavy does +30% damage to enemies below 40% HP"
+rarity = 1
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"bonus": 0.3,
+"threshold": 0.4
+}
+build = "Crit & Execution"

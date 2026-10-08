@@ -20,6 +20,7 @@ var direction: Vector3 = Vector3.FORWARD
 var telegraph_material: StandardMaterial3D
 var shape_node: CollisionShape3D
 var shape_base_position: Vector3
+var telegraph_base_z: float = 1.7
 
 
 func _ready() -> void:
@@ -30,6 +31,7 @@ func _ready() -> void:
 	hitbox.set_active(false)
 	shape_node = hitbox.get_node("CollisionShape3D")
 	shape_base_position = shape_node.position
+	telegraph_base_z = telegraph.position.z
 	telegraph_material = _make_glow_material(Color(1.0, 0.7, 0.3, 0.25))
 	telegraph.material_override = telegraph_material
 	telegraph.visible = false
@@ -39,6 +41,9 @@ func _start() -> void:
 	phase = Phase.WINDUP
 	phase_time = 0.0
 	telegraph_material.albedo_color.a = 0.25
+	var reach: float = player.stats.get_stat("heavy_range") # the red zone grows with the upgrades too
+	telegraph.scale = Vector3(reach, 1.0, reach)
+	telegraph.position.z = telegraph_base_z * reach
 	telegraph.visible = true
 	AudioManager.play_sfx("iaijutsu_charge", -10.0)
 	_aim()
@@ -72,7 +77,7 @@ func _begin_strike() -> void:
 	phase_time = 0.0
 	# If a Kata is running, this strike is its Finisher: the techniques may multiply the damage and add effects.
 	var context: Dictionary = player.kata.begin_finisher(self)
-	hitbox.damage = player.stats.get_stat("attack_damage") * damage_multiplier * context.damage_multiplier
+	hitbox.damage = player.stats.get_stat("attack_damage") * damage_multiplier * context.damage_multiplier * player.stats.get_stat("heavy_damage")
 	_apply_finisher_shape(context)
 	hitbox.force_crit = context.get("force_crit", false)
 	hitbox.execute_below = context.get("execute_below", 0.0)
@@ -91,7 +96,7 @@ func _begin_strike() -> void:
 
 ## Finisher techniques can widen the slash ("scale") or turn it into a circle around the player ("spin").
 func _apply_finisher_shape(context: Dictionary) -> void:
-	var size: float = context.get("scale", 1.0)
+	var size: float = context.get("scale", 1.0) * player.stats.get_stat("heavy_range")
 	hitbox.scale = Vector3(size, 1.0, size)
 	shape_node.position = Vector3(shape_base_position.x, shape_base_position.y, 0.0 if context.get("spin", false) else shape_base_position.z)
 
@@ -129,6 +134,10 @@ func _cancel() -> void:
 	hitbox.set_active(false)
 	_reset_finisher_shape()
 	telegraph.visible = false
+
+
+func get_cooldown_multiplier() -> float:
+	return player.stats.get_stat("heavy_cooldown")
 
 
 func locks_movement() -> bool:

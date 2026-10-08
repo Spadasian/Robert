@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/combat/Hitbox.gd" id="4_hitbox"]
 [ext_resource type="Script" path="res://scripts/player/kata/KataEvents.gd" id="30_kataevents"]
 [ext_resource type="Script" path="res://scripts/player/kata/KataComponent.gd" id="31_kata"]
+[ext_resource type="Script" path="res://scripts/rules/RuleHost.gd" id="32_rules"]
 [ext_resource type="Script" path="res://scripts/combat/Hurtbox.gd" id="5_hurtbox"]
 [ext_resource type="Script" path="res://scripts/combat/HealthComponent.gd" id="6_health"]
 [ext_resource type="Script" path="res://scripts/player/DashComponent.gd" id="7_dash"]
@@ -128,3 +129,6 @@ script = ExtResource("31_kata")
 [node name="KaeshiSkill" parent="." instance=ExtResource("21_kaeshi")]
 
 [node name="UltimateSkill" parent="." instance=ExtResource("22_ultimate")]
+
+[node name="RuleHost" type="Node" parent="."]
+script = ExtResource("32_rules")

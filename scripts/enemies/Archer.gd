@@ -43,6 +43,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if health.is_dead() or target == null:
 		return
+	delta *= time_scale() # Perfect Dodge slow, stun...
 	state_time += delta
 	strafe_timer -= delta
 	match state:
@@ -52,7 +53,7 @@ func _physics_process(delta: float) -> void:
 			_aim(delta)
 		State.RECOVER:
 			_recover(delta)
-	move_and_slide()
+	slide()
 	lock_to_floor()
 	if state == State.MOVE and is_on_wall():
 		_flip_strafe() # stuck against a wall or crate: go around the other way

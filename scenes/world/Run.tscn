@@ -14,17 +14,8 @@
 [ext_resource type="Resource" path="res://resources/rooms/Room_Boss_01.tres" id="14_room"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_Start_01.tres" id="18_start"]
 [ext_resource type="Resource" path="res://resources/modes/standard.tres" id="19_mode"]
-[ext_resource type="Resource" path="res://resources/upgrades/blood_edge.tres" id="u_blood_edge"]
-[ext_resource type="Resource" path="res://resources/upgrades/shadow_step.tres" id="u_shadow_step"]
-[ext_resource type="Resource" path="res://resources/upgrades/iron_skin.tres" id="u_iron_skin"]
-[ext_resource type="Resource" path="res://resources/upgrades/sakura_step.tres" id="u_sakura_step"]
-[ext_resource type="Resource" path="res://resources/upgrades/executioner.tres" id="u_executioner"]
-[ext_resource type="Resource" path="res://resources/upgrades/dark_breath.tres" id="u_dark_breath"]
-[ext_resource type="Resource" path="res://resources/upgrades/swift_blade.tres" id="u_swift_blade"]
-[ext_resource type="Resource" path="res://resources/upgrades/vital_spirit.tres" id="u_vital_spirit"]
-[ext_resource type="Resource" path="res://resources/upgrades/keen_edge.tres" id="u_keen_edge"]
-[ext_resource type="Resource" path="res://resources/upgrades/crimson_meal.tres" id="u_crimson_meal"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeManager.gd" id="8_upgrademanager"]
+[ext_resource type="Resource" path="res://resources/upgrades/_pool.tres" id="u_pool"]
 [ext_resource type="PackedScene" path="res://scenes/ui/UpgradeChoice.tscn" id="9_choice"]
 [ext_resource type="Resource" path="res://resources/techniques/quick_draw.tres" id="t_quick_draw"]
 [ext_resource type="Resource" path="res://resources/techniques/riposte_step.tres" id="t_riposte_step"]
@@ -97,7 +88,7 @@ default_mode = ExtResource("19_mode")
 
 [node name="UpgradeManager" type="Node" parent="."]
 script = ExtResource("8_upgrademanager")
-upgrade_pool = Array[Resource]([ExtResource("u_blood_edge"), ExtResource("u_shadow_step"), ExtResource("u_iron_skin"), ExtResource("u_sakura_step"), ExtResource("u_executioner"), ExtResource("u_dark_breath"), ExtResource("u_swift_blade"), ExtResource("u_vital_spirit"), ExtResource("u_keen_edge"), ExtResource("u_crimson_meal")])
+pool_resource = ExtResource("u_pool")
 
 [node name="TechniqueChoice" parent="." instance=ExtResource("t_choice")]
 

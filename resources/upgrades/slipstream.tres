@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/Slipstream.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "slipstream"
+display_name = "Slipstream"
+description = "After a dash you move 20% faster for 2 s"
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"bonus": 0.2,
+"time": 2.2
+}
+build = "Dodge & Counter"

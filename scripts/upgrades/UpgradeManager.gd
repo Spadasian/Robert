@@ -3,6 +3,8 @@ extends Node
 ## so new upgrades are just new .tres files added to the list.
 
 @export var upgrade_pool: Array[Resource] = []
+## An UpgradePool resource (written by tools/content/generate_upgrades.py); when set it fills upgrade_pool.
+@export var pool_resource: Resource
 
 @onready var choice_ui: Node = $"../UpgradeChoice"
 
@@ -16,6 +18,8 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	if pool_resource != null:
+		upgrade_pool = pool_resource.upgrades.duplicate()
 	var player := get_tree().get_first_node_in_group("player")
 	if player:
 		stats = player.get_node("StatsComponent")
@@ -29,6 +33,23 @@ func _ready() -> void:
 		room_manager.miniboss_defeated.connect(process_pending_levels)
 		room_manager.boss_defeated.connect(func(_final: bool): process_pending_levels())
 		room_manager.room_loaded.connect(func(_room: Node): process_pending_levels())
+
+
+## Rerolls the player can still use (stat "rerolls" minus the ones already used).
+func rerolls_left() -> int:
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	var used: int = run_manager.rerolls_used if run_manager else 0
+	return maxi(int(stats.get_stat("rerolls")) - used, 0)
+
+
+## Uses one reroll and returns new cards (empty if none is left).
+func reroll(count: int) -> Array:
+	if rerolls_left() <= 0:
+		return []
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.rerolls_used += 1
+	return get_random_choices(count)
 
 
 ## Random upgrades the player does not own yet, picked by rarity weight, no duplicates.
@@ -54,6 +75,9 @@ func get_random_choices(count: int) -> Array:
 
 func apply_upgrade(upgrade: Resource) -> void:
 	stats.add_upgrade(upgrade)
+	var rules: Node = stats.get_parent().get_node_or_null("RuleHost")
+	if rules:
+		rules.add_behavior(upgrade)
 
 
 ## Each level up gives one upgrade choice (1 of 3). It is shown between fights: while enemies are alive the level ups
@@ -72,14 +96,14 @@ func process_pending_levels() -> void:
 			await get_tree().process_frame
 			continue
 		run_manager.pending_levels -= 1
-		var choices: Array = get_random_choices(3)
+		var choices: Array = get_random_choices(int(stats.get_stat("choice_count")))
 		if choices.is_empty():
 			continue # every upgrade is owned: the level is still gained
 		var hud := get_tree().get_first_node_in_group("hud")
 		if hud:
 			hud.show_message("LEVEL %d" % (run_manager.level - run_manager.pending_levels), 1.5)
 		is_choosing = true
-		var chosen: Resource = await choice_ui.choose(choices)
+		var chosen: Resource = await choice_ui.choose(choices, self)
 		is_choosing = false
 		apply_upgrade(chosen)
 		if hud:

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/Deadeye.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "deadeye"
+display_name = "Deadeye"
+description = "Your first hit on each enemy has +15% critical chance"
+rarity = 2
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"bonus": 0.15
+}
+build = "Crit & Execution"

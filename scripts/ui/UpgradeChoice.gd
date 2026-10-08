@@ -7,20 +7,17 @@ signal upgrade_chosen(upgrade: Resource)
 @onready var card_row: HBoxContainer = $Center/VBox/CardRow
 
 var current_choices: Array = []
+var manager: Node # UpgradeManager: gives rerolls (optional)
+var reroll_button: Button
 
 
 func _ready() -> void:
 	visible = false
 
 
-func choose(choices: Array) -> Resource:
-	current_choices = choices
-	for old_card in card_row.get_children():
-		card_row.remove_child(old_card)
-		old_card.queue_free()
-	for index in choices.size():
-		card_row.add_child(_make_card(choices[index], index))
-
+func choose(choices: Array, upgrade_manager: Node = null) -> Resource:
+	manager = upgrade_manager
+	_show_cards(choices)
 	visible = true
 	get_tree().paused = true
 	var chosen: Resource = await upgrade_chosen
@@ -30,8 +27,43 @@ func choose(choices: Array) -> Resource:
 	return chosen
 
 
+func _show_cards(choices: Array) -> void:
+	current_choices = choices
+	for old_card in card_row.get_children():
+		card_row.remove_child(old_card)
+		old_card.queue_free()
+	for index in choices.size():
+		card_row.add_child(_make_card(choices[index], index))
+	_refresh_reroll_button()
+
+
+func _refresh_reroll_button() -> void:
+	var left: int = manager.rerolls_left() if manager else 0
+	if reroll_button == null:
+		reroll_button = Button.new()
+		reroll_button.custom_minimum_size = Vector2(260, 44)
+		reroll_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		reroll_button.pressed.connect(_reroll)
+		card_row.get_parent().add_child(reroll_button)
+	reroll_button.visible = left > 0
+	reroll_button.text = "Reroll  [R]   (%d left)" % left
+
+
+func _reroll() -> void:
+	if not visible or manager == null:
+		return
+	var fresh: Array = manager.reroll(current_choices.size())
+	if not fresh.is_empty():
+		AudioManager.play_sfx("upgrade")
+		_show_cards(fresh)
+
+
 func _input(event: InputEvent) -> void:
 	if not visible or not (event is InputEventKey) or not event.pressed or event.echo:
+		return
+	if event.keycode == KEY_R:
+		_reroll()
+		get_viewport().set_input_as_handled()
 		return
 	var index: int = event.keycode - KEY_1
 	if index >= 0 and index < current_choices.size():

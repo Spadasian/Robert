@@ -1,16 +1,18 @@
-[gd_resource type="Resource" script_class="UpgradeData" format=3 uid="uid://buxlpgilxg0qa"]
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
 
-[ext_resource type="Script" uid="uid://jbb3utsqamcl" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
-[ext_resource type="Script" uid="uid://c3o2gkau1kb4i" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
 
 [sub_resource type="Resource" id="Effect_1"]
 script = ExtResource("2_effect")
 stat = "max_health"
-value = 25
+operation = 0
+value = 20.0
 
 [resource]
 script = ExtResource("1_data")
 id = "vital_spirit"
 display_name = "Vital Spirit"
-description = "+25 max HP"
+description = "+20 max HP"
 effects = Array[Resource]([SubResource("Effect_1")])
+build = "Survival"

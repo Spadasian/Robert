@@ -89,6 +89,7 @@ func _ready() -> void:
 	_build_skill_bar(player)
 	_build_kata_bar(player)
 	_build_xp_bar()
+	player.get_node("RuleHost").shield_changed.connect(_on_shield_changed)
 
 
 func _process(delta: float) -> void:
@@ -100,11 +101,28 @@ func _process(delta: float) -> void:
 
 # ---------------------------------------------------------------- health
 
+var last_health: Array = [0.0, 1.0]
+var shield_amount: float = 0.0
+
+
+func _hp_text() -> String:
+	var text := "%d / %d" % [int(last_health[0]), int(last_health[1])]
+	if shield_amount > 0.0:
+		text += "  (+%d shield)" % int(ceil(shield_amount))
+	return text
+
+
+func _on_shield_changed(value: float) -> void:
+	shield_amount = value
+	hp_label.text = _hp_text()
+
+
 func _on_health_changed(current: float, maximum: float) -> void:
 	hp_bar.max_value = maximum
 	hp_trail.max_value = maximum
 	hp_bar.value = current
-	hp_label.text = "%d / %d" % [int(current), int(maximum)]
+	last_health = [current, maximum]
+	hp_label.text = _hp_text()
 	health_ratio = current / maxf(maximum, 1.0)
 	if trail_tween:
 		trail_tween.kill()

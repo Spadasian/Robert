@@ -1,17 +1,19 @@
-[gd_resource type="Resource" script_class="UpgradeData" format=3 uid="uid://tvbf237buijo"]
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
 
-[ext_resource type="Script" uid="uid://jbb3utsqamcl" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
-[ext_resource type="Script" uid="uid://c3o2gkau1kb4i" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
 
 [sub_resource type="Resource" id="Effect_1"]
 script = ExtResource("2_effect")
 stat = "corruption_on_hit"
-value = 3
+operation = 0
+value = 3.0
 
 [resource]
 script = ExtResource("1_data")
 id = "dark_breath"
 display_name = "Dark Breath"
-description = "Each hit adds 3 Corruption"
+description = "Each kill adds 3 Corruption"
 rarity = 2
 effects = Array[Resource]([SubResource("Effect_1")])
+build = "Corruption"

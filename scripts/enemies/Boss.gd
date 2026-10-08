@@ -129,6 +129,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if health.is_dead() or target == null:
 		return
+	delta *= time_scale() # Perfect Dodge slow, stun...
 	state_time += delta
 	match state:
 		State.INTRO:
@@ -146,7 +147,7 @@ func _physics_process(delta: float) -> void:
 			_recover(delta)
 		State.TRANSITION:
 			_transition(delta)
-	move_and_slide()
+	slide()
 	lock_to_floor()
 
 
@@ -378,6 +379,10 @@ func _transition(delta: float) -> void:
 
 
 ## No damage while it introduces itself or changes phase.
+func can_be_stunned() -> bool:
+	return false
+
+
 func _on_hit_received(damage: float, source: Node) -> void:
 	if state == State.INTRO or state == State.TRANSITION:
 		return

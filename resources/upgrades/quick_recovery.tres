@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/QuickRecovery.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "quick_recovery"
+display_name = "Quick Recovery"
+description = "Each hit you land recharges your dash by 0.2 s"
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"seconds": 0.2
+}
+build = "Dodge & Counter"

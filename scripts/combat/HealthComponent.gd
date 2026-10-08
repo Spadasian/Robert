@@ -40,6 +40,12 @@ func take_damage(amount: float) -> void:
 		died.emit()
 
 
+## Sets the health directly (a life saver such as Second Chance uses it).
+func set_current(value: float) -> void:
+	current_health = clampf(value, 0.0, max_health)
+	health_changed.emit(current_health, max_health)
+
+
 func heal(amount: float) -> void:
 	if is_dead():
 		return

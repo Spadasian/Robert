@@ -10,16 +10,24 @@ const LOW_HEALTH_RATIO: float = 0.3
 static var last_hit_was_crit: bool = false
 
 
-static func calculate_damage(base_damage: float, attacker: Node, target_health: Node) -> float:
+static func calculate_damage(base_damage: float, attacker: Node, target_health: Node, kind: String = "") -> float:
 	last_hit_was_crit = false
 	var stats := _get_stats(attacker)
 	if stats == null:
 		return base_damage
+	var rules: Node = attacker.get_node_or_null("RuleHost")
+	var target: Node = target_health.get_parent() if target_health else null
 	var damage: float = base_damage
-	if randf() < stats.get_stat("crit_chance"):
-		damage *= CRIT_MULTIPLIER
+	if rules:
+		if rules.executes(kind, target_health):
+			last_hit_was_crit = false
+			return maxf(target_health.current_health, damage) # a rule kills it outright (Death Mark)
+		damage *= rules.damage_multiplier(kind, target_health)
+	var crit_chance: float = stats.get_stat("crit_chance") + (rules.crit_chance_bonus(kind, target) if rules else 0.0)
+	if (rules and rules.forced_crit(kind, target)) or randf() < crit_chance:
+		damage *= CRIT_MULTIPLIER + stats.get_stat("crit_damage")
 		last_hit_was_crit = true
-	if target_health and target_health.current_health <= target_health.max_health * LOW_HEALTH_RATIO:
+	if target_health and target_health.current_health <= target_health.max_health * (LOW_HEALTH_RATIO + stats.get_stat("execute_threshold")):
 		damage *= 1.0 + stats.get_stat("execute_bonus")
 	return damage
 
@@ -31,7 +39,7 @@ static func after_hit(attacker: Node, target_health: Node, info: Dictionary = {}
 	if stats == null:
 		return
 	var corruption_gain: float = stats.get_stat("corruption_on_hit")
-	if corruption_gain > 0.0:
+	if corruption_gain > 0.0 and target_health and target_health.is_dead(): # Dark Breath: per kill
 		var corruption := attacker.get_node_or_null("CorruptionComponent")
 		if corruption:
 			corruption.add_corruption(corruption_gain)

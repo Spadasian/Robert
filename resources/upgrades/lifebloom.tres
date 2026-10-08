@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/Lifebloom.gd" id="3_behavior"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "max_health"
+operation = 0
+value = 15.0
+
+[resource]
+script = ExtResource("1_data")
+id = "lifebloom"
+display_name = "Lifebloom"
+description = "+15 max HP and heal 20 HP on every level up"
+rarity = 1
+effects = Array[Resource]([SubResource("Effect_1")])
+behavior = ExtResource("3_behavior")
+params = {
+"heal": 20.0
+}
+build = "Survival"

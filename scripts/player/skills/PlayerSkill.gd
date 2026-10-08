@@ -14,6 +14,7 @@ signal finished
 @export var cooldown: float = 6.0
 
 var cooldown_left: float = 0.0
+var current_cooldown: float = 0.0 # the cooldown of the last use, after upgrades (the HUD cover uses it)
 var is_active: bool = false
 var player: CharacterBody3D
 
@@ -45,10 +46,16 @@ func try_activate() -> bool:
 	if not can_activate():
 		return false
 	is_active = true
-	cooldown_left = cooldown
+	current_cooldown = cooldown * get_cooldown_multiplier()
+	cooldown_left = current_cooldown
 	activated.emit()
 	_start()
 	return true
+
+
+## Upgrades shorten the cooldown (Skill Haste for Iaijutsu and Kaeshi; the Heavy and the ultimate override this).
+func get_cooldown_multiplier() -> float:
+	return player.stats.get_stat("skill_cooldown") if player else 1.0
 
 
 func finish() -> void:
@@ -100,9 +107,9 @@ func on_player_hit_dealt(_target_killed: bool) -> void:
 
 ## 0 = ready, 1 = just used / empty. The HUD draws a cover of this height over the slot.
 func get_unavailable_ratio() -> float:
-	if cooldown <= 0.0:
+	if current_cooldown <= 0.0:
 		return 0.0
-	return clampf(cooldown_left / cooldown, 0.0, 1.0)
+	return clampf(cooldown_left / current_cooldown, 0.0, 1.0)
 
 
 func get_status_text() -> String:

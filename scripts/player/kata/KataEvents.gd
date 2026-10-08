@@ -14,3 +14,4 @@ signal dodge # a dash started
 signal perfect_dodge(source: Node) # a hit arrived just after a dash started: the dash made it miss
 signal damage_taken(amount: float)
 signal skill_used(skill: Node)
+signal bleed_tick(enemy: Node, damage: float) # an enemy lost health to bleeding

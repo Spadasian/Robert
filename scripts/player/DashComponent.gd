@@ -11,6 +11,8 @@ signal dash_finished
 @export var max_charges: int = 1
 
 var charges: int
+@onready var base_speed: float = dash_speed
+@onready var base_cooldown: float = dash_cooldown
 var is_dashing: bool = false
 var direction: Vector3 = Vector3.ZERO
 var time_left: float = 0.0
@@ -20,6 +22,18 @@ var recharge_left: float = 0.0
 
 func _ready() -> void:
 	charges = max_charges
+
+
+## Dash upgrades (stats dash_recharge, dash_distance). Called by Player whenever the stats change.
+func apply_stats(stats: Node) -> void:
+	dash_cooldown = base_cooldown / maxf(stats.get_stat("dash_recharge"), 0.1)
+	dash_speed = base_speed * stats.get_stat("dash_distance")
+
+
+## Takes time off the current recharge (Quick Recovery).
+func reduce_recharge(seconds: float) -> void:
+	if charges < max_charges:
+		recharge_left = maxf(recharge_left - seconds, 0.0)
 
 
 func set_max_charges(new_max: int) -> void:

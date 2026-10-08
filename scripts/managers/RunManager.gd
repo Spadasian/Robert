@@ -30,6 +30,7 @@ var relics: Array = [] # RelicData found this run
 var stats: Node # the player's StatsComponent
 var xp: int = 0
 var level: int = 1
+var rerolls_used: int = 0
 var pending_levels: int = 0 # level ups whose upgrade choice was not shown yet (UpgradeManager shows them between fights)
 
 
@@ -73,6 +74,9 @@ func add_relic(relic: Resource) -> void:
 	relics.append(relic)
 	for effect in relic.effects:
 		stats.add_modifier(effect)
+	var rules: Node = stats.get_parent().get_node_or_null("RuleHost") if stats else null
+	if rules:
+		rules.add_behavior(relic)
 	relics_changed.emit()
 
 
@@ -96,6 +100,8 @@ func xp_to_next() -> int:
 func add_xp(amount: int) -> void:
 	if amount <= 0:
 		return
+	if stats:
+		amount = roundi(amount * stats.get_stat("xp_gain"))
 	xp += amount
 	var leveled: bool = false
 	while xp >= xp_to_next():

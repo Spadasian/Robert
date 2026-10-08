@@ -6,6 +6,8 @@ extends "res://scripts/combat/Hitbox.gd"
 @export var speed: float = 13.0
 @export var lifetime: float = 3.0
 @export var spin_speed: float = 0.0 # radians per second, used by shurikens
+## A piercing projectile (Gale Slash, Combo Spark) keeps flying after hitting an enemy.
+@export var pierce: bool = false
 
 @onready var visual: Node3D = get_node_or_null("Visual")
 
@@ -29,6 +31,8 @@ func launch(from_position: Vector3, move_direction: Vector3) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if team == "enemy":
+		delta *= EnemyTime.get_scale() # slowed by a Perfect Dodge like the enemies
 	var step: Vector3 = direction * speed * delta
 	# A ray along the path this frame: walls and crates stop the projectile even if the Area3D
 	# does not report them (Jolt areas ignore static bodies unless a project setting is on).
@@ -47,7 +51,7 @@ func _physics_process(delta: float) -> void:
 func _on_area_entered(area: Area3D) -> void:
 	var hits_before: int = already_hit.size()
 	super(area)
-	if already_hit.size() > hits_before:
+	if already_hit.size() > hits_before and not pierce:
 		queue_free() # it hit something, it is used up
 
 

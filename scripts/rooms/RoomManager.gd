@@ -12,6 +12,7 @@ signal room_loaded(room: Node)
 signal room_changed(index: int, total: int) # a room was entered: index = rooms cleared, total = rooms before the boss
 signal map_changed # something the minimap shows changed (a room entered or cleared, a new biome)
 signal room_cleared
+signal fight_room_cleared(room_type: int) # any fight room was cleared (also mini-boss, boss, Duel, Arena)
 signal miniboss_defeated # the mini-boss of the biome fell (TechniqueManager reacts: it teaches an Opening or Flow)
 signal boss_defeated(is_final: bool) # the boss of a biome fell; is_final = it was the last biome
 signal run_completed # the boss door was used after the last boss died; EndScreen shows the victory
@@ -278,6 +279,7 @@ func _on_room_cleared(cell: Vector2i) -> void:
 	if not is_fight:
 		return
 	_spawn_reward(data)
+	fight_room_cleared.emit(type)
 	AudioManager.play_sfx("room_clear")
 	var is_boss: bool = type == RoomData.RoomType.BOSS
 	var run_manager := get_tree().get_first_node_in_group("run_manager")

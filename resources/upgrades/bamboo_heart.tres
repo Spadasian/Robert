@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/upgrades/behaviors/BambooHeart.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "bamboo_heart"
+display_name = "Bamboo Heart"
+description = "Heal 10% of your HP when you clear a fight room"
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"ratio": 0.1
+}
+build = "Survival"

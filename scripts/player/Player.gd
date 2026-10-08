@@ -14,6 +14,9 @@ const MASK_NORMAL: int = 5
 const MASK_DASHING: int = 1
 # A hit that arrives this soon after a dash began is a Perfect Dodge (a dash lasts 0.18 s).
 const PERFECT_DODGE_WINDOW: float = 0.10
+# A Perfect Dodge slows the enemies (and their projectiles), not the player. Time Slip, Samurai Eye... make it last longer.
+const PERFECT_SLOW_SCALE: float = 0.25
+const PERFECT_SLOW_TIME: float = 0.4
 
 @onready var model: Node3D = $Model
 @onready var body_mesh: MeshInstance3D = $Model/Body
@@ -25,6 +28,7 @@ const PERFECT_DODGE_WINDOW: float = 0.10
 @onready var weapon: Node3D = $WeaponPivot
 @onready var kata_events: Node = $KataEvents
 @onready var kata: Node = $KataComponent
+@onready var rules: Node = $RuleHost
 
 var free_hits_left: int = 0 # hits still ignored in this room (Fox Mask)
 var free_hits_max: int = 0
@@ -33,8 +37,10 @@ var ghost_timer: float = 0.0 # time until the next dash afterimage
 
 
 func _ready() -> void:
+	EnemyTime.reset()
 	health.set_max_health(stats.get_stat("max_health"))
 	dash.set_max_charges(int(stats.get_stat("dodge_charges")))
+	dash.apply_stats(stats)
 	stats.stats_changed.connect(_on_stats_changed)
 	hurtbox.hit_received.connect(_on_hit_received)
 	health.damaged.connect(_on_damaged)
@@ -52,6 +58,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	EnemyTime.tick(delta)
 	if health.is_dead():
 		return
 	_move(delta)
@@ -145,6 +152,17 @@ func on_hit_dealt(target_health: Node, info: Dictionary = {}) -> void:
 		kata_events.kill.emit(info)
 
 
+## Called by EnemyStatus after every bleed tick: bleed kills count like any other kill.
+func on_bleed_tick(enemy: Node, damage: float, killed: bool) -> void:
+	kata_events.bleed_tick.emit(enemy, damage)
+	if killed:
+		var info: Dictionary = {"target": enemy, "damage": damage, "crit": false, "kind": "bleed", "hit_count": 1, "killed": true, "overkill": 0.0}
+		kata_events.kill.emit(info)
+		var heal_amount: float = stats.get_stat("life_on_kill")
+		if heal_amount > 0.0:
+			health.heal(heal_amount)
+
+
 ## True when the player is behind the target (the target looks away from him).
 func _is_behind(target: Node) -> bool:
 	var enemy := target as Node3D
@@ -163,9 +181,10 @@ func _on_hit_received(damage: float, _source: Node) -> void:
 	if health.is_dead():
 		return
 	if dash.is_invulnerable():
-		if dash.elapsed <= PERFECT_DODGE_WINDOW:
+		if dash.elapsed <= PERFECT_DODGE_WINDOW * stats.get_stat("perfect_window"):
 			kata_events.perfect_dodge.emit(_source)
 			_show_floating_text("PERFECT", Color(0.5, 0.95, 1.0))
+			EnemyTime.slow(PERFECT_SLOW_SCALE, PERFECT_SLOW_TIME + stats.get_stat("perfect_slow_bonus"))
 		return
 	var damage_taken_multiplier: float = 1.0
 	for skill in skills:
@@ -174,18 +193,24 @@ func _on_hit_received(damage: float, _source: Node) -> void:
 		if skill.is_active and skill.intercept_hit(damage, _source):
 			return # Kaeshi: the hit is cancelled and answered
 		damage_taken_multiplier *= skill.get_damage_taken_multiplier()
+	if randf() < stats.get_stat("evade_chance"): # Lucky Thread
+		_show_floating_text("LUCKY", Color(0.9, 0.9, 0.5))
+		return
 	if free_hits_left > 0: # Fox Mask: the first hit of every room does nothing
 		free_hits_left -= 1
 		_show_floating_text("BLOCKED", Color(1.0, 0.7, 0.3))
 		AudioManager.play_sfx("kaeshi_counter", -8.0)
 		VFX.hit_spark(global_position + Vector3(0.0, 1.0, 0.0), Color(1.0, 0.7, 0.3))
 		return
-	health.take_damage(damage * stats.get_stat("damage_taken") * damage_taken_multiplier)
+	var final_damage: float = rules.process_incoming(damage * stats.get_stat("damage_taken") * damage_taken_multiplier, _source)
+	if final_damage > 0.0:
+		health.take_damage(final_damage)
 
 
 func _on_stats_changed() -> void:
 	health.change_max_health(stats.get_stat("max_health"))
 	dash.set_max_charges(int(stats.get_stat("dodge_charges")))
+	dash.apply_stats(stats)
 	# A new free hit (Fox Mask picked up) is ready at once.
 	var new_free_hits: int = int(stats.get_stat("free_hits_per_room"))
 	free_hits_left = clampi(free_hits_left + (new_free_hits - free_hits_max), 0, new_free_hits)

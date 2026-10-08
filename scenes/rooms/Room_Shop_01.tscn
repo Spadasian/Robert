@@ -199,6 +199,36 @@ billboard = 1
 outline_size = 12
 font_size = 56
 
+[node name="Stand4" type="Area3D" parent="Stands"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_stand")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Stands/Stand4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("Shape_stand")
+
+[node name="Visual" type="MeshInstance3D" parent="Stands/Stand4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("Mesh_stand")
+
+[node name="InfoLabel" type="Label3D" parent="Stands/Stand4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
+width = 480.0
+autowrap_mode = 2
+
+[node name="PriceLabel" type="Label3D" parent="Stands/Stand4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+pixel_size = 0.007
+billboard = 1
+outline_size = 12
+font_size = 56
+
 [node name="Doors" type="Node3D" parent="."]
 
 [node name="North" parent="Doors" instance=ExtResource("door_scene")]

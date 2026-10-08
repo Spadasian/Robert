@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "shop_extra_item"
+operation = 0
+value = 1.0
+
+[sub_resource type="Resource" id="Effect_2"]
+script = ExtResource("2_effect")
+stat = "shop_technique_mult"
+operation = 1
+value = 1.0
+
+[resource]
+script = ExtResource("1_data")
+id = "merchant_seal"
+display_name = "Merchant's Seal"
+description = "Shops have one more item, and sell Kata techniques twice as often."
+color = Color(0.5, 0.9, 0.5, 1)
+effects = Array[Resource]([SubResource("Effect_1"), SubResource("Effect_2")])
+price = 160
+build = "Economy"

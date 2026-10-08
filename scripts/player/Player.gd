@@ -152,6 +152,11 @@ func on_hit_dealt(target_health: Node, info: Dictionary = {}) -> void:
 		kata_events.kill.emit(info)
 
 
+## True while the enemies cannot see the player (Vanish). They keep moving but start no new attack.
+func is_hidden() -> bool:
+	return rules.hidden_left > 0.0
+
+
 ## Called by EnemyStatus after every bleed tick: bleed kills count like any other kill.
 func on_bleed_tick(enemy: Node, damage: float, killed: bool) -> void:
 	kata_events.bleed_tick.emit(enemy, damage)

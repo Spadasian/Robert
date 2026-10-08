@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "crit_damage"
+operation = 0
+value = 1.0
+
+[sub_resource type="Resource" id="Effect_2"]
+script = ExtResource("2_effect")
+stat = "max_health"
+operation = 1
+value = -0.1
+
+[resource]
+script = ExtResource("1_data")
+id = "hannya_mask"
+display_name = "Hannya Mask"
+description = "Critical hits do +100% more damage, but -10% max HP."
+color = Color(0.85, 0.15, 0.25, 1)
+effects = Array[Resource]([SubResource("Effect_1"), SubResource("Effect_2")])
+price = 150
+build = "Crit & Execution"

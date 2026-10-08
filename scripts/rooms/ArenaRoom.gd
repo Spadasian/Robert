@@ -120,4 +120,7 @@ func _give_reward(techniques: Node) -> void:
 	if hud:
 		hud.show_message("ARENA CLEARED   +%d EXP  +%d gold" % [omen.xp, omen.gold], 2.5)
 	if techniques:
-		techniques.offer([TechniqueData.Category.OPENING, TechniqueData.Category.FLOW, TechniqueData.Category.FINISHER], 3, randf() < omen.master)
+		var stats: Node = player.get_node("StatsComponent") if player else null
+		var extra_cards: int = int(stats.get_stat("reward_cards")) if stats else 0
+		var master_chance: float = omen.master + (stats.get_stat("master_chance") if stats else 0.0)
+		techniques.offer([TechniqueData.Category.OPENING, TechniqueData.Category.FLOW, TechniqueData.Category.FINISHER], 3 + extra_cards, randf() < master_chance)

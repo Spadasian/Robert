@@ -66,7 +66,7 @@ func _move(delta: float) -> void:
 
 	# When cornered (too close for a while) it shoots anyway instead of running forever.
 	var can_aim: bool = line_of_sight and distance <= max_range and (distance >= min_range or state_time > 1.2)
-	if can_aim and state_time >= reaction_time:
+	if can_aim and state_time >= reaction_time and can_see_player():
 		_change_state(State.AIM)
 		return
 

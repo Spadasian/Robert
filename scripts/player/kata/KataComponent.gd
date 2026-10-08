@@ -28,6 +28,7 @@ var is_awake: bool = false
 var is_open: bool = false
 var flow_value: float = 0.0
 var idle_time: float = 0.0
+var flow_shield_left: float = 0.0 # seconds during which no Flow can be lost (Paper Lantern)
 
 
 func _ready() -> void:
@@ -139,6 +140,9 @@ func add_flow(amount: float) -> void:
 	var stats: Node = _stats()
 	if stats:
 		amount *= stats.get_stat("flow_gain") if amount > 0.0 else stats.get_stat("flow_loss")
+	if amount < 0.0 and flow_shield_left > 0.0:
+		idle_time = 0.0
+		return # Paper Lantern: no Flow is lost for a moment after a hit
 	flow_value = clampf(flow_value + amount, 0.0, flow_cap)
 	idle_time = 0.0
 	kata_changed.emit()
@@ -176,6 +180,7 @@ func get_open_timeout() -> float:
 
 
 func _physics_process(delta: float) -> void:
+	flow_shield_left = maxf(flow_shield_left - delta, 0.0)
 	if not is_open:
 		return
 	idle_time += delta

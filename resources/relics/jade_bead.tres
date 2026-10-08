@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/JadeBead.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "jade_bead"
+display_name = "Jade Bead"
+description = "Every level up heals 30% of your HP."
+color = Color(0.4, 0.9, 0.6, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"ratio": 0.3
+}
+price = 130
+build = "Survival"

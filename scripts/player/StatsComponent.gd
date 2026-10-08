@@ -36,6 +36,11 @@ signal stats_changed
 	"xp_gain": 1.0, # multiplier of the EXP received
 	"choice_count": 3.0, # cards in a level up choice
 	"rerolls": 0.0, # level up rerolls per run
+	"reward_cards": 0.0, # extra cards in the Duel and Arena technique rewards (Scroll of Duels)
+	"master_chance": 0.0, # extra chance of a Master technique card in Duel and Arena rewards
+	"ultimate_charge": 1.0, # multiplier of how fast the Ultimate charges
+	"shop_extra_item": 0.0, # extra stands in a Shop (Merchant's Seal)
+	"shop_technique_mult": 1.0, # multiplier of the chance that a Shop sells a technique
 }
 
 var upgrades: Array = [] # UpgradeData taken this run

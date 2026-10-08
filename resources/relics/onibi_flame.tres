@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/OnibiFlame.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "onibi_flame"
+display_name = "Onibi Flame"
+description = "Kills have a 20% chance to leave a flame that makes enemies bleed."
+color = Color(0.4, 0.5, 1.0, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"chance": 0.2,
+"radius": 1.6,
+"time": 8.0,
+"bleed": 6.0
+}
+price = 160
+build = "Bleed"

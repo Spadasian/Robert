@@ -25,9 +25,16 @@ func is_bleeding() -> bool:
 
 
 ## Adds a bleed stack. At the maximum, the weakest stack is replaced if the new one is stronger.
-func apply_bleed(dps: float, duration: float) -> void:
+## `key` (optional): one stack per source, refreshed instead of added (a zone on the floor uses its own id).
+func apply_bleed(dps: float, duration: float, key: String = "") -> void:
+	if key != "":
+		for stack in bleeds:
+			if stack.get("key", "") == key:
+				stack.dps = dps
+				stack.left = duration
+				return
 	if bleeds.size() < MAX_BLEED_STACKS:
-		bleeds.append({"dps": dps, "left": duration})
+		bleeds.append({"dps": dps, "left": duration, "key": key})
 		return
 	var weakest: Dictionary = bleeds[0]
 	for stack in bleeds:

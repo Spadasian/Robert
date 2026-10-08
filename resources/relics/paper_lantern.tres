@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/PaperLantern.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "paper_lantern"
+display_name = "Paper Lantern"
+description = "For 1 s after you hit something, being hit does not take Flow away."
+color = Color(1.0, 0.85, 0.5, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"time": 1.0
+}
+price = 140
+build = "Speed & Flow"

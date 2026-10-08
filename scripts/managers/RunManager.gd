@@ -4,10 +4,13 @@ extends Node
 
 signal gold_changed(gold: int)
 signal relics_changed
+signal gold_collected(amount: int) # gold picked up from the floor (not bought or given)
 signal xp_changed(xp: int, needed: int, level: int)
 signal level_up(level: int)
 
 @export var relic_pool: Array[Resource] = [] # RelicData resources, set in Run.tscn
+## A RelicPool resource (written by tools/content/generate_relics.py); when set it fills relic_pool.
+@export var relic_pool_resource: Resource
 ## The EXP bar: the first level needs xp_base, every next level xp_growth times more.
 @export var xp_base: float = 60.0
 @export var xp_growth: float = 1.5
@@ -39,6 +42,8 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	if relic_pool_resource != null:
+		relic_pool = relic_pool_resource.relics.duplicate()
 	# Permanent bonuses bought with Soul Shards (extra max HP, starting gold...).
 	var player := get_tree().get_first_node_in_group("player")
 	if player:
@@ -84,6 +89,7 @@ func add_relic(relic: Resource) -> void:
 func collect_gold(base_amount: int) -> void:
 	var gain: float = stats.get_stat("gold_gain") if stats else 1.0
 	add_gold(roundi(base_amount * gain))
+	gold_collected.emit(base_amount)
 
 
 func register_kill(enemy: Node = null) -> void:

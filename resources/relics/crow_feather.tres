@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/CrowFeather.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "crow_feather"
+display_name = "Crow Feather"
+description = "Your dash leaves a trail that makes enemies bleed."
+color = Color(0.3, 0.25, 0.45, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"radius": 1.1,
+"time": 3.0,
+"bleed": 5.0
+}
+price = 160
+build = "Bleed"

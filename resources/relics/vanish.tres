@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/Vanish.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "vanish"
+display_name = "Vanish"
+description = "A Perfect Dodge makes you invisible for 0.8 s: the enemies start no new attacks."
+color = Color(0.5, 0.45, 0.7, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"time": 0.8
+}
+price = 160
+build = "Dodge & Counter"

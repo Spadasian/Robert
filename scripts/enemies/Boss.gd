@@ -171,6 +171,9 @@ func _set_state(new_state: int) -> void:
 func _chase(delta: float) -> void:
 	var to_target: Vector3 = _flat(target.global_position - global_position)
 	var distance: float = to_target.length()
+	if not can_see_player():
+		distance = 999.0 # no new attack while the player is hidden, it just keeps walking
+		state_time = 0.0
 	if distance <= combo_range:
 		_begin_attack(_pick(_near_options()))
 		return

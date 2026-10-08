@@ -22,6 +22,7 @@ var charge: float = 0.0
 var time_active: float = 0.0
 var tick_timer: float = 0.0
 var hit_window: float = 0.0
+var duration_bonus: float = 0.0
 
 
 func _ready() -> void:
@@ -44,8 +45,14 @@ func is_available() -> bool:
 func add_charge(amount: float) -> void:
 	if is_active:
 		return # no recharging while it runs
-	charge = minf(charge + amount, max_charge)
+	charge = minf(charge + amount * player.stats.get_stat("ultimate_charge"), max_charge)
 	charge_changed.emit(charge, max_charge)
+
+
+## Spirit Lantern: kills during the Ultimate keep it going a little longer.
+func extend_time(seconds: float) -> void:
+	if is_active:
+		duration_bonus += seconds
 
 
 func on_player_hit_dealt(target_killed: bool) -> void:
@@ -56,6 +63,7 @@ func _start() -> void:
 	charge = 0.0
 	charge_changed.emit(charge, max_charge)
 	time_active = 0.0
+	duration_bonus = 0.0
 	tick_timer = 0.0 # the first cut happens at once
 	disc.visible = true
 	blades.visible = true
@@ -78,7 +86,7 @@ func _tick(delta: float) -> void:
 		hit_window -= delta
 		if hit_window <= 0.0:
 			hitbox.set_active(false)
-	if time_active >= duration:
+	if time_active >= duration + duration_bonus:
 		_stop_effects()
 		finish()
 

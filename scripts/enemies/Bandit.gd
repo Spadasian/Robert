@@ -57,7 +57,7 @@ func _physics_process(delta: float) -> void:
 func _chase(delta: float) -> void:
 	var to_target: Vector3 = target.global_position - global_position
 	to_target.y = 0.0
-	if to_target.length() <= attack_range:
+	if to_target.length() <= attack_range and can_see_player():
 		_change_state(State.WINDUP)
 		return
 

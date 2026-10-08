@@ -9,6 +9,7 @@ const WAVE_SCENE: PackedScene = preload("res://scenes/player/Wave.tscn")
 
 var behaviors: Array = []
 var shield: float = 0.0
+var hidden_left: float = 0.0 # while > 0 the enemies cannot see the player (they start no new attacks)
 var player: CharacterBody3D
 var events: Node
 
@@ -33,13 +34,16 @@ func _ready() -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
 		run_manager.level_up.connect(func(level): _each("on_level_up", [level]))
+		run_manager.gold_collected.connect(func(amount): _each("on_gold_collected", [amount]))
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
 		room_manager.room_loaded.connect(_on_room_loaded)
+		room_manager.biome_started.connect(func(index): _each("on_biome_started", [index]))
 		room_manager.fight_room_cleared.connect(func(room_type): _each("on_room_cleared", [room_type]))
 
 
 func _physics_process(delta: float) -> void:
+	hidden_left = maxf(hidden_left - delta, 0.0)
 	if not behaviors.is_empty() and not player.health.is_dead():
 		_each("on_tick", [delta])
 
@@ -114,6 +118,27 @@ func process_incoming(damage: float, source: Node) -> float:
 
 
 # ---- helpers for the behaviors
+
+## Enemies lose sight of the player for a while (Vanish, Kitsune Tail).
+func hide_player(seconds: float) -> void:
+	hidden_left = maxf(hidden_left, seconds)
+
+
+## A zone on the floor that hurts (or makes bleed) the enemies inside it for a while.
+func spawn_zone(position: Vector3, radius: float, duration: float, damage_per_second: float, bleed_per_second: float, color: Color = Color(0.9, 0.2, 0.3, 0.35), bleed_key: String = "") -> Node:
+	var zone := HazardZone.new()
+	zone.radius = radius
+	zone.duration = duration
+	zone.damage_per_second = damage_per_second
+	zone.bleed_per_second = bleed_per_second
+	zone.color = color
+	zone.bleed_key = bleed_key
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	var parent: Node = room_manager.current_room if room_manager and room_manager.current_room else get_tree().current_scene
+	parent.add_child(zone)
+	zone.global_position = Vector3(position.x, 0.05, position.z)
+	return zone
+
 
 func set_shield(value: float) -> void:
 	shield = maxf(value, 0.0)

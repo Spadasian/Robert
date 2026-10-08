@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/SakuraCharm.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "sakura_charm"
+display_name = "Sakura Charm"
+description = "A Finisher that kills heals 5 HP."
+color = Color(1.0, 0.6, 0.75, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"heal": 5.0
+}
+price = 140
+build = "Survival"

@@ -8,6 +8,7 @@ const GOLD_PICKUP_SCENE: PackedScene = preload("res://scenes/world/GoldPickup.ts
 const BOSS_GOLD_REWARD: int = 50
 const BOSS_HEAL_RATIO: float = 0.5
 
+signal biome_started(index: int)
 signal room_loaded(room: Node)
 signal room_changed(index: int, total: int) # a room was entered: index = rooms cleared, total = rooms before the boss
 signal map_changed # something the minimap shows changed (a room entered or cleared, a new biome)
@@ -135,6 +136,7 @@ func _start_biome(index: int) -> void:
 		run_manager.enemy_health_multiplier = biome.enemy_health_multiplier
 		run_manager.enemy_damage_multiplier = biome.enemy_damage_multiplier
 	_apply_biome_look()
+	biome_started.emit(index)
 	_enter_cell(dungeon.start, "")
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud and biomes.size() > 1:

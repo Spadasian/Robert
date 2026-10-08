@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/Whetstone.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "whetstone"
+display_name = "Whetstone"
+description = "+15% damage while your Kata is open."
+color = Color(0.7, 0.7, 0.75, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"bonus": 0.15
+}
+price = 140
+build = "Speed & Flow"

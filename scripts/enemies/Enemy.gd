@@ -16,6 +16,7 @@ const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/ui/DamageNumber.t
 var body_material: StandardMaterial3D
 var base_color: Color
 var status: EnemyStatus = EnemyStatus.new(self) # bleed, stun, slow, mark
+var knock_velocity: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
@@ -41,14 +42,23 @@ func time_scale() -> float:
 	return EnemyTime.get_scale() * status.speed_factor()
 
 
+## Pushed away (Tengu Fan): an extra velocity that fades out quickly. `direction` is flat, `strength` in m/s.
+func knockback(direction: Vector3, strength: float) -> void:
+	if can_be_stunned():
+		knock_velocity = Vector3(direction.x, 0.0, direction.z).normalized() * strength
+
+
+func can_see_player() -> bool:
+	var player := get_tree().get_first_node_in_group("player")
+	return not (player and player.has_method("is_hidden") and player.is_hidden())
+
+
 ## move_and_slide() at the speed of this enemy's own time (the stored velocity is not changed).
 func slide() -> void:
 	var factor: float = time_scale()
-	if factor >= 0.999:
-		move_and_slide()
-		return
 	var original: Vector3 = velocity
-	velocity = original * factor
+	velocity = original * factor + knock_velocity
+	knock_velocity = knock_velocity.move_toward(Vector3.ZERO, 40.0 * get_physics_process_delta_time())
 	move_and_slide()
 	velocity = original
 

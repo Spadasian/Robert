@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/GoldFrog.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "gold_frog"
+display_name = "Gold Frog"
+description = "Every coin you pick up heals 1 HP."
+color = Color(1.0, 0.85, 0.2, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"heal": 1.0
+}
+price = 120
+build = "Economy"

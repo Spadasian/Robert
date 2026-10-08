@@ -31,10 +31,14 @@ func _ready() -> void:
 func setup(data: Resource) -> void:
 	upgrade = data
 	var is_technique: bool = data is TechniqueData
-	price = _discounted(TECHNIQUE_PRICES[data.rarity] if is_technique else PRICES[data.rarity])
+	var is_relic: bool = data is RelicData
+	if is_relic:
+		price = _discounted(data.price)
+	else:
+		price = _discounted(TECHNIQUE_PRICES[data.rarity] if is_technique else PRICES[data.rarity])
 	sold = false
 
-	var color: Color = data.color if is_technique else data.get_color()
+	var color: Color = data.color if (is_technique or is_relic) else data.get_color()
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.emission_enabled = true
@@ -43,6 +47,8 @@ func setup(data: Resource) -> void:
 	visual.material_override = material
 
 	info_label.text = "%s\n%s" % [data.display_name, data.description]
+	if is_relic:
+		info_label.text = "RELIC\n%s\n%s" % [data.display_name, data.description]
 	if is_technique:
 		info_label.text = "KATA - %s\n%s\n%s" % [data.get_category_name().to_upper(), data.display_name, data.description]
 		var old: Resource = _kata().get_technique(data.category) if _kata() else null
@@ -91,9 +97,11 @@ func _try_buy() -> void:
 		if hud:
 			hud.show_message("Not enough gold")
 		return
-	var color: Color = upgrade.color if upgrade is TechniqueData else upgrade.get_color()
+	var color: Color = upgrade.color if (upgrade is TechniqueData or upgrade is RelicData) else upgrade.get_color()
 	if upgrade is TechniqueData:
 		_kata().set_technique(upgrade)
+	elif upgrade is RelicData:
+		run_manager.add_relic(upgrade)
 	else:
 		upgrade_manager.apply_upgrade(upgrade)
 	AudioManager.play_sfx("buy")

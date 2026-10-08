@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/KitsuneTail.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "kitsune_tail"
+display_name = "Kitsune Tail"
+description = "After a Perfect Dodge: +30% speed and the enemies lose sight of you for 2 s."
+color = Color(1.0, 0.6, 0.3, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"bonus": 0.3,
+"time": 2.0
+}
+price = 160
+build = "Dodge & Counter"

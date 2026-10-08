@@ -88,6 +88,14 @@ func on_level_up(_level: int) -> void:
 	pass
 
 
+func on_gold_collected(_amount: int) -> void:
+	pass
+
+
+func on_biome_started(_index: int) -> void:
+	pass
+
+
 func on_tick(_delta: float) -> void:
 	pass
 

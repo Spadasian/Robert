@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="Script" path="res://scripts/relics/behaviors/IronFan.gd" id="3_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "iron_fan"
+display_name = "Iron Fan"
+description = "Your Heavy destroys the enemy projectiles in front of you."
+color = Color(0.7, 0.75, 0.8, 1)
+effects = Array[Resource]([])
+behavior = ExtResource("3_behavior")
+params = {
+"range": 4.5
+}
+price = 130
+build = "Dodge & Counter"

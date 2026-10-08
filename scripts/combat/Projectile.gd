@@ -17,6 +17,7 @@ var age: float = 0.0
 
 func _ready() -> void:
 	super._ready()
+	add_to_group("projectile")
 	body_entered.connect(_on_body_entered)
 
 

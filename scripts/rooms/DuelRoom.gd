@@ -42,4 +42,8 @@ func _give_reward(techniques: Node) -> void:
 	var hud := get_tree().get_first_node_in_group("hud")
 	if hud:
 		hud.show_message("FLAWLESS DUEL" if flawless else "DUEL WON", 2.0)
-	techniques.offer([TechniqueData.Category.OPENING, TechniqueData.Category.FLOW, TechniqueData.Category.FINISHER], 3, flawless)
+	var stats: Node = player.get_node("StatsComponent") if player else null
+	var extra_cards: int = int(stats.get_stat("reward_cards")) if stats else 0
+	var master_chance: float = stats.get_stat("master_chance") if stats else 0.0
+	var with_master: bool = flawless or randf() < master_chance # a flawless duel always offers a Master
+	techniques.offer([TechniqueData.Category.OPENING, TechniqueData.Category.FLOW, TechniqueData.Category.FINISHER], 3 + extra_cards, with_master)

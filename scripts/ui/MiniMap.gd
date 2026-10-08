@@ -58,6 +58,11 @@ func _draw() -> void:
 			if not room_manager.is_cell_cleared(cell):
 				color.a = 0.55 # entered but not cleared yet
 			draw_rect(rect, color)
+		elif _knows_room_types() and cell != room_manager.dungeon.boss:
+			var type_color: Color = COLORS[clampi(cells[cell].data.room_type, 0, COLORS.size() - 1)]
+			type_color.a = 0.35 # Wanderer's Map: the type of the neighbouring rooms is shown, dimmed
+			draw_rect(rect, type_color)
+			draw_rect(rect, Color(type_color.r, type_color.g, type_color.b, 0.9), false, 1.5)
 		else:
 			var is_boss: bool = cell == room_manager.dungeon.boss
 			draw_rect(rect, Color(0.12, 0.1, 0.18, 0.85))
@@ -66,6 +71,11 @@ func _draw() -> void:
 				HORIZONTAL_ALIGNMENT_CENTER, box, int(box * 0.6), COLORS[6] if is_boss else Color(0.8, 0.8, 0.9))
 		if cell == room_manager.current_cell:
 			draw_rect(rect.grow(2.0), Color.WHITE, false, 2.0)
+
+
+func _knows_room_types() -> bool:
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	return run_manager != null and run_manager.has_relic("wanderer_map")
 
 
 func _center(cell: Vector2i, low: Vector2i, step: float, origin: Vector2) -> Vector2:

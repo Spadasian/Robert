@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "perfect_slow_bonus"
+operation = 0
+value = 0.3
+
+[resource]
+script = ExtResource("1_data")
+id = "samurai_eye"
+display_name = "Samurai Eye"
+description = "A Perfect Dodge slows the enemies 0.3 s longer."
+color = Color(0.4, 0.8, 1.0, 1)
+effects = Array[Resource]([SubResource("Effect_1")])
+price = 140
+build = "Dodge & Counter"

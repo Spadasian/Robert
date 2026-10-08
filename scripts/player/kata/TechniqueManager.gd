@@ -1,6 +1,9 @@
 extends Node
-## Hands out Kata techniques. Rewards call offer(categories): the player picks 1 of 3 techniques (or keeps the Kata
-## as it is). The pool is a list of TechniqueData resources set in the Inspector.
+## Hands out Kata techniques. Rewards call offer(): the player picks 1 of 3 techniques (or keeps the Kata as it is).
+## The pool is a list of TechniqueData resources set in the Inspector.
+## The order does not depend on where the reward comes from: the first offer is 3 Openings, the second 3 Flows, the
+## third 3 Finishers (the first empty slot of the chain). After that the cards are random parts of any category, so
+## the player builds a style of their own. `categories` passed by the sources is only a hint and is ignored.
 ## Techniques come only from the mini-boss, bosses, special rooms (they call offer()) and, rarely and expensively,
 ## from the shop (see get_shop_technique()). Ordinary fight rooms never give any. Each slot does nothing until it has one.
 
@@ -29,17 +32,43 @@ func _ready() -> void:
 		room_manager.miniboss_defeated.connect(_on_miniboss_defeated)
 
 
-## Techniques of the given categories that the player does not own. Categories that are still empty come first:
-## when any of them has techniques left, only those are used.
-func get_choices(categories: Array, count: int, add_master: bool = false) -> Array:
-	var empty_slots: Array = categories.filter(func(category): return not kata.slots.has(category))
-	var wanted: Array = empty_slots if not empty_slots.is_empty() else categories
-	var candidates: Array = technique_pool.filter(func(data): return data.category in wanted and not kata.has_technique(data.id))
-	candidates.shuffle()
-	var choices: Array = candidates.slice(0, count)
-	if add_master:
-		# one card becomes a Master technique (a reward for a hard challenge), if the player has one left to find
-		var masters: Array = technique_pool.filter(func(data): return data.category == Category.MASTER and not kata.has_technique(data.id))
+const CHAIN: Array = [Category.OPENING, Category.FLOW, Category.FINISHER]
+
+
+## The first empty slot of the chain Opening -> Flow -> Finisher, or -1 when the chain is complete.
+func next_chain_category() -> int:
+	for category in CHAIN:
+		if not kata.slots.has(category):
+			return category
+	return -1
+
+
+## The cards of an offer: while the chain is incomplete, `count` techniques of the next category; afterwards a random
+## mix of all categories (one of each category first, so the cards are usually different parts).
+## `categories` is ignored (kept so the sources do not need to change). Techniques already owned are never offered.
+func get_choices(_categories: Array, count: int, add_master: bool = false) -> Array:
+	var owned_free: Array = technique_pool.filter(func(data): return not kata.has_technique(data.id))
+	var next: int = next_chain_category()
+	var choices: Array = []
+	if next >= 0:
+		var of_next: Array = owned_free.filter(func(data): return data.category == next)
+		of_next.shuffle()
+		choices = of_next.slice(0, count)
+	else:
+		var buckets: Array = []
+		for category in CHAIN:
+			var group: Array = owned_free.filter(func(data): return data.category == category)
+			group.shuffle()
+			buckets.append(group)
+		buckets.shuffle()
+		while choices.size() < count and buckets.any(func(group): return not group.is_empty()):
+			for group in buckets:
+				if not group.is_empty() and choices.size() < count:
+					choices.append(group.pop_front())
+	if add_master and next < 0:
+		# one card becomes a Master technique (a reward for a hard challenge) once the chain is complete,
+		# if the player has one left to find
+		var masters: Array = owned_free.filter(func(data): return data.category == Category.MASTER)
 		if not masters.is_empty():
 			if choices.size() >= count:
 				choices.pop_back()
@@ -56,7 +85,7 @@ func offer(categories: Array, count: int = 3, add_master: bool = false) -> Resou
 	if choices.is_empty():
 		return null
 	busy = true
-	var chosen: Resource = await choice_ui.choose(choices, kata)
+	var chosen: Resource = await choice_ui.choose(choices, kata, _title_for(choices))
 	busy = false
 	if chosen == null:
 		return null
@@ -66,6 +95,13 @@ func offer(categories: Array, count: int = 3, add_master: bool = false) -> Resou
 	if hud and not was_asleep: # the first one shows "The Kata awakens" instead
 		hud.show_message("%s learned" % chosen.display_name)
 	return chosen
+
+
+func _title_for(choices: Array) -> String:
+	var next: int = next_chain_category()
+	if next >= 0:
+		return "Choose your %s" % TechniqueData.CATEGORY_NAMES[next].to_upper()
+	return "Choose a technique"
 
 
 func _upgrade_choice_open() -> bool:
@@ -99,9 +135,10 @@ func _on_boss_defeated(is_final: bool) -> void:
 		offer([Category.FINISHER])
 
 
-## A technique the shop can sell: one the player does not own, from a category with an empty slot if possible.
+## A technique the shop can sell: follows the same order as the offers (and may be a Master once the chain is complete).
 func get_shop_technique() -> Resource:
-	var categories: Array = [Category.OPENING, Category.FLOW, Category.FINISHER, Category.MASTER]
-	var empty_slots: Array = categories.filter(func(category): return not kata.slots.has(category) and category != Category.MASTER)
-	var choices: Array = get_choices(empty_slots if not empty_slots.is_empty() else categories, 1)
+	var choices: Array = get_choices([], 1)
+	if next_chain_category() < 0:
+		var anything: Array = technique_pool.filter(func(data): return not kata.has_technique(data.id))
+		return anything.pick_random() if not anything.is_empty() else null
 	return choices[0] if not choices.is_empty() else null

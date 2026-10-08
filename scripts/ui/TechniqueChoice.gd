@@ -7,6 +7,7 @@ signal technique_chosen(technique: Resource)
 
 @onready var card_row: HBoxContainer = $Center/VBox/CardRow
 @onready var keep_button: Button = $Center/VBox/Keep
+@onready var title_label: Label = $Center/VBox/Title
 
 var current_choices: Array = []
 
@@ -16,7 +17,8 @@ func _ready() -> void:
 	keep_button.pressed.connect(_select.bind(null))
 
 
-func choose(choices: Array, kata: Node) -> Resource:
+func choose(choices: Array, kata: Node, title: String = "Learn a technique") -> Resource:
+	title_label.text = title
 	current_choices = choices
 	for old_card in card_row.get_children():
 		card_row.remove_child(old_card)

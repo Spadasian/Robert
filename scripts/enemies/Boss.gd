@@ -494,6 +494,7 @@ func _summon() -> void:
 		if run_manager:
 			minion.max_health *= run_manager.enemy_health_multiplier
 		var angle: float = TAU * (float(index) / summon_count) + rotation.y
+		minion.xp_value = 0 # summoned enemies give no EXP (no farming)
 		minion.position = global_position + Vector3(sin(angle), 0.0, cos(angle)) * 2.2
 		get_parent().add_child(minion)
 		room.register_enemy(minion)

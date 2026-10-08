@@ -115,7 +115,7 @@ func _safe_enemy_position(wanted: Vector3) -> Vector3:
 func _on_enemy_defeated(_enemy: Node) -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
-		run_manager.register_kill()
+		run_manager.register_kill(_enemy)
 	alive_enemies -= 1
 	if alive_enemies <= 0:
 		_clear_room()

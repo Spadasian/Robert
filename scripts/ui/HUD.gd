@@ -48,6 +48,8 @@ var prompt_owner: Object = null
 var boss_box: VBoxContainer
 var boss_name_label: Label
 var boss_bar: ProgressBar
+var xp_bar: ProgressBar
+var xp_label: Label
 
 
 func _ready() -> void:
@@ -86,6 +88,7 @@ func _ready() -> void:
 	dash = player.get_node("DashComponent")
 	_build_skill_bar(player)
 	_build_kata_bar(player)
+	_build_xp_bar()
 
 
 func _process(delta: float) -> void:
@@ -338,6 +341,53 @@ func _boss_fill_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.75, 0.1, 0.15)
 	return style
+
+
+# ---------------------------------------------------------------- EXP
+
+## A thin bar along the bottom of the screen with the level: fills with the EXP of kills.
+func _build_xp_bar() -> void:
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager == null:
+		return
+	xp_bar = ProgressBar.new()
+	xp_bar.show_percentage = false
+	xp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	xp_bar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	xp_bar.offset_left = -280.0
+	xp_bar.offset_right = 280.0
+	xp_bar.offset_top = -12.0
+	xp_bar.offset_bottom = -4.0
+	xp_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	xp_bar.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = Color(0.45, 0.8, 1.0)
+	var back := StyleBoxFlat.new()
+	back.bg_color = Color(0.05, 0.05, 0.1, 0.8)
+	xp_bar.add_theme_stylebox_override("fill", fill)
+	xp_bar.add_theme_stylebox_override("background", back)
+	add_child(xp_bar)
+	move_child(xp_bar, fade_rect.get_index())
+	xp_label = Label.new()
+	xp_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	xp_label.add_theme_font_size_override("font_size", 14)
+	xp_label.add_theme_color_override("font_color", Color(0.75, 0.9, 1.0))
+	xp_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	xp_label.offset_left = -330.0
+	xp_label.offset_top = -24.0
+	xp_label.offset_right = -285.0
+	xp_label.offset_bottom = 0.0
+	xp_label.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	add_child(xp_label)
+	move_child(xp_label, fade_rect.get_index())
+	run_manager.xp_changed.connect(_on_xp_changed)
+	_on_xp_changed(run_manager.xp, run_manager.xp_to_next(), run_manager.level)
+
+
+func _on_xp_changed(xp: int, needed: int, level: int) -> void:
+	xp_bar.max_value = needed
+	xp_bar.value = xp
+	xp_label.text = "Lv %d" % level
 
 
 # ---------------------------------------------------------------- Kata

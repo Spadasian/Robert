@@ -233,6 +233,11 @@ func _on_door_used(direction: String) -> void:
 		is_transitioning = false
 		return
 
+	if not dungeon.cells[current_cell].doors.has(direction):
+		is_transitioning = false # the room changed during the fade (should not happen in play)
+		if hud:
+			await hud.fade_in()
+		return
 	var next_cell: Vector2i = dungeon.cells[current_cell].doors[direction]
 	_enter_cell(next_cell, DungeonGenerator.OPPOSITE[direction])
 	if hud:

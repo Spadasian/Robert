@@ -4,8 +4,13 @@ extends Node
 
 signal gold_changed(gold: int)
 signal relics_changed
+signal xp_changed(xp: int, needed: int, level: int)
+signal level_up(level: int)
 
 @export var relic_pool: Array[Resource] = [] # RelicData resources, set in Run.tscn
+## The EXP bar: the first level needs xp_base, every next level xp_growth times more.
+@export var xp_base: float = 60.0
+@export var xp_growth: float = 1.5
 
 var gold: int = 0
 var gold_earned: int = 0 # everything picked up this run, even what was spent in the shop
@@ -23,6 +28,9 @@ var enemy_damage_multiplier: float = 1.0
 var shard_multiplier: float = 1.0 # of the run mode
 var relics: Array = [] # RelicData found this run
 var stats: Node # the player's StatsComponent
+var xp: int = 0
+var level: int = 1
+var pending_levels: int = 0 # level ups whose upgrade choice was not shown yet (UpgradeManager shows them between fights)
 
 
 func _enter_tree() -> void:
@@ -74,8 +82,30 @@ func collect_gold(base_amount: int) -> void:
 	add_gold(roundi(base_amount * gain))
 
 
-func register_kill() -> void:
+func register_kill(enemy: Node = null) -> void:
 	enemies_defeated += 1
+	if enemy != null and enemy.get("xp_value") != null:
+		add_xp(enemy.xp_value)
+
+
+## EXP needed to go from the current level to the next one.
+func xp_to_next() -> int:
+	return roundi(xp_base * pow(xp_growth, level - 1))
+
+
+func add_xp(amount: int) -> void:
+	if amount <= 0:
+		return
+	xp += amount
+	var leveled: bool = false
+	while xp >= xp_to_next():
+		xp -= xp_to_next()
+		level += 1
+		pending_levels += 1
+		leveled = true
+	xp_changed.emit(xp, xp_to_next(), level)
+	if leveled:
+		level_up.emit(level)
 
 
 func add_gold(amount: int) -> void:

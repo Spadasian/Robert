@@ -39,6 +39,7 @@ collision_layer = 4
 collision_mask = 7
 script = ExtResource("1_enemy")
 max_health = 25.0
+xp_value = 8
 move_speed = 3.0
 min_range = 6.0
 max_range = 12.0

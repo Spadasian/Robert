@@ -63,6 +63,7 @@ collision_layer = 4
 collision_mask = 7
 script = ExtResource("1_boss")
 max_health = 260.0
+xp_value = 80
 summon_scene = ExtResource("6_bandit")
 projectile_scene = ExtResource("5_shuriken")
 

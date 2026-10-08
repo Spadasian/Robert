@@ -90,6 +90,7 @@ func _build_stats() -> String:
 	if run_manager:
 		lines.append("Mode: %s" % run_manager.mode_name)
 		lines.append("Bosses defeated: %d / %d" % [run_manager.bosses_defeated, run_manager.biome_count])
+		lines.append("Level reached: %d" % run_manager.level)
 		lines.append("Rooms cleared: %d" % run_manager.rooms_cleared)
 		lines.append("Enemies defeated: %d" % run_manager.enemies_defeated)
 		lines.append("Gold earned: %d" % run_manager.gold_earned)

@@ -7,6 +7,7 @@ extends Node
 @onready var choice_ui: Node = $"../UpgradeChoice"
 
 var stats: Node
+var is_processing_levels: bool = false
 var is_choosing: bool = false # TechniqueManager waits while an upgrade choice is open
 
 
@@ -18,9 +19,16 @@ func _ready() -> void:
 	var player := get_tree().get_first_node_in_group("player")
 	if player:
 		stats = player.get_node("StatsComponent")
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		run_manager.level_up.connect(func(_level: int): process_pending_levels())
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
-		room_manager.room_cleared.connect(_on_room_cleared)
+		room_manager.room_cleared.connect(process_pending_levels)
+		room_manager.map_changed.connect(process_pending_levels) # also fires when a room without a fight is cleared
+		room_manager.miniboss_defeated.connect(process_pending_levels)
+		room_manager.boss_defeated.connect(func(_final: bool): process_pending_levels())
+		room_manager.room_loaded.connect(func(_room: Node): process_pending_levels())
 
 
 ## Random upgrades the player does not own yet, picked by rarity weight, no duplicates.
@@ -48,17 +56,38 @@ func apply_upgrade(upgrade: Resource) -> void:
 	stats.add_upgrade(upgrade)
 
 
-func _on_room_cleared() -> void:
+## Each level up gives one upgrade choice (1 of 3). It is shown between fights: while enemies are alive the level ups
+## wait, and after a mini-boss or boss the technique reward comes first. Safe to call often; only one runs at a time.
+func process_pending_levels() -> void:
+	if is_processing_levels:
+		return
+	is_processing_levels = true
 	await get_tree().create_timer(0.6, false).timeout # let the player see the last kill (false: waits while paused)
-	if stats.get_parent().get_node("HealthComponent").is_dead():
-		return
-	var choices: Array = get_random_choices(3)
-	if choices.is_empty():
-		return
-	is_choosing = true
-	var chosen: Resource = await choice_ui.choose(choices)
-	is_choosing = false
-	apply_upgrade(chosen)
-	var hud := get_tree().get_first_node_in_group("hud")
-	if hud:
-		hud.show_message("%s acquired" % chosen.display_name)
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	var techniques := get_tree().get_first_node_in_group("technique_manager")
+	while run_manager and run_manager.pending_levels > 0:
+		if stats.get_parent().get_node("HealthComponent").is_dead() or _fight_going_on():
+			break
+		if techniques and (techniques.busy or techniques.offer_pending):
+			await get_tree().process_frame
+			continue
+		run_manager.pending_levels -= 1
+		var choices: Array = get_random_choices(3)
+		if choices.is_empty():
+			continue # every upgrade is owned: the level is still gained
+		var hud := get_tree().get_first_node_in_group("hud")
+		if hud:
+			hud.show_message("LEVEL %d" % (run_manager.level - run_manager.pending_levels), 1.5)
+		is_choosing = true
+		var chosen: Resource = await choice_ui.choose(choices)
+		is_choosing = false
+		apply_upgrade(chosen)
+		if hud:
+			hud.show_message("%s acquired" % chosen.display_name)
+	is_processing_levels = false
+
+
+func _fight_going_on() -> bool:
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	var room: Node = room_manager.current_room if room_manager else null
+	return room != null and room.alive_enemies > 0

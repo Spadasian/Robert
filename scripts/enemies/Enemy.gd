@@ -7,6 +7,7 @@ signal defeated(enemy: Node)
 const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/ui/DamageNumber.tscn")
 
 @export var max_health: float = 50.0
+@export var xp_value: int = 6 # EXP given to the player when it dies
 
 @onready var health: Node = $HealthComponent
 @onready var hurtbox: Area3D = $Hurtbox

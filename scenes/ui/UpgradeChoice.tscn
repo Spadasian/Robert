@@ -27,7 +27,7 @@ theme_override_constants/separation = 30
 
 [node name="Title" type="Label" parent="Center/VBox"]
 theme_override_font_sizes/font_size = 36
-text = "Choose an upgrade"
+text = "Level up! Choose an upgrade"
 horizontal_alignment = 1
 
 [node name="CardRow" type="HBoxContainer" parent="Center/VBox"]

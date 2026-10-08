@@ -12,6 +12,7 @@ const Category = TechniqueData.Category
 
 var kata: Node
 var busy: bool = false
+var offer_pending: bool = false # a reward is about to be offered (UpgradeManager waits for it)
 
 
 func _enter_tree() -> void:
@@ -42,6 +43,7 @@ func get_choices(categories: Array, count: int) -> Array:
 func offer(categories: Array, count: int = 3) -> Resource:
 	while busy or _upgrade_choice_open():
 		await get_tree().process_frame
+	offer_pending = false
 	var choices: Array = get_choices(categories, count)
 	if choices.is_empty():
 		return null
@@ -69,8 +71,11 @@ func _is_player_dead() -> bool:
 
 ## The mini-boss teaches an Opening or a Flow (the one the Kata is missing, if any).
 func _on_miniboss_defeated() -> void:
+	offer_pending = true
 	await get_tree().create_timer(1.2, false).timeout
-	if not _is_player_dead():
+	if _is_player_dead():
+		offer_pending = false
+	else:
 		offer([Category.OPENING, Category.FLOW])
 
 
@@ -78,8 +83,11 @@ func _on_miniboss_defeated() -> void:
 func _on_boss_defeated(is_final: bool) -> void:
 	if is_final:
 		return
+	offer_pending = true
 	await get_tree().create_timer(1.2, false).timeout
-	if not _is_player_dead():
+	if _is_player_dead():
+		offer_pending = false
+	else:
 		offer([Category.FINISHER])
 
 

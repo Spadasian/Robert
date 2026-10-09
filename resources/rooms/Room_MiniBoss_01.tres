@@ -10,4 +10,4 @@ display_name = "Champion's Court"
 room_type = 8
 scene = ExtResource("2_scene")
 difficulty = 2
-reward_gold = 35
+reward_gold = 21

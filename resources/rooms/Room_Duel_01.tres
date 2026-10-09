@@ -10,4 +10,4 @@ display_name = "Master's Dojo"
 room_type = 9
 scene = ExtResource("2_scene")
 difficulty = 2
-reward_gold = 35
+reward_gold = 21

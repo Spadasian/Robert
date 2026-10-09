@@ -5,7 +5,7 @@ extends Node
 ## the next biome; after the last one the run is won. The run mode (RunModeData) says which biomes a run has.
 
 const GOLD_PICKUP_SCENE: PackedScene = preload("res://scenes/world/GoldPickup.tscn")
-const BOSS_GOLD_REWARD: int = 50
+const BOSS_GOLD_REWARD: int = 30
 const BOSS_HEAL_RATIO: float = 0.5
 
 signal biome_started(index: int)

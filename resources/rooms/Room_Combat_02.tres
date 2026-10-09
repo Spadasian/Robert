@@ -10,4 +10,4 @@ display_name = "Ruined Courtyard"
 room_type = 0
 scene = ExtResource("2_scene")
 difficulty = 2
-reward_gold = 15
+reward_gold = 9

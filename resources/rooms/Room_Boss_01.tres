@@ -10,4 +10,4 @@ display_name = "Kageyama's Hall"
 room_type = 6
 scene = ExtResource("2_scene")
 difficulty = 3
-reward_gold = 60
+reward_gold = 36

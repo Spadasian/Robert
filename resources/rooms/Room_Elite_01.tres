@@ -10,4 +10,4 @@ display_name = "Warlord's Yard"
 room_type = 1
 scene = ExtResource("2_scene")
 difficulty = 2
-reward_gold = 40
+reward_gold = 24

@@ -10,4 +10,4 @@ display_name = "Blood Arena"
 room_type = 10
 scene = ExtResource("2_scene")
 difficulty = 3
-reward_gold = 20
+reward_gold = 12

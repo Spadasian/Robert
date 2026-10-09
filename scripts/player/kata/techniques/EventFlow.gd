@@ -23,7 +23,7 @@ func on_event(kata: Node, event: String, payload: Dictionary) -> void:
 			kata.add_flow(param("dodge_gain", 0.0))
 		"perfect_dodge":
 			kata.add_flow(param("perfect_gain", 0.0))
-		"skill_used":
+		"skill_resolved":
 			var skill: Node = payload.get("skill")
 			if is_instance_valid(skill) and skill.display_name != "Heavy":
 				kata.add_flow(param("skill_gain", 0.0))

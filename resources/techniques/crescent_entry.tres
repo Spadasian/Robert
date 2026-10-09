@@ -7,7 +7,7 @@
 script = ExtResource("1_data")
 id = "crescent_entry"
 display_name = "Crescent Entry"
-description = "Opening: using Iaijutsu starts the Kata."
+description = "Opening: the Iaijutsu cut starts the Kata (when the cut is made, not when you press the key)."
 category = 0
 rarity = 1
 color = Color(0.55, 0.85, 1, 1)

@@ -72,6 +72,7 @@ func _begin_strike() -> void:
 	player.body_mesh.transparency = 0.5
 	strike_start = player.global_position + Vector3(0.0, 0.9, 0.0)
 	AudioManager.play_sfx("iaijutsu_strike")
+	player.kata_events.skill_resolved.emit(self) # the cut itself, not the button press
 	VFX.shake(0.15, 0.2)
 
 

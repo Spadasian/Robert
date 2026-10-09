@@ -14,8 +14,8 @@ add("quick_draw", "Quick Draw", "Opening: dashing starts the Kata, with a little
 add("riposte_step", "Riposte Step", "Opening: a Perfect Dodge starts the Kata with a lot of Flow.", OP, 1, (0.5, 0.95, 1), "RiposteStep", {"start_flow": 0.6})
 add("ghost_step", "Ghost Step", "Opening: a hit on an enemy's back starts the Kata.", OP, 0, (0.7, 0.6, 1), "GhostStep", {"start_flow": 0.3})
 add("wounded_resolve", "Wounded Resolve", "Opening: taking damage starts the Kata with 40% Flow. Pain becomes focus.", OP, 1, (0.95, 0.35, 0.35), "EventOpening", {"event": "damage_taken", "start_flow": 0.4})
-add("crescent_entry", "Crescent Entry", "Opening: using Iaijutsu starts the Kata.", OP, 1, (0.55, 0.85, 1), "SkillOpening", {"skill": "Iaijutsu", "start_flow": 0.35})
-add("shadow_vault", "Shadow Vault", "Opening: using Kaeshi starts the Kata.", OP, 1, (0.55, 0.5, 0.9), "SkillOpening", {"skill": "Kaeshi", "start_flow": 0.35})
+add("crescent_entry", "Crescent Entry", "Opening: the Iaijutsu cut starts the Kata (when the cut is made, not when you press the key).", OP, 1, (0.55, 0.85, 1), "SkillOpening", {"skill": "Iaijutsu", "start_flow": 0.35})
+add("shadow_vault", "Shadow Vault", "Opening: a Kaeshi counter starts the Kata (when it hits back, not when you press the key).", OP, 1, (0.55, 0.5, 0.9), "SkillOpening", {"skill": "Kaeshi", "start_flow": 0.35})
 add("hunters_mark", "Hunter's Mark", "Opening: a kill starts the Kata and marks the nearest enemy (+20% damage taken, 4 s).", OP, 1, (0.9, 0.5, 0.3), "EventOpening", {"event": "kill", "start_flow": 0.3, "mark_bonus": 0.2, "mark_time": 4.0})
 add("critical_spark", "Critical Spark", "Opening: a critical hit starts the Kata.", OP, 1, (1, 0.9, 0.4), "EventOpening", {"event": "critical_hit", "start_flow": 0.3})
 add("thousand_cuts", "Thousand Cuts", "Opening: the first hit on an unhurt enemy starts the Kata.", OP, 0, (0.8, 0.8, 0.85), "EventOpening", {"event": "hit_dealt", "needs_full_health": True, "start_flow": 0.25})
@@ -27,7 +27,7 @@ add("crit_current", "Crit Current", "Flow: critical hits add a lot of Flow.", FL
 add("dancing_blade", "Dancing Blade", "Flow: every dash adds Flow.", FL, 0, (0.45, 0.85, 0.95), "EventFlow", {"light_gain": 0.05, "dodge_gain": 0.2, "loss_when_hit": 0.25})
 add("still_water", "Still Water", "Flow: slowly fills by itself (it does not keep the Kata open alone). Taking damage halves it.", FL, 1, (0.4, 0.6, 1), "EventFlow", {"light_gain": 0.05, "per_second": 0.2, "halve_when_hit": True})
 add("perfect_tempo", "Perfect Tempo", "Flow: a Perfect Dodge adds 50% Flow.", FL, 1, (0.5, 1, 0.9), "EventFlow", {"light_gain": 0.05, "perfect_gain": 0.5, "loss_when_hit": 0.25})
-add("skill_weaver", "Skill Weaver", "Flow: Iaijutsu, Kaeshi and Moonlit Storm add Flow.", FL, 1, (0.75, 0.55, 1), "EventFlow", {"light_gain": 0.05, "skill_gain": 0.3, "loss_when_hit": 0.25})
+add("skill_weaver", "Skill Weaver", "Flow: the Iaijutsu cut, a Kaeshi counter and Moonlit Storm starting add Flow.", FL, 1, (0.75, 0.55, 1), "EventFlow", {"light_gain": 0.05, "skill_gain": 0.3, "loss_when_hit": 0.25})
 add("backstab_rhythm", "Backstab Rhythm", "Flow: hits on an enemy's back add Flow.", FL, 0, (0.6, 0.4, 0.8), "EventFlow", {"light_gain": 0.05, "behind_gain": 0.3, "loss_when_hit": 0.25})
 
 # ---- Finishers

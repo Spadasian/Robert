@@ -70,6 +70,7 @@ func _counter() -> void:
 	hitbox.damage = player.stats.get_stat("attack_damage") * counter_multiplier
 	hitbox.set_active(true)
 	cooldown_left *= 1.0 - success_refund
+	player.kata_events.skill_resolved.emit(self) # only a real counter counts for the Kata
 	player._show_floating_text("COUNTER!", Color(0.6, 0.85, 1.0))
 	AudioManager.play_sfx("kaeshi_counter")
 	VFX.ring(player.global_position, 3.5, Color(0.7, 0.9, 1.0), 0.4)

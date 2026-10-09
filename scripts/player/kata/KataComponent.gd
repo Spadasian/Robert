@@ -44,6 +44,7 @@ func _ready() -> void:
 	events.perfect_dodge.connect(func(source: Node): _on_event("perfect_dodge", {"source": source}))
 	events.damage_taken.connect(func(amount: float): _on_event("damage_taken", {"amount": amount}))
 	events.skill_used.connect(func(skill: Node): _on_event("skill_used", {"skill": skill}))
+	events.skill_resolved.connect(func(skill: Node): _on_event("skill_resolved", {"skill": skill}))
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
 		room_manager.room_loaded.connect(func(_room: Node):

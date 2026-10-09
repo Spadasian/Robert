@@ -7,7 +7,7 @@
 script = ExtResource("1_data")
 id = "shadow_vault"
 display_name = "Shadow Vault"
-description = "Opening: using Kaeshi starts the Kata."
+description = "Opening: a Kaeshi counter starts the Kata (when it hits back, not when you press the key)."
 category = 0
 rarity = 1
 color = Color(0.55, 0.5, 0.9, 1)

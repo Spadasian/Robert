@@ -13,5 +13,6 @@ signal kill(info: Dictionary)
 signal dodge # a dash started
 signal perfect_dodge(source: Node) # a hit arrived just after a dash started: the dash made it miss
 signal damage_taken(amount: float)
-signal skill_used(skill: Node)
+signal skill_used(skill: Node) # the button was pressed
+signal skill_resolved(skill: Node) # the skill did its thing: the Kaeshi counter hit back, the Iaijutsu cut was made, the Ultimate began
 signal bleed_tick(enemy: Node, damage: float) # an enemy lost health to bleeding

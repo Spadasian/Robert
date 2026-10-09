@@ -4,7 +4,8 @@ extends RefCounted
 ##
 ## Events (event: String, payload: Dictionary) are the signals of KataEvents:
 ##   "light_attack", "heavy_attack", "hit_dealt", "critical_hit", "kill", "dodge", "perfect_dodge",
-##   "damage_taken", "skill_used". For the hit events payload is the info dictionary (see KataEvents).
+##   "damage_taken", "skill_used" (button pressed), "skill_resolved" (the skill really happened: Kaeshi countered,
+##   Iaijutsu cut, Ultimate began). Kata techniques that react to skills use "skill_resolved". For the hit events payload is the info dictionary (see KataEvents).
 
 var data: Resource # the TechniqueData; numbers are read with param()
 

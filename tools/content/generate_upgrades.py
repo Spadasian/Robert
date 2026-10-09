@@ -50,6 +50,10 @@ add("deadeye", "Deadeye", "Epic", CR, "Your first hit on each enemy has +15% cri
 add("overkill_wave", "Overkill Wave", "Epic", CR, "Damage beyond a kill hurts nearby enemies (50%)", [], ("OverkillWave", {"ratio": 0.5, "radius": 4.0}))
 add("death_mark", "Death Mark", "Epic", CR, "Light attacks kill enemies below 10% HP outright", [], ("DeathMark", {"threshold": 0.10}))
 add("lethal_rhythm", "Lethal Rhythm", "Legendary", CR, "Every 5th light hit in a row is a guaranteed critical hit (taking damage resets it)", [], ("LethalRhythm", {"every": 5}))
+add("falcon_eye", "Falcon Eye", "Common", CR, "+7% critical chance", [("crit_chance", "A", 0.07)])
+add("backstab_instinct", "Backstab Instinct", "Rare", CR, "Hits on an enemy's back have +30% critical chance", [], ("BackstabInstinct", {"bonus": 0.30}))
+add("perfect_aim", "Perfect Aim", "Epic", CR, "After a Perfect Dodge you have +40% critical chance for 3 s", [], ("PerfectAim", {"bonus": 0.40, "time": 3.0}))
+add("crit_momentum", "Crit Momentum", "Epic", CR, "Each critical hit gives +4% critical chance for 4 s (stacks up to 5 times)", [], ("CritMomentum", {"bonus": 0.04, "time": 4.0, "max_stacks": 5}))
 add("dragon_fang", "Dragon Fang", "Legendary", CR, "+25% critical chance and critical hits do +50% more damage", [("crit_chance", "A", 0.25), ("crit_damage", "A", 0.5)])
 
 # ---- Speed & Flow

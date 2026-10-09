@@ -14,11 +14,11 @@ const MASK_NORMAL: int = 5
 const MASK_DASHING: int = 1
 # Perfect Dodge, two ways (both scaled by the stat perfect_window; a dash lasts 0.18 s):
 # 1. a hit that really lands on the player this soon after a dash began (projectiles...);
-const PERFECT_DODGE_WINDOW: float = 0.14
+const PERFECT_DODGE_WINDOW: float = 0.12
 # 2. an enemy attack that STARTS this soon after a dash began and was aimed at the spot where the dash began,
 #    even if the player already left (the hit never lands). Margin: extra metres around the attack's reach.
-const PERFECT_ANTICIPATION: float = 0.22
-const PERFECT_REACH_MARGIN: float = 0.8
+const PERFECT_ANTICIPATION: float = 0.13
+const PERFECT_REACH_MARGIN: float = 0.4
 const PERFECT_COOLDOWN: float = 0.25 # one Perfect Dodge per attack
 # A Perfect Dodge slows the enemies (and their projectiles), not the player. Time Slip, Samurai Eye... make it last longer.
 const PERFECT_SLOW_SCALE: float = 0.2

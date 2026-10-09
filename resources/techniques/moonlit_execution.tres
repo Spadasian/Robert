@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/MoonlitExecution.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "moonlit_execution"
+display_name = "Moonlit Execution"
+description = "Master: with the Flow full, your Finisher is always a critical hit."
+category = 3
+rarity = 3
+color = Color(1, 0.95, 0.7, 1)
+behavior = ExtResource("2_behavior")
+params = {
+
+}

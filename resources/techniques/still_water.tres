@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/EventFlow.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "still_water"
+display_name = "Still Water"
+description = "Flow: slowly fills by itself (it does not keep the Kata open alone). Taking damage halves it."
+category = 1
+rarity = 1
+color = Color(0.4, 0.6, 1, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"light_gain": 0.05,
+"per_second": 0.2,
+"halve_when_hit": true
+}

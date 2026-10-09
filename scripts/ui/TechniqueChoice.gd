@@ -72,7 +72,7 @@ func _make_card(data: Resource, index: int, kata: Node) -> Button:
 	var description := _make_label(data.description, 20, Color(0.8, 0.8, 0.85))
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(description)
-	var old: Resource = kata.get_technique(data.category)
+	var old: Resource = kata.get_replaced(data)
 	if old:
 		box.add_child(_make_label("Replaces: %s" % old.display_name, 16, Color(1.0, 0.6, 0.5)))
 	box.add_child(_make_label("[%d]" % (index + 1), 18, Color(0.6, 0.6, 0.7)))

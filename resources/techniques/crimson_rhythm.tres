@@ -7,10 +7,10 @@
 script = ExtResource("1_data")
 id = "crimson_rhythm"
 display_name = "Crimson Rhythm"
-description = "Flow: every consecutive light hit is worth more. Getting hit breaks the rhythm."
+description = "Flow: every connecting light swing is worth more than the one before. Getting hit breaks the rhythm."
 category = 1
 rarity = 0
-color = Color(1, 0.4, 0.4, 1)
+color = Color(0.9, 0.2, 0.3, 1)
 behavior = ExtResource("2_behavior")
 params = {
 "base_gain": 0.15,

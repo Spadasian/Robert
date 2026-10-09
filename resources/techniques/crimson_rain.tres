@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/CrimsonRain.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "crimson_rain"
+display_name = "Crimson Rain"
+description = "Finisher: leaves a pool in front of you that makes the enemies bleed for 3 s."
+category = 2
+rarity = 1
+color = Color(0.85, 0.1, 0.25, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"flow_bonus": 0.6,
+"radius": 2.6,
+"time": 3.0,
+"bleed": 6.0,
+"distance": 3.0
+}

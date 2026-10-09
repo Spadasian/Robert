@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/EternalFlow.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "eternal_flow"
+display_name = "Eternal Flow"
+description = "Master: the Kata never closes by itself, but the Flow slowly drains."
+category = 3
+rarity = 3
+color = Color(0.4, 0.9, 1, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"decay": 0.05
+}

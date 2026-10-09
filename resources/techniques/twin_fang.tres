@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/TwinFang.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "twin_fang"
+display_name = "Twin Fang"
+description = "Finisher: the arc is followed by a quick thrust straight ahead (60% damage)."
+category = 2
+rarity = 1
+color = Color(1, 0.5, 0.5, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"flow_bonus": 0.6,
+"ratio": 0.6,
+"delay": 0.18
+}

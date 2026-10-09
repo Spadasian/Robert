@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/Tremor.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "tremor"
+display_name = "Tremor"
+description = "Finisher: the ground in front of you shakes and hurts everything on it for 3 s."
+category = 2
+rarity = 1
+color = Color(0.8, 0.65, 0.35, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"flow_bonus": 0.6,
+"radius": 2.8,
+"time": 3.0,
+"damage_ratio": 1.2,
+"distance": 3.0
+}

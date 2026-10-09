@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/GaleSlash.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "gale_slash"
+display_name = "Gale Slash"
+description = "Finisher: the slash also sends a wave that pierces 12 m forward."
+category = 2
+rarity = 1
+color = Color(0.6, 0.95, 1, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"flow_bonus": 0.6,
+"wave_ratio": 0.7
+}

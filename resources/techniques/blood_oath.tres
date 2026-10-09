@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/BloodOath.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "blood_oath"
+display_name = "Blood Oath"
+description = "Master: each kill in the room adds +1% damage to your next Finisher (max +100%)."
+category = 3
+rarity = 3
+color = Color(0.75, 0.05, 0.15, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"per_kill": 0.01,
+"max_bonus": 1.0
+}

@@ -18,18 +18,8 @@
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeManager.gd" id="8_upgrademanager"]
 [ext_resource type="Resource" path="res://resources/upgrades/_pool.tres" id="u_pool"]
 [ext_resource type="PackedScene" path="res://scenes/ui/UpgradeChoice.tscn" id="9_choice"]
-[ext_resource type="Resource" path="res://resources/techniques/quick_draw.tres" id="t_quick_draw"]
-[ext_resource type="Resource" path="res://resources/techniques/riposte_step.tres" id="t_riposte_step"]
-[ext_resource type="Resource" path="res://resources/techniques/ghost_step.tres" id="t_ghost_step"]
-[ext_resource type="Resource" path="res://resources/techniques/crimson_rhythm.tres" id="t_crimson_rhythm"]
-[ext_resource type="Resource" path="res://resources/techniques/untouched_edge.tres" id="t_untouched_edge"]
-[ext_resource type="Resource" path="res://resources/techniques/many_faces.tres" id="t_many_faces"]
-[ext_resource type="Resource" path="res://resources/techniques/moon_sever.tres" id="t_moon_sever"]
-[ext_resource type="Resource" path="res://resources/techniques/crimson_execution.tres" id="t_crimson_execution"]
-[ext_resource type="Resource" path="res://resources/techniques/whirlwind.tres" id="t_whirlwind"]
-[ext_resource type="Resource" path="res://resources/techniques/perfect_draw.tres" id="t_perfect_draw"]
-[ext_resource type="Resource" path="res://resources/techniques/shadow_doppelganger.tres" id="t_shadow_doppelganger"]
 [ext_resource type="Script" path="res://scripts/player/kata/TechniqueManager.gd" id="t_manager"]
+[ext_resource type="Resource" path="res://resources/techniques/_pool.tres" id="t_pool"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TechniqueChoice.tscn" id="t_choice"]
 [ext_resource type="Resource" path="res://resources/rooms/Room_MiniBoss_01.tres" id="mb_room"]
 [ext_resource type="Resource" path="res://resources/variants/oni_brute.tres" id="mb_v1"]
@@ -94,7 +84,7 @@ pool_resource = ExtResource("u_pool")
 
 [node name="TechniqueManager" type="Node" parent="."]
 script = ExtResource("t_manager")
-technique_pool = Array[Resource]([ExtResource("t_quick_draw"), ExtResource("t_riposte_step"), ExtResource("t_ghost_step"), ExtResource("t_crimson_rhythm"), ExtResource("t_untouched_edge"), ExtResource("t_many_faces"), ExtResource("t_moon_sever"), ExtResource("t_crimson_execution"), ExtResource("t_whirlwind"), ExtResource("t_perfect_draw"), ExtResource("t_shadow_doppelganger")])
+pool_resource = ExtResource("t_pool")
 
 [node name="EndScreen" parent="." instance=ExtResource("15_end")]
 

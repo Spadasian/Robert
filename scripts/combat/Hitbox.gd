@@ -47,7 +47,8 @@ func _on_area_entered(area: Area3D) -> void:
 	var health_before: float = target_health.current_health if target_health else 0.0
 	area.receive_hit(final_damage, attacker)
 	var info: Dictionary = {"target": area.get_parent(), "damage": final_damage, "crit": was_crit, "kind": kind, "hit_count": already_hit.size(),
-		"overkill": maxf(final_damage - health_before, 0.0)}
+		"overkill": maxf(final_damage - health_before, 0.0),
+		"was_full": target_health != null and health_before >= target_health.max_health - 0.01}
 	CombatManager.after_hit(attacker, target_health, info)
 	if team == "player": # the player's hits get a thud and sparks (hits on the player: see Player._on_damaged)
 		AudioManager.play_sfx("hit")

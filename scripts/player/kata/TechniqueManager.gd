@@ -10,6 +10,8 @@ extends Node
 const Category = TechniqueData.Category
 
 @export var technique_pool: Array[Resource] = []
+## A TechniquePool resource (written by tools/content/generate_techniques.py); when set it fills technique_pool.
+@export var pool_resource: Resource
 
 @onready var choice_ui: Node = $"../TechniqueChoice"
 
@@ -23,6 +25,8 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	if pool_resource != null:
+		technique_pool = pool_resource.techniques.duplicate()
 	var player := get_tree().get_first_node_in_group("player")
 	if player:
 		kata = player.get_node("KataComponent")

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/EventFlow.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "dancing_blade"
+display_name = "Dancing Blade"
+description = "Flow: every dash adds Flow."
+category = 1
+rarity = 0
+color = Color(0.45, 0.85, 0.95, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"light_gain": 0.05,
+"dodge_gain": 0.2,
+"loss_when_hit": 0.25
+}

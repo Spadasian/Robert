@@ -16,6 +16,9 @@ signal closed(reason: String)
 signal finisher_performed(context: Dictionary)
 
 const Category = TechniqueData.Category
+## Keys of the extra slots (Master "Double Opening" / "Dual Flow"); they sit next to the Opening / Flow slots.
+const EXTRA_OPENING: int = 10
+const EXTRA_FLOW: int = 11
 
 @export var open_timeout: float = 3.0 # seconds without Flow activity before a running Kata closes
 @export var flow_cap: float = 1.0
@@ -43,7 +46,10 @@ func _ready() -> void:
 	events.skill_used.connect(func(skill: Node): _on_event("skill_used", {"skill": skill}))
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager:
-		room_manager.room_loaded.connect(func(_room: Node): close("room"))
+		room_manager.room_loaded.connect(func(_room: Node):
+			close("room")
+			for behavior in _active_behaviors():
+				behavior.on_room(self))
 
 
 func get_technique(category: int) -> Resource:
@@ -62,17 +68,49 @@ func is_empty_slot(category: int) -> bool:
 	return not slots.has(category)
 
 
-## Puts a technique in the slot of its category. Returns the technique that was there (or null).
+## True when the Master technique opens a second slot for this category (Double Opening / Dual Flow).
+func has_extra_slot(category: int) -> bool:
+	var master: TechniqueBehavior = behaviors.get(Category.MASTER)
+	return master != null and master.extra_slot() == category
+
+
+## The slot key a technique would go to: its own category, or the extra slot when the main one holds another
+## technique and the extra one is free (and unlocked).
+func slot_key_for(data: Resource) -> int:
+	var main: int = data.category
+	var extra: int = EXTRA_OPENING if main == Category.OPENING else (EXTRA_FLOW if main == Category.FLOW else -1)
+	if extra >= 0 and has_extra_slot(main) and slots.has(main) and not slots.has(extra):
+		return extra
+	return main
+
+
+## The technique that putting `data` in the Kata would replace (null if it goes to a free slot).
+func get_replaced(data: Resource) -> Resource:
+	return slots.get(slot_key_for(data))
+
+
+## Puts a technique in its slot. Returns the technique that was there (or null).
 ## The first technique ever found awakens the Kata.
 func set_technique(data: Resource) -> Resource:
-	var previous: Resource = slots.get(data.category)
-	slots[data.category] = data
-	behaviors[data.category] = _make_behavior(data)
+	var key: int = slot_key_for(data)
+	var previous: Resource = slots.get(key)
+	slots[key] = data
+	behaviors[key] = _make_behavior(data)
+	if data.category == Category.MASTER:
+		if not has_extra_slot(Category.OPENING):
+			_drop_slot(EXTRA_OPENING) # a Master that does not open the extra slot closes it
+		if not has_extra_slot(Category.FLOW):
+			_drop_slot(EXTRA_FLOW)
 	if not is_awake:
 		is_awake = true
 		awakened.emit()
 	kata_changed.emit()
 	return previous
+
+
+func _drop_slot(key: int) -> void:
+	slots.erase(key)
+	behaviors.erase(key)
 
 
 func _make_behavior(data: Resource) -> TechniqueBehavior:
@@ -89,8 +127,9 @@ func _on_event(event: String, payload: Dictionary) -> void:
 	if not is_awake:
 		return
 	if not is_open:
-		if behaviors.has(Category.OPENING) and behaviors[Category.OPENING].opening_matches(self, event, payload):
-			_open()
+		var opener: TechniqueBehavior = _matching_opening(event, payload)
+		if opener != null:
+			_open(opener)
 			# the event that opened the Kata also counts for the Flow
 			for behavior in _active_behaviors():
 				behavior.on_event(self, event, payload)
@@ -99,6 +138,13 @@ func _on_event(event: String, payload: Dictionary) -> void:
 		return
 	for behavior in _active_behaviors():
 		behavior.on_event(self, event, payload)
+
+
+func _matching_opening(event: String, payload: Dictionary) -> TechniqueBehavior:
+	for key in [Category.OPENING, EXTRA_OPENING]:
+		if behaviors.has(key) and behaviors[key].opening_matches(self, event, payload):
+			return behaviors[key]
+	return null
 
 
 ## Opens the Kata without its Opening (Second Wind, Echo Opening, Shrine Bell). Does nothing while it sleeps.
@@ -110,12 +156,15 @@ func force_open(initial_flow: float = 0.0) -> void:
 	add_flow(initial_flow)
 
 
-func _open() -> void:
+func _open(opener: TechniqueBehavior = null) -> void:
 	is_open = true
 	flow_value = 0.0
 	idle_time = 0.0
-	for behavior in _active_behaviors():
-		behavior.on_open(self)
+	for key in behaviors:
+		var is_opening: bool = key == Category.OPENING or key == EXTRA_OPENING
+		if is_opening and opener != null and behaviors[key] != opener:
+			continue # with two Openings, only the one that started the Kata gives its start Flow
+		behaviors[key].on_open(self)
 	opened.emit()
 	kata_changed.emit()
 
@@ -133,18 +182,27 @@ func close(reason: String) -> void:
 
 
 ## Techniques call this to add (or take away, with a negative number) Flow. It also counts as activity.
-func add_flow(amount: float) -> void:
+func add_flow(amount: float, counts_as_activity: bool = true) -> void:
 	if not behaviors.has(Category.FLOW):
-		idle_time = 0.0
+		if counts_as_activity:
+			idle_time = 0.0
 		return # the chain: without a Flow technique the bar does not grow
 	var stats: Node = _stats()
 	if stats:
 		amount *= stats.get_stat("flow_gain") if amount > 0.0 else stats.get_stat("flow_loss")
 	if amount < 0.0 and flow_shield_left > 0.0:
-		idle_time = 0.0
+		if counts_as_activity:
+			idle_time = 0.0
 		return # Paper Lantern: no Flow is lost for a moment after a hit
 	flow_value = clampf(flow_value + amount, 0.0, flow_cap)
-	idle_time = 0.0
+	if counts_as_activity:
+		idle_time = 0.0
+	kata_changed.emit()
+
+
+## Sets the Flow to a value directly (Echo Opening, Still Water).
+func set_flow(value: float) -> void:
+	flow_value = clampf(value, 0.0, flow_cap)
 	kata_changed.emit()
 
 
@@ -166,6 +224,8 @@ func begin_finisher(heavy: Node) -> Dictionary:
 		behavior.on_finisher_strike(self, heavy, context)
 	finisher_performed.emit(context)
 	close("finisher")
+	for behavior in _active_behaviors():
+		behavior.after_finisher(self)
 	return context
 
 
@@ -179,6 +239,10 @@ func get_open_timeout() -> float:
 	return open_timeout + (stats.get_stat("kata_timeout_bonus") if stats else 0.0)
 
 
+func _prevents_timeout() -> bool:
+	return _active_behaviors().any(func(behavior): return behavior.prevents_timeout())
+
+
 func _physics_process(delta: float) -> void:
 	flow_shield_left = maxf(flow_shield_left - delta, 0.0)
 	if not is_open:
@@ -186,7 +250,7 @@ func _physics_process(delta: float) -> void:
 	idle_time += delta
 	for behavior in _active_behaviors():
 		behavior.on_tick(self, delta)
-	if idle_time >= get_open_timeout():
+	if idle_time >= get_open_timeout() and not _prevents_timeout():
 		close("timeout")
 	else:
 		kata_changed.emit() # the timer line on the HUD moves

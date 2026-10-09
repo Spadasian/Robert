@@ -11,7 +11,7 @@ var kata: Node
 func setup(kata_component: Node) -> void:
 	kata = kata_component
 	kata.kata_changed.connect(queue_redraw)
-	custom_minimum_size = Vector2(BOX.x * 3.0 + GAP * 2.0, BOX.y + 22.0)
+	custom_minimum_size = Vector2(BOX.x * 3.0 + GAP * 2.0, BOX.y + 44.0)
 	size = custom_minimum_size
 	queue_redraw()
 
@@ -51,10 +51,25 @@ func _draw() -> void:
 	_draw_box(finisher_rect, finisher.color, open and ready_glow > 0.0, finisher.display_name, font)
 	if open and ready_glow >= 0.99:
 		draw_rect(finisher_rect.grow(3.0), Color(1.0, 0.85, 0.4, 0.9), false, 3.0)
+	# extra slots (Master: Double Opening / Dual Flow): small boxes under the Opening / the Flow bar
+	var small := Vector2(BOX.x, 20.0)
+	if kata.has_extra_slot(TechniqueData.Category.OPENING):
+		_draw_extra(Rect2(origin + Vector2(0.0, BOX.y + 12.0), small), kata.get_technique(kata.EXTRA_OPENING), open, font)
+	if kata.has_extra_slot(TechniqueData.Category.FLOW):
+		_draw_extra(Rect2(origin + Vector2(BOX.x + GAP, BOX.y + 12.0), small), kata.get_technique(kata.EXTRA_FLOW), open, font)
 	# arrows between the boxes
 	for index in 2:
 		var arrow_x: float = BOX.x * (index + 1) + GAP * index + GAP * 0.5
 		draw_string(font, Vector2(arrow_x - 6.0, BOX.y * 0.7), ">", HORIZONTAL_ALIGNMENT_CENTER, 12.0, 20, Color(1, 1, 1, 0.6 if open else 0.25))
+
+
+func _draw_extra(rect: Rect2, technique: Resource, lit: bool, font: Font) -> void:
+	var color: Color = technique.color if technique else Color(0.4, 0.4, 0.5)
+	var text: String = technique.display_name if technique else "-"
+	var active: bool = lit and technique != null
+	draw_rect(rect, Color(color.r, color.g, color.b, 0.3) if active else Color(0.08, 0.07, 0.12, 0.85))
+	draw_rect(rect, color if active else Color(0.4, 0.4, 0.5, 0.8), false, 2.0)
+	draw_string(font, rect.position + Vector2(0.0, 15.0), text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, 13, Color(1, 1, 1, 1.0 if active else 0.55))
 
 
 func _draw_box(rect: Rect2, color: Color, lit: bool, text: String, font: Font) -> void:

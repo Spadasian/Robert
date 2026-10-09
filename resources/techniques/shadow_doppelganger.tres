@@ -10,7 +10,7 @@ display_name = "Shadow Doppelganger"
 description = "Master: a shadow repeats every Finisher a moment later."
 category = 3
 rarity = 3
-color = Color(0.6, 0.3, 0.9, 1)
+color = Color(0.45, 0.35, 0.7, 1)
 behavior = ExtResource("2_behavior")
 params = {
 "echo_damage": 0.6

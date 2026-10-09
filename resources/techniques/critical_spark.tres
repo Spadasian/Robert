@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/EventOpening.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "critical_spark"
+display_name = "Critical Spark"
+description = "Opening: a critical hit starts the Kata."
+category = 0
+rarity = 1
+color = Color(1, 0.9, 0.4, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"event": "critical_hit",
+"start_flow": 0.3
+}

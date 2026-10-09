@@ -21,6 +21,8 @@ var telegraph_material: StandardMaterial3D
 var shape_node: CollisionShape3D
 var shape_base_position: Vector3
 var telegraph_base_z: float = 1.7
+var finisher_context: Dictionary = {} # the context of the Finisher that is striking now (empty for a plain heavy attack)
+var invulnerable_now: bool = false # Storm Step
 
 
 func _ready() -> void:
@@ -35,6 +37,7 @@ func _ready() -> void:
 	telegraph_material = _make_glow_material(Color(1.0, 0.7, 0.3, 0.25))
 	telegraph.material_override = telegraph_material
 	telegraph.visible = false
+	player.get_node("KataEvents").hit_dealt.connect(_on_hit_dealt)
 
 
 func _start() -> void:
@@ -64,6 +67,7 @@ func _tick(delta: float) -> void:
 				_end_strike()
 		Phase.RECOVER:
 			if phase_time >= recover_time:
+				invulnerable_now = false
 				finish()
 
 
@@ -77,7 +81,9 @@ func _begin_strike() -> void:
 	phase_time = 0.0
 	# If a Kata is running, this strike is its Finisher: the techniques may multiply the damage and add effects.
 	var context: Dictionary = player.kata.begin_finisher(self)
-	hitbox.damage = player.stats.get_stat("attack_damage") * damage_multiplier * context.damage_multiplier * player.stats.get_stat("heavy_damage")
+	hitbox.damage = strike_damage(context)
+	finisher_context = context if context.was_open else {}
+	invulnerable_now = context.get("invulnerable", false)
 	_apply_finisher_shape(context)
 	hitbox.force_crit = context.get("force_crit", false)
 	hitbox.execute_below = context.get("execute_below", 0.0)
@@ -92,6 +98,20 @@ func _begin_strike() -> void:
 	VFX.shake(0.2 if finisher else 0.12, 0.2)
 	if context.has("echo"):
 		_echo_strike(context.echo, arc_size, arc_color)
+
+
+## The damage of this strike for a given Finisher context (waves and extra strikes use it too).
+func strike_damage(context: Dictionary) -> float:
+	return player.stats.get_stat("attack_damage") * damage_multiplier * context.get("damage_multiplier", 1.0) * player.stats.get_stat("heavy_damage")
+
+
+## Finisher techniques can put a callback in context["on_hit"] (an Array of Callables): called with the info of every
+## enemy this heavy attack hits.
+func _on_hit_dealt(info: Dictionary) -> void:
+	if finisher_context.is_empty() or info.get("kind", "") != "heavy":
+		return
+	for callback in finisher_context.get("on_hit", []):
+		callback.call(info)
 
 
 ## Finisher techniques can widen the slash ("scale") or turn it into a circle around the player ("spin").
@@ -118,6 +138,7 @@ func _echo_strike(damage_share: float, arc_size: float, color: Color) -> void:
 func _end_strike() -> void:
 	phase = Phase.RECOVER
 	phase_time = 0.0
+	finisher_context = {}
 	hitbox.set_active(false)
 	_reset_finisher_shape()
 	player.velocity = Vector3.ZERO # stop where the step ends, no sliding
@@ -131,9 +152,15 @@ func _reset_finisher_shape() -> void:
 
 
 func _cancel() -> void:
+	invulnerable_now = false
+	finisher_context = {}
 	hitbox.set_active(false)
 	_reset_finisher_shape()
 	telegraph.visible = false
+
+
+func is_invulnerable() -> bool:
+	return invulnerable_now
 
 
 func get_cooldown_multiplier() -> float:

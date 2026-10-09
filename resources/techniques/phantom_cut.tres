@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/PhantomCut.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "phantom_cut"
+display_name = "Phantom Cut"
+description = "Master: every 4th light hit leaves a phantom slash that strikes half a second later."
+category = 3
+rarity = 3
+color = Color(0.7, 0.6, 1, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"every": 4,
+"ratio": 1.0,
+"delay": 0.5
+}

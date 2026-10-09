@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/EventOpening.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "hunters_mark"
+display_name = "Hunter's Mark"
+description = "Opening: a kill starts the Kata and marks the nearest enemy (+20% damage taken, 4 s)."
+category = 0
+rarity = 1
+color = Color(0.9, 0.5, 0.3, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"event": "kill",
+"start_flow": 0.3,
+"mark_bonus": 0.2,
+"mark_time": 4.0
+}

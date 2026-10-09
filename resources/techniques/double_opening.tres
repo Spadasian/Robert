@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/DoubleOpening.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "double_opening"
+display_name = "Double Opening"
+description = "Master: a second Opening slot. Either Opening can start the Kata."
+category = 3
+rarity = 3
+color = Color(0.6, 1, 0.8, 1)
+behavior = ExtResource("2_behavior")
+params = {
+
+}

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="TechniqueData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/kata/TechniqueData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/player/kata/techniques/EventOpening.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = "wounded_resolve"
+display_name = "Wounded Resolve"
+description = "Opening: taking damage starts the Kata with 40% Flow. Pain becomes focus."
+category = 0
+rarity = 1
+color = Color(0.95, 0.35, 0.35, 1)
+behavior = ExtResource("2_behavior")
+params = {
+"event": "damage_taken",
+"start_flow": 0.4
+}

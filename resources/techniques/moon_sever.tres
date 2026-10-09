@@ -7,10 +7,10 @@
 script = ExtResource("1_data")
 id = "moon_sever"
 display_name = "Moon Sever"
-description = "Finisher: a huge, wide slash. Hits harder with Flow."
+description = "Finisher: a huge slash, wider and harder with Flow."
 category = 2
 rarity = 1
-color = Color(0.6, 0.7, 1, 1)
+color = Color(1, 0.9, 0.5, 1)
 behavior = ExtResource("2_behavior")
 params = {
 "flow_bonus": 1.0,

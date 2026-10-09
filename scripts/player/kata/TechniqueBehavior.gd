@@ -53,3 +53,25 @@ func finisher_multiplier(_kata: Node) -> float:
 ## (damage_multiplier, flow, ...); `heavy` is the HeavyAttack node (its position and direction can be used).
 func on_finisher_strike(_kata: Node, _heavy: Node, _context: Dictionary) -> void:
 	pass
+
+
+## Called after the Kata closed because of the Finisher (Echo Opening reopens it here).
+func after_finisher(_kata: Node) -> void:
+	pass
+
+
+# ---- Master
+
+## A new room was loaded (called even when the Kata is closed): reset room counters here.
+func on_room(_kata: Node) -> void:
+	pass
+
+
+## True to keep the Kata from closing by itself when nothing happens (Eternal Flow).
+func prevents_timeout() -> bool:
+	return false
+
+
+## A Master that gives the Kata a second slot returns the category of it (OPENING or FLOW), otherwise -1.
+func extra_slot() -> int:
+	return -1

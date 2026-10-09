@@ -7,11 +7,12 @@
 script = ExtResource("1_data")
 id = "untouched_edge"
 display_name = "Untouched Edge"
-description = "Flow: builds fast while you are not hit. The first hit you take wipes it all."
+description = "Flow: builds fast and your blade is 25% quicker while you are not hit. The first hit you take wipes both."
 category = 1
 rarity = 1
 color = Color(0.9, 0.95, 1, 1)
 behavior = ExtResource("2_behavior")
 params = {
-"gain_per_hit": 0.4
+"gain_per_hit": 0.4,
+"attack_speed": 0.25
 }

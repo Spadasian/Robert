@@ -9,8 +9,8 @@ id = "whirlwind"
 display_name = "Whirlwind"
 description = "Finisher: the slash becomes a circle around you."
 category = 2
-rarity = 1
-color = Color(0.5, 1, 0.7, 1)
+rarity = 0
+color = Color(0.6, 0.9, 0.8, 1)
 behavior = ExtResource("2_behavior")
 params = {
 "flow_bonus": 0.8,

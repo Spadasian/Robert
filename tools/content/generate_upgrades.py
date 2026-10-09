@@ -73,7 +73,7 @@ add("stone_skin", "Stone Skin", "Common", SV, "-8% damage taken", [("damage_take
 add("bamboo_heart", "Bamboo Heart", "Common", SV, "Heal 10% of your HP when you clear a fight room", [], ("BambooHeart", {"ratio": 0.10}))
 add("second_chance", "Second Chance", "Epic", SV, "Once per run, a deadly hit leaves you with 30% HP", [], ("SecondChance", {"ratio": 0.3}))
 add("armor_plate", "Armor Plate", "Rare", SV, "A 15 damage shield comes back in every room", [], ("ArmorPlate", {"amount": 15.0}))
-add("warm_tea", "Warm Tea", "Common", SV, "Heal 15% HP when you enter a Shop or Treasure room", [], ("WarmTea", {"ratio": 0.15}))
+add("warm_tea", "Warm Tea", "Common", SV, "Heal 15% HP the first time you enter a Shop in each biome", [], ("WarmTea", {"ratio": 0.15}))
 add("last_stand", "Last Stand", "Rare", SV, "Below 30% HP: +25% damage and -20% damage taken", [], ("LastStand", {"threshold": 0.3, "damage": 0.25, "defense": 0.2}))
 add("spiked_armor", "Spiked Armor", "Rare", SV, "Enemies that hit you take 8 damage", [], ("SpikedArmor", {"damage": 8.0}))
 add("lifebloom", "Lifebloom", "Rare", SV, "+15 max HP and heal 20 HP on every level up", [("max_health", "A", 15)], ("Lifebloom", {"heal": 20.0}))

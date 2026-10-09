@@ -8,7 +8,7 @@
 script = ExtResource("1_data")
 id = "warm_tea"
 display_name = "Warm Tea"
-description = "Heal 15% HP when you enter a Shop or Treasure room"
+description = "Heal 15% HP the first time you enter a Shop in each biome"
 effects = Array[Resource]([])
 behavior = ExtResource("3_behavior")
 params = {

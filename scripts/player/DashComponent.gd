@@ -17,6 +17,8 @@ var is_dashing: bool = false
 var direction: Vector3 = Vector3.ZERO
 var time_left: float = 0.0
 var elapsed: float = 0.0 # seconds since this dash began
+var since_start: float = 999.0 # seconds since the last dash began (keeps counting after it ends)
+var start_position: Vector3 = Vector3.ZERO # where the player stood when the last dash began
 var recharge_left: float = 0.0
 
 
@@ -56,12 +58,15 @@ func try_dash(dash_direction: Vector3) -> bool:
 	direction = dash_direction.normalized()
 	time_left = dash_duration
 	elapsed = 0.0
+	since_start = 0.0
+	start_position = get_parent().global_position if get_parent() is Node3D else Vector3.ZERO
 	is_dashing = true
 	dash_started.emit()
 	return true
 
 
 func _physics_process(delta: float) -> void:
+	since_start += delta
 	if is_dashing:
 		elapsed += delta
 		time_left -= delta

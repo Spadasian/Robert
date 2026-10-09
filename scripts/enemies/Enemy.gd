@@ -17,6 +17,7 @@ var body_material: StandardMaterial3D
 var base_color: Color
 var status: EnemyStatus = EnemyStatus.new(self) # bleed, stun, slow, mark
 var knock_velocity: Vector3 = Vector3.ZERO
+var slow_tinted: bool = false # blue glow while the Perfect Dodge slow is on
 var hide_next_telegraph: bool = false # Eclipse: the first attack shows no warning
 
 
@@ -86,6 +87,19 @@ func lock_to_floor() -> void:
 func _process(delta: float) -> void:
 	lock_to_floor()
 	status.tick(delta)
+	_update_slow_tint()
+
+
+## Enemies glow blue while time is slowed for them (Perfect Dodge), so the effect is easy to see.
+func _update_slow_tint() -> void:
+	var slowed: bool = EnemyTime.get_scale() < 0.6 and not health.is_dead()
+	if slowed == slow_tinted or body_material == null:
+		return
+	slow_tinted = slowed
+	body_material.emission_enabled = slowed
+	if slowed:
+		body_material.emission = Color(0.3, 0.55, 1.0)
+		body_material.emission_energy_multiplier = 0.9
 
 
 func _on_damaged(amount: float) -> void:

@@ -21,7 +21,31 @@ func _ready() -> void:
 func set_active(active: bool) -> void:
 	if active:
 		already_hit.clear()
+		if team == "enemy" and is_inside_tree():
+			# Tell the player an attack is starting: a dash that began just before it counts as a Perfect Dodge,
+			# even if the player already left the zone and the hit never lands.
+			var player := get_tree().get_first_node_in_group("player")
+			if player and player.has_method("on_enemy_attack"):
+				player.on_enemy_attack(self)
 	set_deferred("monitoring", active)
+
+
+## About how far this attack reaches from its centre (m), from its collision shape.
+func get_reach() -> float:
+	var reach: float = 3.0
+	for child in get_children():
+		if child is CollisionShape3D and child.shape != null:
+			var shape: Shape3D = child.shape
+			if shape is BoxShape3D:
+				reach = shape.size.length() * 0.5
+			elif shape is SphereShape3D or shape is CapsuleShape3D:
+				reach = shape.radius
+			elif shape is CylinderShape3D:
+				reach = maxf(shape.radius, shape.height * 0.5)
+			var scale_factor: Vector3 = global_transform.basis.get_scale() * child.scale
+			reach *= maxf(scale_factor.x, scale_factor.z)
+			break
+	return clampf(reach, 1.0, 8.0)
 
 
 func _on_area_entered(area: Area3D) -> void:

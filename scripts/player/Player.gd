@@ -12,11 +12,17 @@ const CAMERA_YAW_DEGREES: float = 45.0
 # Layers: 1 = world, 4 = enemies. While dashing the player passes through enemies.
 const MASK_NORMAL: int = 5
 const MASK_DASHING: int = 1
-# A hit that arrives this soon after a dash began is a Perfect Dodge (a dash lasts 0.18 s).
-const PERFECT_DODGE_WINDOW: float = 0.10
+# Perfect Dodge, two ways (both scaled by the stat perfect_window; a dash lasts 0.18 s):
+# 1. a hit that really lands on the player this soon after a dash began (projectiles...);
+const PERFECT_DODGE_WINDOW: float = 0.14
+# 2. an enemy attack that STARTS this soon after a dash began and was aimed at the spot where the dash began,
+#    even if the player already left (the hit never lands). Margin: extra metres around the attack's reach.
+const PERFECT_ANTICIPATION: float = 0.22
+const PERFECT_REACH_MARGIN: float = 0.8
+const PERFECT_COOLDOWN: float = 0.25 # one Perfect Dodge per attack
 # A Perfect Dodge slows the enemies (and their projectiles), not the player. Time Slip, Samurai Eye... make it last longer.
-const PERFECT_SLOW_SCALE: float = 0.25
-const PERFECT_SLOW_TIME: float = 0.4
+const PERFECT_SLOW_SCALE: float = 0.2
+const PERFECT_SLOW_TIME: float = 0.7
 
 @onready var model: Node3D = $Model
 @onready var body_mesh: MeshInstance3D = $Model/Body
@@ -34,6 +40,8 @@ var free_hits_left: int = 0 # hits still ignored in this room (Fox Mask)
 var free_hits_max: int = 0
 var skills: Array[PlayerSkill] = [] # right click, Shift, Q, E (children of this scene)
 var ghost_timer: float = 0.0 # time until the next dash afterimage
+var perfect_cooldown_left: float = 0.0
+var perfect_guard_left: float = 0.0 # after a Perfect Dodge the player cannot be hurt for a moment (the attack that was dodged)
 
 
 func _ready() -> void:
@@ -49,6 +57,7 @@ func _ready() -> void:
 		if child is PlayerSkill:
 			skills.append(child)
 			child.activated.connect(func(): kata_events.skill_used.emit(child))
+	add_child(preload("res://scripts/combat/PerfectDodgeFX.gd").new()) # the screen reacts while the enemies are slowed
 	add_child(preload("res://scripts/player/CorruptionVfx.gd").new()) # purple wisps that grow with Corruption
 	dash.dash_started.connect(_on_dash_started)
 	dash.dash_finished.connect(_on_dash_finished)
@@ -59,6 +68,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	EnemyTime.tick(delta)
+	perfect_cooldown_left = maxf(perfect_cooldown_left - delta, 0.0)
+	perfect_guard_left = maxf(perfect_guard_left - delta, 0.0)
 	if health.is_dead():
 		return
 	_move(delta)
@@ -187,11 +198,11 @@ func _is_behind(target: Node) -> bool:
 func _on_hit_received(damage: float, _source: Node) -> void:
 	if health.is_dead():
 		return
+	if perfect_guard_left > 0.0:
+		return
 	if dash.is_invulnerable():
 		if dash.elapsed <= PERFECT_DODGE_WINDOW * stats.get_stat("perfect_window"):
-			kata_events.perfect_dodge.emit(_source)
-			_show_floating_text("PERFECT", Color(0.5, 0.95, 1.0))
-			EnemyTime.slow(PERFECT_SLOW_SCALE, PERFECT_SLOW_TIME + stats.get_stat("perfect_slow_bonus"))
+			trigger_perfect_dodge(_source)
 		return
 	var damage_taken_multiplier: float = 1.0
 	for skill in skills:
@@ -212,6 +223,31 @@ func _on_hit_received(damage: float, _source: Node) -> void:
 	var final_damage: float = rules.process_incoming(damage * stats.get_stat("damage_taken") * damage_taken_multiplier, _source)
 	if final_damage > 0.0:
 		health.take_damage(final_damage)
+
+
+## An enemy attack is starting (Hitbox.set_active): a dash that began just before it, near where the attack is aimed,
+## is a Perfect Dodge, even when the player is already out of reach.
+func on_enemy_attack(hitbox: Node) -> void:
+	if health.is_dead() or dash.since_start > PERFECT_ANTICIPATION * stats.get_stat("perfect_window"):
+		return
+	var offset: Vector3 = hitbox.global_position - dash.start_position
+	offset.y = 0.0
+	if offset.length() <= hitbox.get_reach() + PERFECT_REACH_MARGIN:
+		trigger_perfect_dodge(hitbox.source)
+
+
+## The Perfect Dodge itself: Kata event, text, the enemies slow down, a short guard. Once per attack.
+func trigger_perfect_dodge(source: Node) -> bool:
+	if perfect_cooldown_left > 0.0:
+		return false
+	perfect_cooldown_left = PERFECT_COOLDOWN
+	perfect_guard_left = PERFECT_COOLDOWN
+	kata_events.perfect_dodge.emit(source)
+	_show_floating_text("PERFECT", Color(0.5, 0.95, 1.0))
+	EnemyTime.slow(PERFECT_SLOW_SCALE, PERFECT_SLOW_TIME + stats.get_stat("perfect_slow_bonus"))
+	VFX.ring(global_position + Vector3(0.0, 0.1, 0.0), 2.6, Color(0.5, 0.85, 1.0, 0.9), 0.5)
+	AudioManager.play_sfx("blink", -3.0)
+	return true
 
 
 func _on_stats_changed() -> void:

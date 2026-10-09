@@ -19,6 +19,7 @@ const ROOM_COLORS: Array[Color] = [
 
 @onready var vignette: TextureRect = $Overlay/Vignette
 @onready var hit_flash: ColorRect = $Overlay/HitFlash
+var slow_tint: ColorRect
 @onready var hp_bar: ProgressBar = $StatusPanel/Box/HPBox/HPBar
 @onready var hp_trail: ProgressBar = $StatusPanel/Box/HPBox/HPTrail
 @onready var hp_label: Label = $StatusPanel/Box/HPBox/HPLabel
@@ -299,6 +300,17 @@ func show_message(text: String, duration: float = 2.0) -> void:
 	await get_tree().create_timer(duration).timeout
 	if my_serial == message_serial:
 		message_label.visible = false
+
+
+## Blue-white tint over the whole screen while the enemies are slowed (Perfect Dodge). strength 0..1.
+func set_slow_tint(strength: float) -> void:
+	if slow_tint == null:
+		slow_tint = ColorRect.new()
+		slow_tint.color = Color(0.35, 0.6, 1.0, 0.0)
+		slow_tint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slow_tint.set_anchors_preset(Control.PRESET_FULL_RECT)
+		$Overlay.add_child(slow_tint)
+	slow_tint.color.a = 0.2 * strength
 
 
 func fade_out(duration: float = 0.25) -> void:

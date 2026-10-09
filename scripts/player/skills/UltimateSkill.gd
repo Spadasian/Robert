@@ -1,12 +1,12 @@
 extends "res://scripts/player/skills/PlayerSkill.gd"
-## E: the ultimate, a storm of blades. It has no cooldown: it charges as the player lands hits (and more for kills)
-## and can be used when the meter is full. While it lasts the player moves faster, takes less damage and everything
+## E: the ultimate, a storm of blades. It has no cooldown: it charges only from KILLS (a plain hit gives nothing,
+## unless an upgrade raises the stat "ultimate_hit_charge") and can be used when the meter is full. While it lasts the player moves faster, takes less damage and everything
 ## around him is cut every tick. Basic attacks and other skills are not available during it.
 
 signal charge_changed(charge: float, maximum: float)
 
 @export var max_charge: float = 100.0
-@export var charge_per_hit: float = 2.0
+@export var charge_per_hit: float = 0.0 # a hit that does not kill; upgrades add to it with "ultimate_hit_charge"
 @export var charge_per_kill: float = 6.0
 @export var duration: float = 3.5
 @export var tick_interval: float = 0.25
@@ -23,6 +23,7 @@ var time_active: float = 0.0
 var tick_timer: float = 0.0
 var hit_window: float = 0.0
 var duration_bonus: float = 0.0
+var charge_locked: bool = false # Silent Night: the Ultimate does not charge
 
 
 func _ready() -> void:
@@ -43,7 +44,7 @@ func is_available() -> bool:
 
 
 func add_charge(amount: float) -> void:
-	if is_active:
+	if is_active or charge_locked or amount <= 0.0:
 		return # no recharging while it runs
 	charge = minf(charge + amount * player.stats.get_stat("ultimate_charge"), max_charge)
 	charge_changed.emit(charge, max_charge)
@@ -56,7 +57,10 @@ func extend_time(seconds: float) -> void:
 
 
 func on_player_hit_dealt(target_killed: bool) -> void:
-	add_charge(charge_per_kill if target_killed else charge_per_hit)
+	if target_killed:
+		add_charge(charge_per_kill)
+	else:
+		add_charge(charge_per_hit + player.stats.get_stat("ultimate_hit_charge"))
 
 
 func _start() -> void:

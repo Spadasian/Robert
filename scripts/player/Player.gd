@@ -161,6 +161,8 @@ func is_hidden() -> bool:
 func on_bleed_tick(enemy: Node, damage: float, killed: bool) -> void:
 	kata_events.bleed_tick.emit(enemy, damage)
 	if killed:
+		for skill in skills:
+			skill.on_player_hit_dealt(true) # a kill by bleeding charges the Ultimate too
 		var info: Dictionary = {"target": enemy, "damage": damage, "crit": false, "kind": "bleed", "hit_count": 1, "killed": true, "overkill": 0.0}
 		kata_events.kill.emit(info)
 		var heal_amount: float = stats.get_stat("life_on_kill")

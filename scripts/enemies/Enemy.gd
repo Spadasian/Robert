@@ -17,6 +17,7 @@ var body_material: StandardMaterial3D
 var base_color: Color
 var status: EnemyStatus = EnemyStatus.new(self) # bleed, stun, slow, mark
 var knock_velocity: Vector3 = Vector3.ZERO
+var hide_next_telegraph: bool = false # Eclipse: the first attack shows no warning
 
 
 func _ready() -> void:
@@ -40,6 +41,14 @@ func _on_hit_received(damage: float, _source: Node) -> void:
 ## their delta by this at the start of _physics_process and call slide() instead of move_and_slide().
 func time_scale() -> float:
 	return EnemyTime.get_scale() * status.speed_factor()
+
+
+## Enemy scripts ask this before showing the red warning of an attack (false once when Eclipse hides it).
+func telegraph_visible() -> bool:
+	if hide_next_telegraph:
+		hide_next_telegraph = false
+		return false
+	return true
 
 
 ## Pushed away (Tengu Fan): an extra velocity that fades out quickly. `direction` is flat, `strength` in m/s.

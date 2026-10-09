@@ -39,6 +39,7 @@ signal stats_changed
 	"reward_cards": 0.0, # extra cards in the Duel and Arena technique rewards (Scroll of Duels)
 	"master_chance": 0.0, # extra chance of a Master technique card in Duel and Arena rewards
 	"ultimate_charge": 1.0, # multiplier of how fast the Ultimate charges
+	"ultimate_hit_charge": 0.0, # Ultimate charge from a hit that does not kill (0 = it charges only from kills)
 	"shop_extra_item": 0.0, # extra stands in a Shop (Merchant's Seal)
 	"shop_technique_mult": 1.0, # multiplier of the chance that a Shop sells a technique
 }

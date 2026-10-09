@@ -10,6 +10,10 @@ signal technique_chosen(technique: Resource)
 @onready var title_label: Label = $Center/VBox/Title
 
 var current_choices: Array = []
+var kata_ref: Node
+var rerolls_left: int = 0
+var reroll_callable: Callable
+var reroll_button: Button
 
 
 func _ready() -> void:
@@ -17,14 +21,13 @@ func _ready() -> void:
 	keep_button.pressed.connect(_select.bind(null))
 
 
-func choose(choices: Array, kata: Node, title: String = "Learn a technique") -> Resource:
+## `rerolls` > 0 shows a Reroll button [R]; `reroll` is a Callable that returns the new cards.
+func choose(choices: Array, kata: Node, title: String = "Learn a technique", rerolls: int = 0, reroll: Callable = Callable()) -> Resource:
 	title_label.text = title
-	current_choices = choices
-	for old_card in card_row.get_children():
-		card_row.remove_child(old_card)
-		old_card.queue_free()
-	for index in choices.size():
-		card_row.add_child(_make_card(choices[index], index, kata))
+	kata_ref = kata
+	rerolls_left = rerolls
+	reroll_callable = reroll
+	_show_cards(choices)
 	visible = true
 	get_tree().paused = true
 	var chosen: Resource = await technique_chosen
@@ -34,8 +37,40 @@ func choose(choices: Array, kata: Node, title: String = "Learn a technique") -> 
 	return chosen
 
 
+func _show_cards(choices: Array) -> void:
+	current_choices = choices
+	for old_card in card_row.get_children():
+		card_row.remove_child(old_card)
+		old_card.queue_free()
+	for index in choices.size():
+		card_row.add_child(_make_card(choices[index], index, kata_ref))
+	if reroll_button == null:
+		reroll_button = Button.new()
+		reroll_button.custom_minimum_size = Vector2(260, 44)
+		reroll_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		reroll_button.pressed.connect(_reroll)
+		card_row.get_parent().add_child(reroll_button)
+	reroll_button.visible = rerolls_left > 0
+	reroll_button.text = "Reroll  [R]   (%d left)" % rerolls_left
+
+
+func _reroll() -> void:
+	if not visible or rerolls_left <= 0 or not reroll_callable.is_valid():
+		return
+	var fresh: Array = reroll_callable.call()
+	if fresh.is_empty():
+		return
+	rerolls_left -= 1
+	AudioManager.play_sfx("upgrade")
+	_show_cards(fresh)
+
+
 func _input(event: InputEvent) -> void:
 	if not visible or not (event is InputEventKey) or not event.pressed or event.echo:
+		return
+	if event.keycode == KEY_R:
+		_reroll()
+		get_viewport().set_input_as_handled()
 		return
 	var index: int = event.keycode - KEY_1
 	if index >= 0 and index < current_choices.size():

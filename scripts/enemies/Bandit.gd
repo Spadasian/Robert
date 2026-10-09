@@ -100,7 +100,7 @@ func _change_state(new_state: State) -> void:
 		State.WINDUP:
 			# Telegraph: the red zone shows where the hit will land.
 			visual_material.albedo_color.a = 0.3
-			attack_visual.visible = true
+			attack_visual.visible = telegraph_visible()
 		State.ATTACK:
 			visual_material.albedo_color.a = 0.85
 			attack_hitbox.set_active(true)

@@ -108,7 +108,7 @@ func _change_state(new_state: State) -> void:
 	match new_state:
 		State.AIM:
 			visual_material.albedo_color.a = 0.3
-			aim_pivot.visible = true
+			aim_pivot.visible = telegraph_visible()
 		State.RECOVER:
 			aim_pivot.visible = false
 			_on_recover_started()

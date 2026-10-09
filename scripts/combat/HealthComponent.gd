@@ -8,6 +8,7 @@ signal died
 @export var max_health: float = 100.0
 
 var current_health: float
+var heal_blocked: bool = false # Hunger Moon: nothing heals in the arena
 
 
 func _ready() -> void:
@@ -47,7 +48,7 @@ func set_current(value: float) -> void:
 
 
 func heal(amount: float) -> void:
-	if is_dead():
+	if is_dead() or heal_blocked:
 		return
 	current_health = minf(current_health + amount, max_health)
 	health_changed.emit(current_health, max_health)

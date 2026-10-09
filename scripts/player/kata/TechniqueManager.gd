@@ -50,8 +50,8 @@ func next_chain_category() -> int:
 ## The cards of an offer: while the chain is incomplete, `count` techniques of the next category; afterwards a random
 ## mix of all categories (one of each category first, so the cards are usually different parts).
 ## `categories` is ignored (kept so the sources do not need to change). Techniques already owned are never offered.
-func get_choices(_categories: Array, count: int, add_master: bool = false) -> Array:
-	var owned_free: Array = technique_pool.filter(func(data): return not kata.has_technique(data.id))
+func get_choices(_categories: Array, count: int, add_master: bool = false, exclude_ids: Array = []) -> Array:
+	var owned_free: Array = technique_pool.filter(func(data): return not kata.has_technique(data.id) and not exclude_ids.has(data.id))
 	var next: int = next_chain_category()
 	var choices: Array = []
 	if next >= 0:
@@ -81,7 +81,8 @@ func get_choices(_categories: Array, count: int, add_master: bool = false) -> Ar
 
 
 ## Shows the choice and equips the pick. Returns the technique taken (null if none was left or the player kept the Kata).
-func offer(categories: Array, count: int = 3, add_master: bool = false) -> Resource:
+## `rerolls`: how many times the player may ask for other cards (Hunger Moon).
+func offer(categories: Array, count: int = 3, add_master: bool = false, rerolls: int = 0) -> Resource:
 	while busy or _upgrade_choice_open():
 		await get_tree().process_frame
 	offer_pending = false
@@ -89,7 +90,14 @@ func offer(categories: Array, count: int = 3, add_master: bool = false) -> Resou
 	if choices.is_empty():
 		return null
 	busy = true
-	var chosen: Resource = await choice_ui.choose(choices, kata, _title_for(choices))
+	var shown_ids: Array = choices.map(func(data): return data.id)
+	var reroll: Callable = func() -> Array:
+		var fresh: Array = get_choices(categories, count, add_master, shown_ids)
+		if fresh.is_empty():
+			fresh = get_choices(categories, count, add_master)
+		shown_ids.append_array(fresh.map(func(data): return data.id))
+		return fresh
+	var chosen: Resource = await choice_ui.choose(choices, kata, _title_for(choices), rerolls, reroll)
 	busy = false
 	if chosen == null:
 		return null

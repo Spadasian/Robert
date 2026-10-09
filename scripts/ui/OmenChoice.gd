@@ -61,6 +61,7 @@ func _make_card(omen: Dictionary, index: int) -> Button:
 	box.add_theme_constant_override("separation", 14)
 	card.add_child(box)
 	box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 16)
+	box.add_child(_make_label(omen.get("difficulty", "").to_upper(), 15, Color(0.7, 0.7, 0.8)))
 	box.add_child(_make_label(omen.name, 28, color))
 	var text := _make_label(omen.text, 18, Color(0.8, 0.8, 0.85))
 	text.size_flags_vertical = Control.SIZE_EXPAND_FILL

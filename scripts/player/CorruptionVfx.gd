@@ -8,6 +8,9 @@ const LEVEL_COLORS: Array[Color] = [
 
 var particles: CPUParticles3D
 var body_material: StandardMaterial3D
+var aura: CPUParticles3D
+var glow: OmniLight3D
+var possessed: bool = false
 
 
 func _ready() -> void:
@@ -37,12 +40,42 @@ func _ready() -> void:
 		body_material.emission_enabled = true
 		body_material.emission = Color.BLACK
 
+	aura = CPUParticles3D.new() # Possessed: a dark violet-black wind of wisps rising around him (the clothes and hair will follow when the model exists)
+	aura.mesh = VFX.get_particle_mesh()
+	aura.emitting = false
+	aura.amount = 36
+	aura.lifetime = 0.9
+	aura.local_coords = false
+	aura.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+	aura.emission_sphere_radius = 0.55
+	aura.direction = Vector3.UP
+	aura.spread = 12.0
+	aura.initial_velocity_min = 2.0
+	aura.initial_velocity_max = 3.5
+	aura.gravity = Vector3(0.8, 1.5, 0.4) # the "wind" always blows on him
+	aura.scale_amount_min = 0.8
+	aura.scale_amount_max = 1.6
+	var aura_fade := Gradient.new()
+	aura_fade.set_color(0, Color(0.45, 0.05, 0.75, 0.9))
+	aura_fade.set_color(1, Color(0.02, 0.0, 0.05, 0.0))
+	aura.color_ramp = aura_fade
+	add_child(aura)
+	glow = OmniLight3D.new()
+	glow.light_color = Color(0.55, 0.1, 0.9)
+	glow.light_energy = 0.0
+	glow.omni_range = 5.0
+	add_child(glow)
+
 	var corruption: Node = player.get_node("CorruptionComponent")
 	corruption.corruption_changed.connect(_on_corruption_changed)
+	corruption.possessed_started.connect(func(): _set_possessed(true))
+	corruption.possessed_ended.connect(func(): _set_possessed(false))
 	_on_corruption_changed(corruption.value, corruption.level)
 
 
 func _on_corruption_changed(_value: float, level: int) -> void:
+	if possessed:
+		return # the Possessed look stays until it ends
 	var color: Color = LEVEL_COLORS[clampi(level, 0, LEVEL_COLORS.size() - 1)]
 	particles.emitting = level > 0
 	particles.amount = 6 + 6 * maxi(level, 1)
@@ -53,3 +86,17 @@ func _on_corruption_changed(_value: float, level: int) -> void:
 	if body_material:
 		body_material.emission = color
 		body_material.emission_energy_multiplier = 0.25 * level
+
+
+func _set_possessed(on: bool) -> void:
+	possessed = on
+	aura.emitting = on
+	glow.light_energy = 2.5 if on else 0.0
+	if on:
+		particles.emitting = false
+		if body_material:
+			body_material.emission = Color(0.35, 0.0, 0.6)
+			body_material.emission_energy_multiplier = 1.2
+	else:
+		var corruption: Node = get_parent().get_node("CorruptionComponent")
+		_on_corruption_changed(corruption.value, corruption.level)

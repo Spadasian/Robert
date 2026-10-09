@@ -38,6 +38,7 @@ signal stats_changed
 	"rerolls": 0.0, # level up rerolls per run
 	"reward_cards": 0.0, # extra cards in the Duel and Arena technique rewards (Scroll of Duels)
 	"master_chance": 0.0, # extra chance of a Master technique card in Duel and Arena rewards
+	"bleed_power": 1.0, # multiplier of the damage of bleeding (Cursed Wound)
 	"ultimate_charge": 1.0, # multiplier of how fast the Ultimate charges
 	"ultimate_hit_charge": 0.0, # Ultimate charge from a hit that does not kill (0 = it charges only from kills)
 	"shop_extra_item": 0.0, # extra stands in a Shop (Merchant's Seal)

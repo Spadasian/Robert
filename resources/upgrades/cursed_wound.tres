@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("2_effect")
+stat = "bleed_power"
+operation = 1
+value = 0.6
+
+[sub_resource type="Resource" id="Effect_2"]
+script = ExtResource("2_effect")
+stat = "max_health"
+operation = 1
+value = -0.15
+
+[resource]
+script = ExtResource("1_data")
+id = "cursed_wound"
+display_name = "Cursed Wound"
+description = "Bleeding hurts 60% more, but -15% max HP"
+rarity = 4
+effects = Array[Resource]([SubResource("Effect_1"), SubResource("Effect_2")])
+build = "Corruption"

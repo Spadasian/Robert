@@ -55,7 +55,11 @@ func reroll(count: int) -> Array:
 ## Random upgrades the player does not own yet, picked by rarity weight, no duplicates.
 func get_random_choices(count: int) -> Array:
 	var candidates: Array = []
+	var corruption: Node = stats.get_parent().get_node_or_null("CorruptionComponent")
+	var cursed_open: bool = corruption != null and corruption.cursed_unlocked # Corruption reached 50% once
 	for upgrade in upgrade_pool:
+		if upgrade.rarity == UpgradeData.Rarity.CURSED and not cursed_open:
+			continue
 		if not stats.has_upgrade(upgrade.id):
 			candidates.append(upgrade)
 	var choices: Array = []

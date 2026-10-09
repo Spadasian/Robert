@@ -23,6 +23,9 @@ static func calculate_damage(base_damage: float, attacker: Node, target_health: 
 			last_hit_was_crit = false
 			return maxf(target_health.current_health, damage) # a rule kills it outright (Death Mark)
 		damage *= rules.damage_multiplier(kind, target_health)
+	var corruption: Node = attacker.get_node_or_null("CorruptionComponent")
+	if corruption:
+		damage *= corruption.damage_multiplier() # thresholds and Possessed
 	var crit_chance: float = stats.get_stat("crit_chance") + (rules.crit_chance_bonus(kind, target) if rules else 0.0)
 	if (rules and rules.forced_crit(kind, target)) or randf() < crit_chance:
 		damage *= CRIT_MULTIPLIER + stats.get_stat("crit_damage")
@@ -38,11 +41,6 @@ static func after_hit(attacker: Node, target_health: Node, info: Dictionary = {}
 	var stats := _get_stats(attacker)
 	if stats == null:
 		return
-	var corruption_gain: float = stats.get_stat("corruption_on_hit")
-	if corruption_gain > 0.0 and target_health and target_health.is_dead(): # Dark Breath: per kill
-		var corruption := attacker.get_node_or_null("CorruptionComponent")
-		if corruption:
-			corruption.add_corruption(corruption_gain)
 	if target_health and target_health.is_dead():
 		var heal_amount: float = stats.get_stat("life_on_kill")
 		var health := attacker.get_node_or_null("HealthComponent")

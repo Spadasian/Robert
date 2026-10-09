@@ -27,6 +27,9 @@ func is_bleeding() -> bool:
 ## Adds a bleed stack. At the maximum, the weakest stack is replaced if the new one is stronger.
 ## `key` (optional): one stack per source, refreshed instead of added (a zone on the floor uses its own id).
 func apply_bleed(dps: float, duration: float, key: String = "") -> void:
+	var player := enemy.get_tree().get_first_node_in_group("player") if enemy.is_inside_tree() else null
+	if player and player.get("stats") != null:
+		dps *= player.stats.get_stat("bleed_power")
 	if key != "":
 		for stack in bleeds:
 			if stack.get("key", "") == key:

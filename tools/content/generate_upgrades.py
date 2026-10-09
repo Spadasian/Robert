@@ -89,6 +89,12 @@ add("scholars_brush", "Scholar's Brush", "Common", EC, "+10% EXP from enemies", 
 add("wide_view", "Wide View", "Epic", EC, "Level ups offer 4 upgrades instead of 3", [("choice_count", "A", 1)])
 add("reroll_token", "Reroll Token", "Rare", EC, "Once per run you can reroll a level up choice (key R)", [("rerolls", "A", 1)])
 
+# ---- Cursed (offered only after the Corruption bar reached 50% once in a run): strong, with a price
+add("cursed_blade", "Cursed Blade", "Cursed", CO, "+60% attack damage, but -25% max HP", [("attack_damage", "P", 0.60), ("max_health", "P", -0.25)])
+add("cursed_rhythm", "Cursed Rhythm", "Cursed", CO, "The Flow grows twice as fast, but the Kata closes after 1.5 s of silence", [("flow_gain", "P", 1.0), ("kata_timeout_bonus", "A", -1.5)])
+add("cursed_haste", "Cursed Haste", "Cursed", CO, "+40% attack speed, but your dash recharges 35% slower", [("attack_speed", "P", 0.40), ("dash_recharge", "P", -0.35)])
+add("cursed_wound", "Cursed Wound", "Cursed", CO, "Bleeding hurts 60% more, but -15% max HP", [("bleed_power", "P", 0.60), ("max_health", "P", -0.15)])
+
 OUT = "resources/upgrades"
 os.makedirs(OUT, exist_ok=True)
 
@@ -122,7 +128,7 @@ for id, name, rarity, build, desc, effects, behavior in U:
     with open("%s/%s.tres" % (OUT, id), "w") as f:
         f.write("\n".join(lines) + "\n")
 
-# the list the UpgradeManager reads (Cursed upgrades are added later and kept out of the normal pool)
+# the list the UpgradeManager reads (Cursed upgrades are in it but only offered once Corruption reached 50%)
 pool = ['[gd_resource type="Resource" script_class="UpgradePool" format=3]', "",
         '[ext_resource type="Script" path="res://scripts/upgrades/UpgradePool.gd" id="1_pool"]']
 for i, u in enumerate(U, 1):

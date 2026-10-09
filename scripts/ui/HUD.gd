@@ -20,6 +20,8 @@ const ROOM_COLORS: Array[Color] = [
 @onready var vignette: TextureRect = $Overlay/Vignette
 @onready var hit_flash: ColorRect = $Overlay/HitFlash
 var slow_tint: ColorRect
+var corruption_component: Node
+var corruption_edge: TextureRect # purple edge of the screen from 75% Corruption
 @onready var hp_bar: ProgressBar = $StatusPanel/Box/HPBox/HPBar
 @onready var hp_trail: ProgressBar = $StatusPanel/Box/HPBox/HPTrail
 @onready var hp_label: Label = $StatusPanel/Box/HPBox/HPLabel
@@ -68,6 +70,10 @@ func _ready() -> void:
 
 	var corruption: Node = player.get_node("CorruptionComponent")
 	corruption.corruption_changed.connect(_on_corruption_changed)
+	corruption.state_changed.connect(_refresh_corruption_label)
+	corruption.possessed_started.connect(func(): show_message("POSSESSED", 2.0))
+	corruption.threshold_reached.connect(func(level: int): if level == 2: show_message("The Cursed answer your call...", 2.0))
+	corruption_component = corruption
 	_on_corruption_changed(corruption.value, corruption.level)
 
 	var room_manager: Node = get_tree().get_first_node_in_group("room_manager")
@@ -96,6 +102,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	time += delta
 	_update_vignette()
+	_update_corruption_edge()
 	_update_dash_pips()
 	_update_skill_bar()
 
@@ -160,10 +167,41 @@ func _on_player_died() -> void:
 
 func _on_corruption_changed(value: float, level: int) -> void:
 	corruption_bar.value = value
-	corruption_label.text = "Corruption %d%%" % int(value)
+	_refresh_corruption_label()
 	var fill := corruption_bar.get_theme_stylebox("fill") as StyleBoxFlat
 	if fill:
 		fill.bg_color = CORRUPTION_COLORS[clampi(level, 0, CORRUPTION_COLORS.size() - 1)]
+
+
+func _refresh_corruption_label() -> void:
+	var component: Node = corruption_component
+	if component == null:
+		return
+	if component.possessed:
+		corruption_label.text = "POSSESSED  %.0fs" % maxf(component.possessed_left, 0.0)
+	elif component.cooldown_left > 0.0:
+		corruption_label.text = "Corruption (resting %.0fs)" % component.cooldown_left
+	else:
+		corruption_label.text = "Corruption %d%%" % int(component.value)
+
+
+## Purple glow on the edges of the screen (not on the character) from 75% Corruption, pulsing; strongest when Possessed.
+func _update_corruption_edge() -> void:
+	if corruption_component == null:
+		return
+	var strength: float = corruption_component.edge_strength()
+	if strength <= 0.0 and corruption_edge == null:
+		return
+	if corruption_edge == null:
+		corruption_edge = TextureRect.new()
+		corruption_edge.texture = vignette.texture
+		corruption_edge.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		corruption_edge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		corruption_edge.set_anchors_preset(Control.PRESET_FULL_RECT)
+		corruption_edge.modulate = Color(0.55, 0.15, 0.9, 0.0)
+		$Overlay.add_child(corruption_edge)
+	var pulse: float = 0.8 + 0.2 * sin(time * 3.0)
+	corruption_edge.modulate = Color(0.5, 0.1, 0.85, clampf(strength * pulse, 0.0, 1.0))
 
 
 func _on_gold_changed(gold: int) -> void:

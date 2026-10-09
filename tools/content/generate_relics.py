@@ -8,8 +8,8 @@ OPS = {"A": 0, "P": 1}
 DG, CR, SF, SV, EC, BL = "Dodge & Counter", "Crit & Execution", "Speed & Flow", "Survival", "Economy", "Bleed"
 
 R = []  # (id, name, description, color (r,g,b), price, build, effects, behavior)
-def add(id, name, desc, color, price, build, effects=(), behavior=None):
-    R.append((id, name, desc, color, price, build, list(effects), behavior))
+def add(id, name, desc, color, price, build, effects=(), behavior=None, cursed=False):
+    R.append((id, name, desc, color, price, build, list(effects), behavior, cursed))
 
 add("fox_mask", "Fox Mask", "Blocks the first hit you take in every room.", (1, 0.55, 0.2), 150, SV, [("free_hits_per_room", "A", 1)])
 add("black_pearl", "Black Pearl", "+20% gold from rooms. Shops charge 20% less.", (0.65, 0.7, 0.95), 130, EC, [("gold_gain", "P", 0.2), ("shop_discount", "A", 0.2)])
@@ -40,6 +40,8 @@ add("spirit_lantern", "Spirit Lantern", "Your Ultimate charges 25% faster, and k
 add("soul_syphon", "Soul Syphon", "Every bleed tick on an enemy heals you 1 HP.", (0.6, 0.2, 0.4), 170, BL, [], ("SoulSyphon", {"heal": 1.0}))
 add("vanish", "Vanish", "A Perfect Dodge makes you invisible for 0.8 s: the enemies start no new attacks.", (0.5, 0.45, 0.7), 160, DG, [], ("Vanish", {"time": 0.8}))
 
+add("cursed_mirror", "Cursed Mirror", "A Perfect Dodge freezes time until you hit an enemy, and Finishers deal double damage, but you take 30% more damage.", (0.55, 0.1, 0.35), 180, SF, [], ("CursedMirror", {"damage_taken": 0.3, "finisher": 2.0, "max_freeze": 8.0}), True)
+
 OUT = "resources/relics"
 os.makedirs(OUT, exist_ok=True)
 
@@ -49,7 +51,7 @@ def esc(t):
 def num(v):
     return "%d.0" % v if float(v).is_integer() else repr(float(v))
 
-for id, name, desc, color, price, build, effects, behavior in R:
+for id, name, desc, color, price, build, effects, behavior, cursed in R:
     lines = ['[gd_resource type="Resource" script_class="RelicData" format=3]', "",
              '[ext_resource type="Script" path="res://scripts/relics/RelicData.gd" id="1_data"]',
              '[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]']
@@ -67,6 +69,8 @@ for id, name, desc, color, price, build, effects, behavior in R:
         if behavior[1]:
             lines.append("params = {\n%s\n}" % ",\n".join('"%s": %s' % (k, num(v)) for k, v in behavior[1].items()))
     lines += ["price = %d" % price, 'build = "%s"' % build]
+    if cursed:
+        lines.append("cursed = true")
     with open("%s/%s.tres" % (OUT, id), "w") as f:
         f.write("\n".join(lines) + "\n")
 

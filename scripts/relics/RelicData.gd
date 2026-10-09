@@ -13,5 +13,6 @@ extends Resource
 @export var effects: Array[Resource] = [] # UpgradeEffect resources
 @export var behavior: Script # a special rule (see RuleBehavior); empty for relics that only change stats
 @export var params: Dictionary = {}
+@export var cursed: bool = false # only offered after Corruption reached 50% once in the run
 @export var price: int = 150 # in a Shop (more than any ordinary item)
 @export var build: String = "" # which style of play it belongs to (for the lists, not used in the game)

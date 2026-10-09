@@ -29,7 +29,8 @@
 [ext_resource type="Resource" path="res://resources/relics/spirit_lantern.tres" id="r26"]
 [ext_resource type="Resource" path="res://resources/relics/soul_syphon.tres" id="r27"]
 [ext_resource type="Resource" path="res://resources/relics/vanish.tres" id="r28"]
+[ext_resource type="Resource" path="res://resources/relics/cursed_mirror.tres" id="r29"]
 
 [resource]
 script = ExtResource("1_pool")
-relics = Array[Resource]([ExtResource("r1"), ExtResource("r2"), ExtResource("r3"), ExtResource("r4"), ExtResource("r5"), ExtResource("r6"), ExtResource("r7"), ExtResource("r8"), ExtResource("r9"), ExtResource("r10"), ExtResource("r11"), ExtResource("r12"), ExtResource("r13"), ExtResource("r14"), ExtResource("r15"), ExtResource("r16"), ExtResource("r17"), ExtResource("r18"), ExtResource("r19"), ExtResource("r20"), ExtResource("r21"), ExtResource("r22"), ExtResource("r23"), ExtResource("r24"), ExtResource("r25"), ExtResource("r26"), ExtResource("r27"), ExtResource("r28")])
+relics = Array[Resource]([ExtResource("r1"), ExtResource("r2"), ExtResource("r3"), ExtResource("r4"), ExtResource("r5"), ExtResource("r6"), ExtResource("r7"), ExtResource("r8"), ExtResource("r9"), ExtResource("r10"), ExtResource("r11"), ExtResource("r12"), ExtResource("r13"), ExtResource("r14"), ExtResource("r15"), ExtResource("r16"), ExtResource("r17"), ExtResource("r18"), ExtResource("r19"), ExtResource("r20"), ExtResource("r21"), ExtResource("r22"), ExtResource("r23"), ExtResource("r24"), ExtResource("r25"), ExtResource("r26"), ExtResource("r27"), ExtResource("r28"), ExtResource("r29")])

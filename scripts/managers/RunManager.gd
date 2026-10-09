@@ -70,7 +70,10 @@ func has_relic(relic_id: String) -> bool:
 
 ## Up to `count` different relics the player does not own yet, in random order.
 func get_random_relics(count: int) -> Array:
-	var candidates: Array = relic_pool.filter(func(relic): return not has_relic(relic.id))
+	var player := get_tree().get_first_node_in_group("player")
+	var corruption: Node = player.get_node_or_null("CorruptionComponent") if player else null
+	var cursed_open: bool = corruption != null and corruption.cursed_unlocked
+	var candidates: Array = relic_pool.filter(func(relic): return not has_relic(relic.id) and (cursed_open or not relic.cursed))
 	candidates.shuffle()
 	return candidates.slice(0, count)
 

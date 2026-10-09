@@ -236,7 +236,9 @@ func _stats() -> Node:
 ## Seconds without activity before the running Kata closes (Lingering Mist adds to it).
 func get_open_timeout() -> float:
 	var stats: Node = _stats()
-	return open_timeout + (stats.get_stat("kata_timeout_bonus") if stats else 0.0)
+	var corruption: Node = get_parent().get_node_or_null("CorruptionComponent")
+	var penalty: float = corruption.timeout_penalty() if corruption else 0.0
+	return maxf(open_timeout + (stats.get_stat("kata_timeout_bonus") if stats else 0.0) - penalty, 1.0)
 
 
 func _prevents_timeout() -> bool:

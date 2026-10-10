@@ -1,5 +1,10 @@
 # KUROTSUKI: ENDLESS NIGHT — Project Brief (handoff for Claude)
 
+> **NOTĂ (2026-10-10):** acest fișier este istoric și parțial depășit. Starea actuală și regulile sunt în `CLAUDE.md`,
+> `design/ROADMAP.md` și `tests/README.md`. Capitolele 3 (faze), 6 (hartă de fișiere) și 7 (pași următori) nu mai sunt
+> valabile; capitolele 1, 2, 4 și 5 rămân în mare corecte.
+
+
 > Read this first. It explains what we are building, how we work together, what is already done, and what comes next.
 > The human collaborator is NOT a professional programmer and speaks **Romanian**. All explanations to them must be in Romanian. Code, identifiers and code comments stay in English.
 

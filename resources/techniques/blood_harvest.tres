@@ -7,12 +7,12 @@
 script = ExtResource("1_data")
 id = "blood_harvest"
 display_name = "Blood Harvest"
-description = "Finisher: every enemy the slash hits heals you 3 HP."
+description = "Finisher: every enemy the slash hits heals you for 10% of the damage it takes."
 category = 2
 rarity = 1
 color = Color(0.8, 0.1, 0.3, 1)
 behavior = ExtResource("2_behavior")
 params = {
 "flow_bonus": 0.6,
-"heal": 3.0
+"lifesteal": 0.1
 }

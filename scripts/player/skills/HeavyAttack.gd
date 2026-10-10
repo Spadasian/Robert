@@ -4,7 +4,7 @@ extends "res://scripts/player/skills/PlayerSkill.gd"
 
 enum Phase { WINDUP, STRIKE, RECOVER }
 
-@export var damage_multiplier: float = 1.8 # times attack_damage
+@export var flat_bonus: float = 4.0 # the Heavy deals attack_damage + this (not a multiple of it)
 @export var windup_time: float = 0.28
 @export var lock_time: float = 0.06 # last part of the windup where the aim no longer follows the mouse
 @export var strike_time: float = 0.14
@@ -102,7 +102,7 @@ func _begin_strike() -> void:
 
 ## The damage of this strike for a given Finisher context (waves and extra strikes use it too).
 func strike_damage(context: Dictionary) -> float:
-	return player.stats.get_stat("attack_damage") * damage_multiplier * context.get("damage_multiplier", 1.0) * player.stats.get_stat("heavy_damage")
+	return (player.stats.get_stat("attack_damage") + flat_bonus) * context.get("damage_multiplier", 1.0) * player.stats.get_stat("heavy_damage")
 
 
 ## Finisher techniques can put a callback in context["on_hit"] (an Array of Callables): called with the info of every

@@ -6,7 +6,7 @@
 script = ExtResource("1_script")
 id = "hungry_blade"
 display_name = "Hungry Blade"
-description = "Heal 1 HP per kill"
-stat = "life_on_kill"
-value_per_level = 1.0
+description = "Heal 1% of the damage you deal"
+stat = "lifesteal"
+value_per_level = 0.01
 costs = PackedInt32Array(40, 70, 110)

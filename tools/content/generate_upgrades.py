@@ -11,12 +11,12 @@ OPS = {"A": 0, "P": 1}
 DG, CR, SF, SV, EC, CO = "Dodge & Counter", "Crit & Execution", "Speed & Flow", "Survival", "Economy", "Corruption"
 
 U = []  # (id, name, rarity, build, description, [effects], behavior or None)
-def add(id, name, rarity, build, desc, effects=(), behavior=None):
-    U.append((id, name, rarity, build, desc, list(effects), behavior))
+def add(id, name, rarity, build, desc, effects=(), behavior=None, character=""):
+    U.append((id, name, rarity, build, desc, list(effects), behavior, character))
 
 # ---- the first ten (some values changed after the list review)
 add("blood_edge", "Blood Edge", "Common", CR, "+15% attack damage", [("attack_damage", "P", 0.15)])
-add("crimson_meal", "Crimson Meal", "Rare", SV, "Heal 3 HP on kill", [("life_on_kill", "A", 3)])
+add("crimson_meal", "Crimson Meal", "Rare", SV, "Heal 6% of the damage you deal", [("lifesteal", "A", 0.06)])
 add("dark_breath", "Dark Breath", "Epic", CO, "Each kill adds 3 Corruption", [("corruption_on_hit", "A", 3)])
 add("executioner", "Executioner", "Rare", CR, "+50% damage against enemies below 30% HP", [("execute_bonus", "A", 0.5)])
 add("iron_skin", "Iron Skin", "Common", SV, "-10% damage taken", [("damage_taken", "P", -0.10)])
@@ -43,7 +43,7 @@ add("sharp_focus", "Sharp Focus", "Common", CR, "+5% critical chance", [("crit_c
 add("heavy_hands", "Heavy Hands", "Common", CR, "Critical hits do +25% more damage", [("crit_damage", "A", 0.25)])
 add("killing_intent", "Killing Intent", "Rare", CR, "Enemies below 40% HP (instead of 30%) count as wounded, and you do +25% damage to them", [("execute_threshold", "A", 0.10), ("execute_bonus", "A", 0.25)])
 add("soul_reaper", "Soul Reaper", "Rare", CR, "Each kill charges your Ultimate by 5%", [], ("SoulReaper", {"ratio": 0.05}))
-add("bloodthirst", "Bloodthirst", "Common", SV, "Heal +1 HP on kill", [("life_on_kill", "A", 1)])
+add("bloodthirst", "Bloodthirst", "Common", SV, "Heal +2% of the damage you deal", [("lifesteal", "A", 0.02)])
 add("bleeding_cut", "Bleeding Cut", "Rare", CR, "Critical hits make the enemy bleed for 3 s", [], ("BleedingCut", {"dps_ratio": 0.3, "time": 3.0}))
 add("finish_them", "Finish Them", "Rare", CR, "Heavy does +30% damage to enemies below 40% HP", [], ("FinishThem", {"bonus": 0.3, "threshold": 0.4}))
 add("deadeye", "Deadeye", "Epic", CR, "Your first hit on each enemy has +15% critical chance", [], ("Deadeye", {"bonus": 0.15}))
@@ -93,6 +93,8 @@ add("scholars_brush", "Scholar's Brush", "Common", EC, "+10% EXP from enemies", 
 add("wide_view", "Wide View", "Epic", EC, "Level ups offer 4 upgrades instead of 3", [("choice_count", "A", 1)])
 add("reroll_token", "Reroll Token", "Rare", EC, "Once per run you can reroll a level up choice (key R)", [("rerolls", "A", 1)])
 
+add("weapon_master", "Weapon Master", "Common", SF, "Your basic attack reaches 15% farther", [("attack_range", "P", 0.15)])
+
 # ---- Cursed (offered only after the Corruption bar reached 50% once in a run): strong, with a price
 add("cursed_blade", "Cursed Blade", "Cursed", CO, "+60% attack damage, but -25% max HP", [("attack_damage", "P", 0.60), ("max_health", "P", -0.25)])
 add("cursed_rhythm", "Cursed Rhythm", "Cursed", CO, "The Flow grows twice as fast, but the Kata closes after 1.5 s of silence", [("flow_gain", "P", 1.0), ("kata_timeout_bonus", "A", -1.5)])
@@ -108,7 +110,7 @@ def esc(text):
 def num(v):
     return repr(float(v)) if not float(v).is_integer() else "%d.0" % v
 
-for id, name, rarity, build, desc, effects, behavior in U:
+for id, name, rarity, build, desc, effects, behavior, character in U:
     lines = ['[gd_resource type="Resource" script_class="UpgradeData" format=3]', "",
              '[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1_data"]',
              '[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]']
@@ -128,6 +130,8 @@ for id, name, rarity, build, desc, effects, behavior in U:
         if behavior[1]:
             body = ",\n".join('"%s": %s' % (k, num(v)) for k, v in behavior[1].items())
             lines.append("params = {\n%s\n}" % body)
+    if character:
+        lines.append('character = "%s"' % character)
     lines.append('build = "%s"' % build)
     with open("%s/%s.tres" % (OUT, id), "w") as f:
         f.write("\n".join(lines) + "\n")

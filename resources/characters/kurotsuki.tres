@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/CharacterData.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+
+[resource]
+script = ExtResource("1_data")
+id = "kurotsuki"
+display_name = "Kurotsuki"
+role = "Curse of the night"
+description = "Risk and reward. Bleed and Corruption, built around Possessed."
+color = Color(0.3, 0.1, 0.4, 1)
+weapon = "Steel claws (tekko-kagi)"
+implemented = false
+stats = {
+"max_health": 95.0,
+"attack_damage": 10.5,
+"attack_speed": 1.1,
+"move_speed": 6.2,
+"bleed_power": 1.2,
+"starting_corruption": 15.0
+}
+passive_name = "Born Cursed"
+passive_text = "Starts every run with 15% Corruption and the Cursed upgrades unlocked."
+passive_effects = Array[Resource]([])
+cursed_unlocked = true
+skill_names = {
+"lmb": "Cursed Edge",
+"rmb": "Blood Cut",
+"shift": "Shadow Pass",
+"q": "Absorb",
+"e": "Awakening"
+}

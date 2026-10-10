@@ -7,7 +7,7 @@
 script = ExtResource("1_data")
 id = "skill_weaver"
 display_name = "Skill Weaver"
-description = "Flow: the Iaijutsu cut, a Kaeshi counter and Moonlit Storm starting add Flow."
+description = "Flow: your Shift, Q and E skills add Flow when they really happen (the cut, the counter, the Ultimate starting)."
 category = 1
 rarity = 1
 color = Color(0.75, 0.55, 1, 1)

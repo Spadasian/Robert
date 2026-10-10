@@ -8,12 +8,12 @@
 script = ExtResource("1_data")
 id = "sakura_charm"
 display_name = "Sakura Charm"
-description = "A Finisher that kills heals 5 HP."
+description = "A Finisher that kills heals you for 15% of the damage of that blow."
 color = Color(1.0, 0.6, 0.75, 1)
 effects = Array[Resource]([])
 behavior = ExtResource("3_behavior")
 params = {
-"heal": 5.0
+"ratio": 0.15
 }
 price = 140
 build = "Survival"

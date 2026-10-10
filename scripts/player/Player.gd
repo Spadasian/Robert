@@ -40,12 +40,14 @@ var free_hits_left: int = 0 # hits still ignored in this room (Fox Mask)
 var free_hits_max: int = 0
 var skills: Array[PlayerSkill] = [] # right click, Shift, Q, E (children of this scene)
 var ghost_timer: float = 0.0 # time until the next dash afterimage
+var pending_character: Resource # applied in _ready; the Corruption start is set when the node tree is ready
 var perfect_cooldown_left: float = 0.0
 var perfect_guard_left: float = 0.0 # after a Perfect Dodge the player cannot be hurt for a moment (the attack that was dodged)
 
 
 func _ready() -> void:
 	EnemyTime.reset()
+	_apply_character(GameManager.selected_character)
 	health.set_max_health(stats.get_stat("max_health"))
 	dash.set_max_charges(int(stats.get_stat("dodge_charges")))
 	dash.apply_stats(stats)
@@ -57,6 +59,12 @@ func _ready() -> void:
 		if child is PlayerSkill:
 			skills.append(child)
 			child.activated.connect(func(): kata_events.skill_used.emit(child))
+	if pending_character != null:
+		var corruption: Node = $CorruptionComponent
+		if stats.get_stat("starting_corruption") > 0.0:
+			corruption.set_corruption(stats.get_stat("starting_corruption")) # Kurotsuki starts with some Corruption
+		if pending_character.cursed_unlocked:
+			corruption.cursed_unlocked = true
 	add_child(preload("res://scripts/combat/PerfectDodgeFX.gd").new()) # the screen reacts while the enemies are slowed
 	add_child(preload("res://scripts/player/CorruptionVfx.gd").new()) # purple wisps that grow with Corruption
 	dash.dash_started.connect(_on_dash_started)
@@ -171,14 +179,14 @@ func is_hidden() -> bool:
 ## Called by EnemyStatus after every bleed tick: bleed kills count like any other kill.
 func on_bleed_tick(enemy: Node, damage: float, killed: bool) -> void:
 	kata_events.bleed_tick.emit(enemy, damage)
+	var lifesteal: float = stats.get_stat("lifesteal")
+	if lifesteal > 0.0:
+		health.heal(damage * lifesteal) # bleeding is damage dealt too
 	if killed:
 		for skill in skills:
 			skill.on_player_hit_dealt(true) # a kill by bleeding charges the Ultimate too
 		var info: Dictionary = {"target": enemy, "damage": damage, "crit": false, "kind": "bleed", "hit_count": 1, "killed": true, "overkill": 0.0}
 		kata_events.kill.emit(info)
-		var heal_amount: float = stats.get_stat("life_on_kill")
-		if heal_amount > 0.0:
-			health.heal(heal_amount)
 
 
 ## True when the player is behind the target (the target looks away from him).
@@ -223,6 +231,34 @@ func _on_hit_received(damage: float, _source: Node) -> void:
 	var final_damage: float = rules.process_incoming(damage * stats.get_stat("damage_taken") * damage_taken_multiplier, _source)
 	if final_damage > 0.0:
 		health.take_damage(final_damage)
+
+
+## The chosen character: its stats, its passive, its placeholder colour and its own skills (if it has any).
+func _apply_character(character: Resource) -> void:
+	if character == null:
+		return
+	for stat_name in character.stats:
+		stats.base_stats[stat_name] = float(character.stats[stat_name])
+	for effect in character.passive_effects:
+		stats.modifiers.append(effect)
+	stats._recalculate()
+	if character.passive_behavior != null:
+		rules.add_behavior(character)
+	var material := body_mesh.get_active_material(0) as StandardMaterial3D
+	if material:
+		material = material.duplicate() as StandardMaterial3D
+		material.albedo_color = character.color
+		body_mesh.material_override = material
+	for slot in character.skill_scenes:
+		for child in get_children():
+			if child is PlayerSkill and child.get_slot() == slot:
+				var replacement: Node = character.skill_scenes[slot].instantiate()
+				var index: int = child.get_index()
+				remove_child(child)
+				child.queue_free()
+				add_child(replacement)
+				move_child(replacement, index)
+	pending_character = character
 
 
 ## An enemy attack is starting (Hitbox.set_active): a dash that began just before it, near where the attack is aimed,

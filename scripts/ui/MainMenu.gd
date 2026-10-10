@@ -22,8 +22,8 @@ func _ready() -> void:
 	AudioManager.stop_ambience()
 	options_button.pressed.connect(_open_options)
 	options_back_button.pressed.connect(_close_options)
-	play_button.pressed.connect(GameManager.start_run.bind(GameManager.STANDARD_MODE))
-	quick_button.pressed.connect(GameManager.start_run.bind(GameManager.QUICK_MODE))
+	play_button.pressed.connect(GameManager.open_character_select.bind(GameManager.STANDARD_MODE))
+	quick_button.pressed.connect(GameManager.open_character_select.bind(GameManager.QUICK_MODE))
 	for button_and_mode in [[play_button, GameManager.STANDARD_MODE], [quick_button, GameManager.QUICK_MODE]]:
 		var mode: Resource = button_and_mode[1]
 		button_and_mode[0].focus_entered.connect(func(): mode_info_label.text = mode.description)

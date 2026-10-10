@@ -8,12 +8,12 @@
 script = ExtResource("1_data")
 id = "soul_syphon"
 display_name = "Soul Syphon"
-description = "Every bleed tick on an enemy heals you 1 HP."
+description = "Every bleed tick on an enemy heals you for 50% of its damage."
 color = Color(0.6, 0.2, 0.4, 1)
 effects = Array[Resource]([])
 behavior = ExtResource("3_behavior")
 params = {
-"heal": 1.0
+"ratio": 0.5
 }
 price = 170
 build = "Bleed"

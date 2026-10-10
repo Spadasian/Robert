@@ -7,12 +7,12 @@
 script = ExtResource("1_data")
 id = "shadow_vault"
 display_name = "Shadow Vault"
-description = "Opening: a Kaeshi counter starts the Kata (when it hits back, not when you press the key)."
+description = "Opening: your Q skill starts the Kata when it really happens (Kaeshi: when the counter hits back), not when you press the key."
 category = 0
 rarity = 1
 color = Color(0.55, 0.5, 0.9, 1)
 behavior = ExtResource("2_behavior")
 params = {
-"skill": "Kaeshi",
+"slot": "q",
 "start_flow": 0.35
 }

@@ -14,7 +14,7 @@ signal stats_changed
 	"crit_chance": 0.0,
 	"execute_bonus": 0.0, # extra damage vs enemies at low HP
 	"corruption_on_hit": 0.0,
-	"life_on_kill": 0.0,
+	"lifesteal": 0.0, # share of the damage dealt that heals the player (0.06 = 6%)
 	"gold_gain": 1.0, # multiplier for gold picked up (Black Pearl: 1.5)
 	"shop_discount": 0.0, # 0.2 = shops charge 20% less
 	"free_hits_per_room": 0.0, # hits ignored at the start of every room (Fox Mask: 1)
@@ -38,6 +38,8 @@ signal stats_changed
 	"rerolls": 0.0, # level up rerolls per run
 	"reward_cards": 0.0, # extra cards in the Duel and Arena technique rewards (Scroll of Duels)
 	"master_chance": 0.0, # extra chance of a Master technique card in Duel and Arena rewards
+	"attack_range": 1.0, # multiplier of the reach of the basic attack (Weapon Master)
+	"starting_corruption": 0.0, # Corruption the run starts with (Kurotsuki)
 	"bleed_power": 1.0, # multiplier of the damage of bleeding (Cursed Wound)
 	"ultimate_charge": 1.0, # multiplier of how fast the Ultimate charges
 	"ultimate_hit_charge": 0.0, # Ultimate charge from a hit that does not kill (0 = it charges only from kills)

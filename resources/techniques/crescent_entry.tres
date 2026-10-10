@@ -7,12 +7,12 @@
 script = ExtResource("1_data")
 id = "crescent_entry"
 display_name = "Crescent Entry"
-description = "Opening: the Iaijutsu cut starts the Kata (when the cut is made, not when you press the key)."
+description = "Opening: your Shift skill starts the Kata when it really happens (Iaijutsu: when the cut is made), not when you press the key."
 category = 0
 rarity = 1
 color = Color(0.55, 0.85, 1, 1)
 behavior = ExtResource("2_behavior")
 params = {
-"skill": "Iaijutsu",
+"slot": "shift",
 "start_flow": 0.35
 }

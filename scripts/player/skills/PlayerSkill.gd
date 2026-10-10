@@ -29,6 +29,17 @@ func _physics_process(delta: float) -> void:
 		_tick(delta)
 
 
+## The slot of the skill: "rmb", "shift", "q" or "e". Kata techniques that react to skills use the slot, not the
+## name, so they work for every character (each one has other skills in the same slots).
+func get_slot() -> String:
+	match input_action:
+		"heavy": return "rmb"
+		"skill": return "shift"
+		"ability": return "q"
+		"ultimate": return "e"
+	return ""
+
+
 ## True when the skill could be used right now (cooldown or charge, ignoring what the player is doing).
 func is_available() -> bool:
 	return cooldown_left <= 0.0

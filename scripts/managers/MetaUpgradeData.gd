@@ -2,7 +2,7 @@ class_name MetaUpgradeData
 extends Resource
 ## A permanent upgrade bought with Soul Shards between runs. Each level adds `value_per_level` to a stat
 ## for the whole next run. The number of levels is the number of entries in `costs`.
-## `stat` is a stat name from StatsComponent (max_health, life_on_kill...) or the special value "starting_gold".
+## `stat` is a stat name from StatsComponent (max_health, lifesteal...) or the special value "starting_gold".
 ## New permanent upgrade = new .tres + add it to MetaProgression.UPGRADES.
 
 @export var id: String = ""

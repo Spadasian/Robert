@@ -52,6 +52,17 @@ func reroll(count: int) -> Array:
 	return get_random_choices(count)
 
 
+const CHARACTER_WEIGHT: float = 3.0 # the style upgrades of the chosen character come up this much more often
+
+
+## The chance weight of an upgrade for the character of this run.
+func weight_of(upgrade: Resource) -> float:
+	var character: Resource = GameManager.selected_character
+	if upgrade.character != "" and character != null and upgrade.character == character.id:
+		return upgrade.get_weight() * CHARACTER_WEIGHT
+	return upgrade.get_weight()
+
+
 ## Random upgrades the player does not own yet, picked by rarity weight, no duplicates.
 func get_random_choices(count: int) -> Array:
 	var candidates: Array = []
@@ -66,10 +77,10 @@ func get_random_choices(count: int) -> Array:
 	while choices.size() < count and not candidates.is_empty():
 		var total_weight: float = 0.0
 		for upgrade in candidates:
-			total_weight += upgrade.get_weight()
+			total_weight += weight_of(upgrade)
 		var roll: float = randf() * total_weight
 		for upgrade in candidates:
-			roll -= upgrade.get_weight()
+			roll -= weight_of(upgrade)
 			if roll <= 0.0:
 				choices.append(upgrade)
 				candidates.erase(upgrade)

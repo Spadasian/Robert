@@ -4,7 +4,7 @@ extends "res://scripts/player/skills/PlayerSkill.gd"
 
 enum Phase { WINDUP, STRIKE, RECOVER }
 
-@export var damage_multiplier: float = 2.2 # times attack_damage
+@export var damage_multiplier: float = 1.0 # times attack_damage
 @export var windup_time: float = 0.35
 @export var lock_time: float = 0.08 # last part of the windup where the aim no longer follows the mouse
 @export var strike_speed: float = 35.0

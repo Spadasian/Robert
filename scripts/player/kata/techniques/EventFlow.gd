@@ -25,7 +25,7 @@ func on_event(kata: Node, event: String, payload: Dictionary) -> void:
 			kata.add_flow(param("perfect_gain", 0.0))
 		"skill_resolved":
 			var skill: Node = payload.get("skill")
-			if is_instance_valid(skill) and skill.display_name != "Heavy":
+			if is_instance_valid(skill) and skill.get_slot() != "rmb":
 				kata.add_flow(param("skill_gain", 0.0))
 		"damage_taken":
 			if param("halve_when_hit", false):

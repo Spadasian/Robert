@@ -14,8 +14,8 @@ add("quick_draw", "Quick Draw", "Opening: dashing starts the Kata, with a little
 add("riposte_step", "Riposte Step", "Opening: a Perfect Dodge starts the Kata with a lot of Flow.", OP, 1, (0.5, 0.95, 1), "RiposteStep", {"start_flow": 0.6})
 add("ghost_step", "Ghost Step", "Opening: a hit on an enemy's back starts the Kata.", OP, 0, (0.7, 0.6, 1), "GhostStep", {"start_flow": 0.3})
 add("wounded_resolve", "Wounded Resolve", "Opening: taking damage starts the Kata with 40% Flow. Pain becomes focus.", OP, 1, (0.95, 0.35, 0.35), "EventOpening", {"event": "damage_taken", "start_flow": 0.4})
-add("crescent_entry", "Crescent Entry", "Opening: the Iaijutsu cut starts the Kata (when the cut is made, not when you press the key).", OP, 1, (0.55, 0.85, 1), "SkillOpening", {"skill": "Iaijutsu", "start_flow": 0.35})
-add("shadow_vault", "Shadow Vault", "Opening: a Kaeshi counter starts the Kata (when it hits back, not when you press the key).", OP, 1, (0.55, 0.5, 0.9), "SkillOpening", {"skill": "Kaeshi", "start_flow": 0.35})
+add("crescent_entry", "Crescent Entry", "Opening: your Shift skill starts the Kata when it really happens (Iaijutsu: when the cut is made), not when you press the key.", OP, 1, (0.55, 0.85, 1), "SkillOpening", {"slot": "shift", "start_flow": 0.35})
+add("shadow_vault", "Shadow Vault", "Opening: your Q skill starts the Kata when it really happens (Kaeshi: when the counter hits back), not when you press the key.", OP, 1, (0.55, 0.5, 0.9), "SkillOpening", {"slot": "q", "start_flow": 0.35})
 add("hunters_mark", "Hunter's Mark", "Opening: a kill starts the Kata and marks the nearest enemy (+20% damage taken, 4 s).", OP, 1, (0.9, 0.5, 0.3), "EventOpening", {"event": "kill", "start_flow": 0.3, "mark_bonus": 0.2, "mark_time": 4.0})
 add("critical_spark", "Critical Spark", "Opening: a critical hit starts the Kata.", OP, 1, (1, 0.9, 0.4), "EventOpening", {"event": "critical_hit", "start_flow": 0.3})
 add("thousand_cuts", "Thousand Cuts", "Opening: the first hit on an unhurt enemy starts the Kata.", OP, 0, (0.8, 0.8, 0.85), "EventOpening", {"event": "hit_dealt", "needs_full_health": True, "start_flow": 0.25})
@@ -27,7 +27,7 @@ add("crit_current", "Crit Current", "Flow: critical hits add a lot of Flow.", FL
 add("dancing_blade", "Dancing Blade", "Flow: every dash adds Flow.", FL, 0, (0.45, 0.85, 0.95), "EventFlow", {"light_gain": 0.05, "dodge_gain": 0.2, "loss_when_hit": 0.25})
 add("still_water", "Still Water", "Flow: slowly fills by itself (it does not keep the Kata open alone). Taking damage halves it.", FL, 1, (0.4, 0.6, 1), "EventFlow", {"light_gain": 0.05, "per_second": 0.2, "halve_when_hit": True})
 add("perfect_tempo", "Perfect Tempo", "Flow: a Perfect Dodge adds 50% Flow.", FL, 1, (0.5, 1, 0.9), "EventFlow", {"light_gain": 0.05, "perfect_gain": 0.5, "loss_when_hit": 0.25})
-add("skill_weaver", "Skill Weaver", "Flow: the Iaijutsu cut, a Kaeshi counter and Moonlit Storm starting add Flow.", FL, 1, (0.75, 0.55, 1), "EventFlow", {"light_gain": 0.05, "skill_gain": 0.3, "loss_when_hit": 0.25})
+add("skill_weaver", "Skill Weaver", "Flow: your Shift, Q and E skills add Flow when they really happen (the cut, the counter, the Ultimate starting).", FL, 1, (0.75, 0.55, 1), "EventFlow", {"light_gain": 0.05, "skill_gain": 0.3, "loss_when_hit": 0.25})
 add("backstab_rhythm", "Backstab Rhythm", "Flow: hits on an enemy's back add Flow.", FL, 0, (0.6, 0.4, 0.8), "EventFlow", {"light_gain": 0.05, "behind_gain": 0.3, "loss_when_hit": 0.25})
 
 # ---- Finishers
@@ -36,7 +36,7 @@ add("crimson_execution", "Crimson Execution", "Finisher: enemies left below 30% 
 add("whirlwind", "Whirlwind", "Finisher: the slash becomes a circle around you.", FI, 0, (0.6, 0.9, 0.8), "Whirlwind", {"flow_bonus": 0.8, "scale": 1.5})
 add("gale_slash", "Gale Slash", "Finisher: the slash also sends a wave that pierces 12 m forward.", FI, 1, (0.6, 0.95, 1), "GaleSlash", {"flow_bonus": 0.6, "wave_ratio": 0.7})
 add("twin_fang", "Twin Fang", "Finisher: the arc is followed by a quick thrust straight ahead (60% damage).", FI, 1, (1, 0.5, 0.5), "TwinFang", {"flow_bonus": 0.6, "ratio": 0.6, "delay": 0.18})
-add("blood_harvest", "Blood Harvest", "Finisher: every enemy the slash hits heals you 3 HP.", FI, 1, (0.8, 0.1, 0.3), "BloodHarvest", {"flow_bonus": 0.6, "heal": 3.0})
+add("blood_harvest", "Blood Harvest", "Finisher: every enemy the slash hits heals you for 10% of the damage it takes.", FI, 1, (0.8, 0.1, 0.3), "BloodHarvest", {"flow_bonus": 0.6, "lifesteal": 0.10})
 add("shatter", "Shatter", "Finisher: the enemies it hits are stunned 1.5 s and take +25% damage for 4 s.", FI, 2, (0.7, 0.85, 1), "Shatter", {"flow_bonus": 0.6, "stun": 1.5, "mark_bonus": 0.25, "mark_time": 4.0})
 add("spirit_cleave", "Spirit Cleave", "Finisher: +20% damage for every enemy in the arc when you strike.", FI, 2, (0.55, 0.9, 0.7), "SpiritCleave", {"flow_bonus": 0.6, "per_enemy": 0.2})
 add("crimson_rain", "Crimson Rain", "Finisher: leaves a pool in front of you that makes the enemies bleed for 3 s.", FI, 1, (0.85, 0.1, 0.25), "CrimsonRain", {"flow_bonus": 0.6, "radius": 2.6, "time": 3.0, "bleed": 6.0, "distance": 3.0})

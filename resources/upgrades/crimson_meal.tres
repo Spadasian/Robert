@@ -5,15 +5,15 @@
 
 [sub_resource type="Resource" id="Effect_1"]
 script = ExtResource("2_effect")
-stat = "life_on_kill"
+stat = "lifesteal"
 operation = 0
-value = 3.0
+value = 0.06
 
 [resource]
 script = ExtResource("1_data")
 id = "crimson_meal"
 display_name = "Crimson Meal"
-description = "Heal 3 HP on kill"
+description = "Heal 6% of the damage you deal"
 rarity = 1
 effects = Array[Resource]([SubResource("Effect_1")])
 build = "Survival"

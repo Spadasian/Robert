@@ -41,11 +41,10 @@ static func after_hit(attacker: Node, target_health: Node, info: Dictionary = {}
 	var stats := _get_stats(attacker)
 	if stats == null:
 		return
-	if target_health and target_health.is_dead():
-		var heal_amount: float = stats.get_stat("life_on_kill")
-		var health := attacker.get_node_or_null("HealthComponent")
-		if heal_amount > 0.0 and health:
-			health.heal(heal_amount)
+	var lifesteal: float = stats.get_stat("lifesteal")
+	var health := attacker.get_node_or_null("HealthComponent")
+	if lifesteal > 0.0 and health:
+		health.heal((info.get("damage", 0.0) - info.get("overkill", 0.0)) * lifesteal) # only damage that really hurt
 
 
 static func _get_stats(attacker: Node) -> Node:

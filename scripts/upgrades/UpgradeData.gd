@@ -21,6 +21,8 @@ const RARITY_NAMES: Array[String] = ["Common", "Rare", "Epic", "Legendary", "Cur
 ## A special rule (see RuleBehavior) with its numbers; empty for upgrades that only change stats.
 @export var behavior: Script
 @export var params: Dictionary = {}
+## A style upgrade of one character (its id, e.g. "yume"): that character sees it about 3 times more often. Empty = for all.
+@export var character: String = ""
 @export var build: String = "" # which style of play it belongs to (for the lists, not used in the game)
 
 

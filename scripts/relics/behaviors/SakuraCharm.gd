@@ -14,4 +14,4 @@ func on_tick(delta: float) -> void:
 
 func on_kill(info: Dictionary) -> void:
 	if window > 0.0 and info.get("kind", "") == "heavy":
-		host.heal(p("heal", 5.0))
+		host.heal(info.get("damage", 0.0) * p("ratio", 0.15))

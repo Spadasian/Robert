@@ -16,7 +16,7 @@ add("black_pearl", "Black Pearl", "+20% gold from rooms. Shops charge 20% less."
 add("oni_horn", "Oni Horn", "+25% damage, but -20% max HP.", (0.9, 0.2, 0.2), 140, CR, [("attack_damage", "P", 0.25), ("max_health", "P", -0.2)])
 add("samurai_eye", "Samurai Eye", "A Perfect Dodge slows the enemies 0.3 s longer.", (0.4, 0.8, 1.0), 140, DG, [("perfect_slow_bonus", "A", 0.3)])
 add("kurotsuki_eye", "Kurotsuki Eye", "A kill marks the nearest enemy: it takes +25% damage for 6 s.", (0.7, 0.2, 0.9), 170, CR, [], ("KurotsukiEye", {"bonus": 0.25, "time": 6.0}))
-add("sakura_charm", "Sakura Charm", "A Finisher that kills heals 5 HP.", (1.0, 0.6, 0.75), 140, SV, [], ("SakuraCharm", {"heal": 5.0}))
+add("sakura_charm", "Sakura Charm", "A Finisher that kills heals you for 15% of the damage of that blow.", (1.0, 0.6, 0.75), 140, SV, [], ("SakuraCharm", {"ratio": 0.15}))
 add("crow_feather", "Crow Feather", "Your dash leaves a trail that makes enemies bleed.", (0.3, 0.25, 0.45), 160, BL, [], ("CrowFeather", {"radius": 1.1, "time": 3.0, "bleed": 5.0}))
 add("paper_lantern", "Paper Lantern", "For 1 s after you hit something, being hit does not take Flow away.", (1.0, 0.85, 0.5), 140, SF, [], ("PaperLantern", {"time": 1.0}))
 add("broken_hilt", "Broken Katana Hilt", "Your Finisher also sends a slash wave forward.", (0.75, 0.75, 0.8), 170, SF, [], ("BrokenHilt", {"ratio": 0.6}))
@@ -37,7 +37,7 @@ add("wanderer_map", "Wanderer's Map", "The minimap shows the type of the rooms n
 add("calligraphy_ink", "Calligrapher's Ink", "Master techniques appear more often in Duel and Arena rewards (+25%).", (0.3, 0.3, 0.45), 170, SF, [("master_chance", "A", 0.25)])
 add("mountain_heart", "Heart of the Mountain", "+30 max HP, but -10% movement speed.", (0.55, 0.45, 0.4), 130, SV, [("max_health", "A", 30), ("move_speed", "P", -0.1)])
 add("spirit_lantern", "Spirit Lantern", "Your Ultimate charges 25% faster, and kills during it make it last longer.", (0.7, 0.5, 1.0), 170, SF, [("ultimate_charge", "P", 0.25)], ("SpiritLantern", {"seconds": 0.5}))
-add("soul_syphon", "Soul Syphon", "Every bleed tick on an enemy heals you 1 HP.", (0.6, 0.2, 0.4), 170, BL, [], ("SoulSyphon", {"heal": 1.0}))
+add("soul_syphon", "Soul Syphon", "Every bleed tick on an enemy heals you for 50% of its damage.", (0.6, 0.2, 0.4), 170, BL, [], ("SoulSyphon", {"ratio": 0.5}))
 add("vanish", "Vanish", "A Perfect Dodge makes you invisible for 0.8 s: the enemies start no new attacks.", (0.5, 0.45, 0.7), 160, DG, [], ("Vanish", {"time": 0.8}))
 
 add("cursed_mirror", "Cursed Mirror", "A Perfect Dodge freezes time until you hit an enemy, and Finishers deal double damage, but you take 30% more damage.", (0.55, 0.1, 0.35), 180, SF, [], ("CursedMirror", {"damage_taken": 0.3, "finisher": 2.0, "max_freeze": 8.0}), True)

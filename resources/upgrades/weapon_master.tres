@@ -5,14 +5,14 @@
 
 [sub_resource type="Resource" id="Effect_1"]
 script = ExtResource("2_effect")
-stat = "lifesteal"
-operation = 0
-value = 0.02
+stat = "attack_range"
+operation = 1
+value = 0.15
 
 [resource]
 script = ExtResource("1_data")
-id = "bloodthirst"
-display_name = "Bloodthirst"
-description = "Heal +2% of the damage you deal"
+id = "weapon_master"
+display_name = "Weapon Master"
+description = "Your basic attack reaches 15% farther"
 effects = Array[Resource]([SubResource("Effect_1")])
-build = "Survival"
+build = "Speed & Flow"

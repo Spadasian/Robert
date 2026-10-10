@@ -35,11 +35,13 @@ func _physics_process(delta: float) -> void:
 func start_attack() -> void:
 	cooldown_left = attack_cooldown / stats.get_stat("attack_speed")
 	hitbox.damage = stats.get_stat("attack_damage")
+	var reach: float = stats.get_stat("attack_range")
+	hitbox.scale = Vector3(reach, 1.0, reach) # Weapon Master and the weapon of the character
 	kata_events.light_attack.emit()
 	hitbox.set_active(true)
 	blade.visible = true
 	AudioManager.play_sfx("slash")
-	VFX.slash_arc(global_position + Vector3(0.0, 0.9, 0.0), rotation.y, 2.3, 130.0, Color(0.9, 0.95, 1.0), 0.16)
+	VFX.slash_arc(global_position + Vector3(0.0, 0.9, 0.0), rotation.y, 2.3 * reach, 130.0, Color(0.9, 0.95, 1.0), 0.16)
 
 	var half_arc: float = deg_to_rad(swing_arc_degrees * 0.5) * swing_side
 	swing_pivot.rotation.y = -half_arc

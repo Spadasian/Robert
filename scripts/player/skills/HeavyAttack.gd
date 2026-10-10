@@ -2,7 +2,7 @@ extends "res://scripts/player/skills/PlayerSkill.gd"
 ## Right click: the heavy attack. A short windup (the aim follows the mouse, then locks), then a step forward
 ## with a wide, hard slash. It is the Finisher of the Kata (see KataComponent), but works on its own too.
 
-enum Phase { WINDUP, STRIKE, RECOVER }
+enum Phase { WINDUP, STRIKE, RECOVER, LAND }
 
 @export var flat_bonus: float = 4.0 # the Heavy deals attack_damage + this (not a multiple of it)
 @export var windup_time: float = 0.28
@@ -10,6 +10,10 @@ enum Phase { WINDUP, STRIKE, RECOVER }
 @export var strike_time: float = 0.14
 @export var lunge_speed: float = 9.0 # the step forward during the strike
 @export var recover_time: float = 0.22
+## Leaping Cut (Yume): the strike is a jump over the enemies (leap_distance metres, invulnerable), and the cut
+## hits BEHIND her when she lands. 0 = a normal Heavy.
+@export var leap_distance: float = 0.0
+@export var land_time: float = 0.12
 
 @onready var hitbox: Area3D = $Hitbox
 @onready var telegraph: MeshInstance3D = $Telegraph
@@ -65,6 +69,9 @@ func _tick(delta: float) -> void:
 		Phase.STRIKE:
 			if phase_time >= strike_time:
 				_end_strike()
+		Phase.LAND:
+			if phase_time >= land_time:
+				_end_land()
 		Phase.RECOVER:
 			if phase_time >= recover_time:
 				invulnerable_now = false
@@ -83,11 +90,13 @@ func _begin_strike() -> void:
 	var context: Dictionary = player.kata.begin_finisher(self)
 	hitbox.damage = strike_damage(context)
 	finisher_context = context if context.was_open else {}
-	invulnerable_now = context.get("invulnerable", false)
+	invulnerable_now = context.get("invulnerable", false) or leap_distance > 0.0
 	_apply_finisher_shape(context)
 	hitbox.force_crit = context.get("force_crit", false)
 	hitbox.execute_below = context.get("execute_below", 0.0)
-	hitbox.set_active(true)
+	hitbox.set_active(leap_distance <= 0.0) # a leap cuts when it lands
+	if leap_distance > 0.0:
+		player.collision_mask = player.MASK_DASHING # jumps over the enemies, not through the walls
 	player.kata_events.heavy_attack.emit()
 	telegraph.visible = false
 	AudioManager.play_sfx("boss_slash", -6.0)
@@ -136,12 +145,40 @@ func _echo_strike(damage_share: float, arc_size: float, color: Color) -> void:
 
 
 func _end_strike() -> void:
+	if leap_distance > 0.0:
+		_land()
+		return
 	phase = Phase.RECOVER
 	phase_time = 0.0
 	finisher_context = {}
 	hitbox.set_active(false)
 	_reset_finisher_shape()
 	player.velocity = Vector3.ZERO # stop where the step ends, no sliding
+
+
+## The leap ended: the cut hits behind her, where the enemies she jumped over are.
+func _land() -> void:
+	phase = Phase.LAND
+	phase_time = 0.0
+	player.collision_mask = player.MASK_NORMAL
+	player.velocity = Vector3.ZERO
+	global_rotation.y = atan2(direction.x, direction.z) + PI
+	hitbox.set_active(true)
+	AudioManager.play_sfx("boss_slash", -6.0)
+	var finisher: bool = not finisher_context.is_empty()
+	var scale_factor: float = finisher_context.get("scale", 1.0)
+	var arc: float = 360.0 if finisher_context.get("spin", false) else 170.0
+	VFX.slash_arc(player.global_position + Vector3(0.0, 0.9, 0.0), global_rotation.y, (4.0 if finisher else 3.4) * scale_factor, arc, Color(0.98, 0.72, 0.88), 0.22)
+	VFX.shake(0.15, 0.2)
+
+
+func _end_land() -> void:
+	phase = Phase.RECOVER
+	phase_time = 0.0
+	finisher_context = {}
+	hitbox.set_active(false)
+	_reset_finisher_shape()
+	global_rotation.y = atan2(direction.x, direction.z)
 
 
 func _reset_finisher_shape() -> void:
@@ -152,6 +189,7 @@ func _reset_finisher_shape() -> void:
 
 
 func _cancel() -> void:
+	player.collision_mask = player.MASK_NORMAL
 	invulnerable_now = false
 	finisher_context = {}
 	hitbox.set_active(false)
@@ -173,5 +211,5 @@ func locks_movement() -> bool:
 
 func get_forced_velocity() -> Variant:
 	if is_active and phase == Phase.STRIKE:
-		return direction * lunge_speed
+		return direction * (leap_distance / strike_time if leap_distance > 0.0 else lunge_speed)
 	return null

@@ -127,6 +127,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	target = refresh_target(target)
 	if health.is_dead() or target == null:
 		return
 	delta *= time_scale() # Perfect Dodge slow, stun...

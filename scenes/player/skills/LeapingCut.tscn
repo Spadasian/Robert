@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/skills/HeavyAttack.gd" id="1_skill"]
+[ext_resource type="Script" path="res://scripts/combat/Hitbox.gd" id="2_hitbox"]
+
+[sub_resource type="BoxShape3D" id="Shape_hit"]
+size = Vector3(3.4, 1.4, 2.8)
+
+[sub_resource type="BoxMesh" id="Mesh_telegraph"]
+size = Vector3(3.2, 0.04, 2.6)
+
+[node name="LeapingCut" type="Node3D"]
+script = ExtResource("1_skill")
+display_name = "Leaping Cut"
+key_label = "RMB"
+input_action = "heavy"
+cooldown = 0.9
+windup_time = 0.2
+lock_time = 0.05
+strike_time = 0.22
+recover_time = 0.2
+leap_distance = 5.0
+land_time = 0.12
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 32
+monitorable = false
+script = ExtResource("2_hitbox")
+kind = "heavy"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1.6)
+shape = SubResource("Shape_hit")
+
+[node name="Telegraph" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 1.7)
+mesh = SubResource("Mesh_telegraph")

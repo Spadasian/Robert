@@ -2,6 +2,12 @@
 
 [ext_resource type="Script" path="res://scripts/characters/CharacterData.gd" id="1_data"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="PackedScene" path="res://art/weapons/tessen_yume.glb" id="3_weapon"]
+[ext_resource type="Script" path="res://scripts/characters/passives/ButterflyTwist.gd" id="4_passive"]
+[ext_resource type="PackedScene" path="res://scenes/player/skills/LeapingCut.tscn" id="5_rmb"]
+[ext_resource type="PackedScene" path="res://scenes/player/skills/yume/PhantomStep.tscn" id="5_shift"]
+[ext_resource type="PackedScene" path="res://scenes/player/skills/yume/MirrorDream.tscn" id="5_q"]
+[ext_resource type="PackedScene" path="res://scenes/player/skills/yume/DreamClones.tscn" id="5_e"]
 
 [resource]
 script = ExtResource("1_data")
@@ -11,7 +17,20 @@ role = "Blade dancer"
 description = "Fast and fragile. Hit and run with many small blows."
 color = Color(0.97, 0.7, 0.85, 1)
 weapon = "Tessen (war fans)"
-implemented = false
+weapon_scene = ExtResource("3_weapon")
+weapon_position = Vector3(0.0, 0.0, 0.75)
+weapon_rotation = Vector3(90.0, 0.0, 0.0)
+weapon_scale = 2.6
+attack = {
+"cooldown": 0.3,
+"swing_time": 0.09,
+"arc": 110.0,
+"reach": 0.9,
+"hits": 2,
+"hit_gap": 0.1,
+"damage_ratio": 0.6,
+"color": Color(0.98, 0.72, 0.88, 1)
+}
 stats = {
 "max_health": 85.0,
 "attack_damage": 9.0,
@@ -24,6 +43,19 @@ stats = {
 passive_name = "Butterfly Twist"
 passive_text = "Every dash throws 3 shuriken (5 damage each) in a fan opposite to the dash."
 passive_effects = Array[Resource]([])
+passive_behavior = ExtResource("4_passive")
+passive_params = {
+"damage": 5.0,
+"base_attack": 9.0,
+"cooldown": 1.0,
+"spread": 18.0
+}
+skill_scenes = {
+"rmb": ExtResource("5_rmb"),
+"shift": ExtResource("5_shift"),
+"q": ExtResource("5_q"),
+"e": ExtResource("5_e")
+}
 skill_names = {
 "lmb": "Twin Cuts",
 "rmb": "Leaping Cut",

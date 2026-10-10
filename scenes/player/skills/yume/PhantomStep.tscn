@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/skills/yume/PhantomStepSkill.gd" id="1_skill"]
+
+[node name="PhantomStep" type="Node3D"]
+script = ExtResource("1_skill")
+display_name = "Phantom Step"
+key_label = "SHIFT"
+input_action = "skill"
+cooldown = 6.0

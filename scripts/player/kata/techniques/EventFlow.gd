@@ -13,7 +13,7 @@ func on_event(kata: Node, event: String, payload: Dictionary) -> void:
 		"hit_dealt":
 			if payload.get("kind", "") == "bleed" or payload.get("hit_count", 1) > 1:
 				return
-			if payload.get("kind", "") == "light":
+			if payload.get("kind", "") in ["light", "shuriken"]:
 				kata.add_flow(param("light_gain", 0.0))
 			if payload.get("from_behind", false):
 				kata.add_flow(param("behind_gain", 0.0))

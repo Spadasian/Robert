@@ -244,6 +244,7 @@ func _apply_character(character: Resource) -> void:
 	stats._recalculate()
 	if character.passive_behavior != null:
 		rules.add_behavior(character)
+	weapon.apply_character(character)
 	var material := body_mesh.get_active_material(0) as StandardMaterial3D
 	if material:
 		material = material.duplicate() as StandardMaterial3D

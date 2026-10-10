@@ -9,7 +9,7 @@ func on_open(_kata: Node) -> void:
 
 
 func on_event(kata: Node, event: String, payload: Dictionary) -> void:
-	if event == "hit_dealt" and payload.get("kind", "") == "light" and payload.get("hit_count", 1) <= 1:
+	if event == "hit_dealt" and payload.get("kind", "") in ["light", "shuriken"] and payload.get("hit_count", 1) <= 1:
 		streak += 1
 		kata.add_flow(param("base_gain", 0.15) + param("streak_gain", 0.07) * mini(streak, 6))
 	elif event == "damage_taken":

@@ -93,6 +93,11 @@ add("scholars_brush", "Scholar's Brush", "Common", EC, "+10% EXP from enemies", 
 add("wide_view", "Wide View", "Epic", EC, "Level ups offer 4 upgrades instead of 3", [("choice_count", "A", 1)])
 add("reroll_token", "Reroll Token", "Rare", EC, "Once per run you can reroll a level up choice (key R)", [("rerolls", "A", 1)])
 
+# ---- Style upgrades of the characters (their own character sees them about 3 times more often)
+add("dream_echo", "Dream Echo", "Epic", SF, "Every dash leaves a clone that cuts the spot a moment later", [], ("DreamEcho", {"damage_ratio": 0.8, "radius": 2.2, "delay": 0.3, "cooldown": 1.0}), "yume")
+add("quick_hands", "Quick Hands", "Rare", SF, "Every 3rd light hit in a row: +15% attack speed for 2 s", [], ("QuickHands", {"every": 3, "bonus": 0.15, "time": 2.0}), "yume")
+add("silk_step", "Silk Step", "Rare", DG, "After a Perfect Dodge the enemies lose sight of you for 1 s", [], ("SilkStep", {"time": 1.0}), "yume")
+
 add("weapon_master", "Weapon Master", "Common", SF, "Your basic attack reaches 15% farther", [("attack_range", "P", 0.15)])
 
 # ---- Cursed (offered only after the Corruption bar reached 50% once in a run): strong, with a price

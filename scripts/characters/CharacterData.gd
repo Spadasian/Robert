@@ -10,6 +10,15 @@ extends Resource
 @export_multiline var description: String = ""
 @export var color: Color = Color(1, 1, 1) # placeholder colour of the body until the 3D model exists
 @export var weapon: String = ""
+## The 3D model of the weapon (a .glb in art/weapons, Y-up, in metres) and where it sits on the swing pivot of the
+## basic attack: position, rotation (degrees) and scale. The model is turned so its tip points forward (+Z).
+@export var weapon_scene: PackedScene
+@export var weapon_position: Vector3 = Vector3(0.0, 0.0, 0.9)
+@export var weapon_rotation: Vector3 = Vector3(90.0, 0.0, 0.0)
+@export var weapon_scale: float = 1.0
+## The basic attack (LMB) of this character. Keys (all optional): cooldown, swing_time, arc (degrees), reach,
+## hits (cuts per press), hit_gap (seconds between the cuts), damage_ratio (of attack_damage, per cut), color.
+@export var attack: Dictionary = {}
 @export var implemented: bool = true # false: shown on the select screen but cannot be chosen yet
 
 ## Stats that differ from StatsComponent.base_stats: stat name -> value.

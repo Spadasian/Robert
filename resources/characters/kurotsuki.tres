@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/characters/CharacterData.gd" id="1_data"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="PackedScene" path="res://art/weapons/tekko_kagi_kurotsuki.glb" id="3_weapon"]
 
 [resource]
 script = ExtResource("1_data")
@@ -11,6 +12,10 @@ role = "Curse of the night"
 description = "Risk and reward. Bleed and Corruption, built around Possessed."
 color = Color(0.3, 0.1, 0.4, 1)
 weapon = "Steel claws (tekko-kagi)"
+weapon_scene = ExtResource("3_weapon")
+weapon_position = Vector3(0.0, 0.0, 0.7)
+weapon_rotation = Vector3(90.0, 0.0, 0.0)
+weapon_scale = 3.2
 implemented = false
 stats = {
 "max_health": 95.0,

@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/skills/yume/DreamClonesSkill.gd" id="1_skill"]
+
+[node name="DreamClones" type="Node3D"]
+script = ExtResource("1_skill")
+display_name = "Dream Clones"
+key_label = "E"
+input_action = "ultimate"
+cooldown = 0.0

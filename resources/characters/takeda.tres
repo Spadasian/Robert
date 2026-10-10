@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/characters/CharacterData.gd" id="1_data"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="PackedScene" path="res://art/weapons/kanabo_takeda.glb" id="3_weapon"]
 
 [resource]
 script = ExtResource("1_data")
@@ -11,6 +12,10 @@ role = "Resilient general"
 description = "Slow and hard to stop. Heavy blows that crush and push."
 color = Color(0.25, 0.65, 0.3, 1)
 weapon = "Kanabo (iron club)"
+weapon_scene = ExtResource("3_weapon")
+weapon_position = Vector3(0.0, 0.0, 1.1)
+weapon_rotation = Vector3(90.0, 0.0, 0.0)
+weapon_scale = 1.3
 implemented = false
 stats = {
 "max_health": 130.0,

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/characters/CharacterData.gd" id="1_data"]
 [ext_resource type="Script" path="res://scripts/upgrades/UpgradeEffect.gd" id="2_effect"]
+[ext_resource type="PackedScene" path="res://art/weapons/katana_kazuma.glb" id="3_weapon"]
 
 [sub_resource type="Resource" id="Effect_1"]
 script = ExtResource("2_effect")
@@ -17,6 +18,10 @@ role = "Ronin duelist"
 description = "Precise and balanced. Plays on timing: Perfect Dodge, Iaijutsu, counters."
 color = Color(0.85, 0.15, 0.15, 1)
 weapon = "Katana"
+weapon_scene = ExtResource("3_weapon")
+weapon_position = Vector3(0.0, 0.0, 0.9)
+weapon_rotation = Vector3(90.0, 0.0, 0.0)
+weapon_scale = 1.8
 stats = {
 "max_health": 110.0,
 "attack_damage": 11.0

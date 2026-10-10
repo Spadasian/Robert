@@ -55,7 +55,11 @@ func on_damage_taken(_amount: float) -> void:
 	pass
 
 
-func on_skill_used(_skill: Node) -> void:
+func on_skill_used(_skill: Node) -> void: # the button was pressed
+	pass
+
+
+func on_skill_resolved(_skill: Node) -> void: # the skill really did its thing (the cut, the counter, the dash...)
 	pass
 
 

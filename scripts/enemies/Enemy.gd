@@ -44,6 +44,17 @@ func time_scale() -> float:
 	return EnemyTime.get_scale() * status.speed_factor()
 
 
+## Who the enemy attacks: a decoy (Yume's Mirror Dream) draws every attack while it lives, otherwise the player.
+func refresh_target(current: Variant) -> Node3D:
+	var decoy := get_tree().get_first_node_in_group("decoy") as Node3D
+	if decoy != null and is_instance_valid(decoy):
+		return decoy
+	var player := get_tree().get_first_node_in_group("player") as Node3D
+	if player != null:
+		return player
+	return current if is_instance_valid(current) else null
+
+
 ## Enemy scripts ask this before showing the red warning of an attack (false once when Eclipse hides it).
 func telegraph_visible() -> bool:
 	if hide_next_telegraph:

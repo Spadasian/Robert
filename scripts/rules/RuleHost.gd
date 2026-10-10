@@ -6,6 +6,7 @@ extends Node
 signal shield_changed(value: float)
 
 const WAVE_SCENE: PackedScene = preload("res://scenes/player/Wave.tscn")
+const SHURIKEN_SCENE: PackedScene = preload("res://scenes/player/Shuriken.tscn")
 
 var behaviors: Array = []
 var shield: float = 0.0
@@ -26,6 +27,7 @@ func _ready() -> void:
 	events.kill.connect(func(info): _each("on_kill", [info]))
 	events.damage_taken.connect(func(amount): _each("on_damage_taken", [amount]))
 	events.skill_used.connect(func(skill): _each("on_skill_used", [skill]))
+	events.skill_resolved.connect(func(skill): _each("on_skill_resolved", [skill]))
 	events.bleed_tick.connect(func(enemy, damage): _each("on_bleed_tick", [enemy, damage]))
 	var kata: Node = player.get_node("KataComponent")
 	kata.opened.connect(func(): _each("on_kata_opened", []))
@@ -190,14 +192,23 @@ func nearest_enemy(center: Vector3, radius: float, except: Node = null) -> Node:
 
 ## A slash wave that flies forward (Combo Spark, Broken Katana Hilt, Gale Slash).
 func fire_wave(direction: Vector3, damage: float, speed: float = 16.0, lifetime: float = 0.5, pierce: bool = true) -> void:
-	var wave = WAVE_SCENE.instantiate()
-	wave.damage = damage
-	wave.speed = speed
-	wave.lifetime = lifetime
-	wave.pierce = pierce
-	wave.source = player
+	_fire(WAVE_SCENE, direction, damage, speed, lifetime, pierce)
+
+
+## A shuriken (Yume): small, stops at the first enemy it hits.
+func fire_shuriken(direction: Vector3, damage: float, speed: float = 15.0, lifetime: float = 0.7) -> void:
+	_fire(SHURIKEN_SCENE, direction, damage, speed, lifetime, false)
+
+
+func _fire(scene: PackedScene, direction: Vector3, damage: float, speed: float, lifetime: float, pierce: bool) -> void:
+	var projectile = scene.instantiate()
+	projectile.damage = damage
+	projectile.speed = speed
+	projectile.lifetime = lifetime
+	projectile.pierce = pierce
+	projectile.source = player
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	var parent: Node = room_manager.current_room if room_manager and room_manager.current_room else get_tree().current_scene
-	parent.add_child(wave)
+	parent.add_child(projectile)
 	var flat: Vector3 = Vector3(direction.x, 0.0, direction.z).normalized()
-	wave.launch(player.global_position + Vector3(0.0, 0.9, 0.0) + flat * 0.8, flat)
+	projectile.launch(player.global_position + Vector3(0.0, 0.9, 0.0) + flat * 0.8, flat)
